@@ -43,8 +43,6 @@
                 category: wallet.level.toString()
             } as GraphNode;
         });;
-
-        console.log(options);
     }
     function createLinks(transfers: OsmosisNetTransferDTO[]) {
         var links = transfers
