@@ -12,10 +12,10 @@
 </script>
 
 <script lang="ts">
-	import { Chart } from 'svelte-echarts';
-	import type { EChartsOptions } from 'svelte-echarts';
+	import type { EChartsOption } from 'echarts';
 	import type { SankeySeriesOption } from 'echarts';
 	import type { OsmosisFlowSankeyDTO } from '$lib/models/OsmosisDTOs';
+	import Chart from '$lib/components/Chart.svelte';
 
 	export let parameters: OsmosisFlowSankeyDTO;
 
@@ -151,7 +151,7 @@
 		}
 	};
 
-	const options: EChartsOptions = {
+	const options: EChartsOption = {
 		tooltip: {
 			trigger: 'item',
 			triggerOn: 'mousemove'
@@ -161,7 +161,7 @@
 </script>
 
 <p class="mb-48">OUTPUT</p>
-<Chart {options} />
+<Chart isLoading={false} {options} />
 
 <style>
 </style>
