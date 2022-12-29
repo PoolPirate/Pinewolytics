@@ -1,4 +1,6 @@
 ﻿using Common.Extensions;
+using Microsoft.AspNetCore.Rewrite;
+using Microsoft.Extensions.FileProviders;
 
 namespace Pinewolytics;
 
@@ -44,7 +46,6 @@ public class Startup
             policy.AllowAnyOrigin();
         });
 
-        app.UseStaticFiles();
         app.UseResponseCaching();
 
         app.UseRouting();
@@ -56,6 +57,5 @@ public class Startup
     public void ConfigureRoutes(IEndpointRouteBuilder routes)
     {
         routes.MapControllers();
-        routes.MapFallbackToFile("index.html");
     }
 }
