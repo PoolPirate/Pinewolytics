@@ -62,7 +62,7 @@
     });
 </script>
 
-<WalletGraph wallets={$wallets} transfers={$transfers} depth={$depth} isLoading={$isLoading}></WalletGraph>
+<WalletGraph wallets={$wallets} transfers={$transfers} depth={$depth + 1} isLoading={$isLoading} ></WalletGraph>
 
 <style>
 

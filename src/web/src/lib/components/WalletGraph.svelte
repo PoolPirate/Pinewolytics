@@ -24,7 +24,7 @@
 
 	import type { OsmosisNetTransferDTO } from '$lib/models/OsmosisDTOs';
 	import type { GraphSeriesOption, LegendComponentOption } from 'echarts';
-	import Chart from './Chart.svelte';
+	import Chart, { type EChartsLoadingOption } from './Chart.svelte';
 
     export let wallets: DeveloperWallet[];
     export let transfers: OsmosisNetTransferDTO[];
@@ -42,10 +42,15 @@
         (options.series as GraphSeriesOption).data = wallets.map(wallet => {
             return {
                 name: wallet.address,
-                symbolSize: transfers.length == 0 ? 12 : map(wallet.amount, min, max, 5, 110),
+                symbolSize: transfers.length == 0 
+                    ? 12 
+                    : map(wallet.amount == 0 
+                        ? transfers.filter(x => x.sender == wallet.address).reduce((total, curr, _) => total + curr.amount, 0)
+                        : wallet.amount
+                            , min, max, 5, 110),
                 category: wallet.level.toString()
             } as GraphNode;
-        });;
+        });
     }
     function createLinks(transfers: OsmosisNetTransferDTO[]) {
         var links = transfers
@@ -104,7 +109,8 @@
             layout: 'force',
             roam: true,
             force: {
-                repulsion: 400,
+                repulsion: 250,
+                initLayout: "circular"
             },
 
             edgeSymbol: ['circle', 'arrow'],
@@ -129,9 +135,13 @@
         const mapped: number = ((current - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
         return clamp(mapped, out_min, out_max);
     }
+
+    const loadingOptions: EChartsLoadingOption = {
+        text: "Loading..."
+    }
 </script>
 
-<Chart isLoading={isLoading} {options} />
+<Chart isLoading={isLoading} {options} {loadingOptions} />
 
 <style>
 </style>
