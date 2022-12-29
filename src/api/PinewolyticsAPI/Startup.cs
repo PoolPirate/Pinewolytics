@@ -45,8 +45,7 @@ public class Startup
         });
 
         app.UseStaticFiles();
-
-        //app.UseResponseCaching();        
+        app.UseResponseCaching();
 
         app.UseRouting();
 
@@ -57,5 +56,6 @@ public class Startup
     public void ConfigureRoutes(IEndpointRouteBuilder routes)
     {
         routes.MapControllers();
+        routes.MapFallbackToFile("index.html");
     }
 }
