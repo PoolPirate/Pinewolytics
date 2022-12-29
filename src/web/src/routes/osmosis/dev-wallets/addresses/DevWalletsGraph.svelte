@@ -34,12 +34,12 @@
 
     function createNodes(wallets: DeveloperWallet[]) {
         const max = wallets.reduce((max, curr, _) => Math.max(max, curr.amount), 0);
-        const min = 0;
+        const min = wallets.reduce((min, curr, _) => Math.min(min, curr.amount), 0);
 
         (options.series as GraphSeriesOption).data = wallets.map(wallet => {
             return {
                 name: wallet.address,
-                symbolSize: transfers.length == 0 ? 12 : map(wallet.amount, min, max, 5, 60),
+                symbolSize: transfers.length == 0 ? 12 : map(wallet.amount, min, max, 5, 110),
                 category: wallet.level.toString()
             } as GraphNode;
         });;
@@ -60,19 +60,13 @@
             }
             if (wallets[senderIdx].level > wallets[receiverIdx].level) {
                 wallets[senderIdx].amount -= transfer.amount;
-                return null;
             }
 
             return {
                 source: transfer.sender,
                 target: transfer.receiver,
             } as GraphLink;
-        }).filter(x => x !== null).map(x => x!);
-
-        wallets = wallets.filter(x => x.amount > 0);
-        links = links
-            .filter(link => wallets.some(x => x.address == link.source))
-            .filter(link => wallets.some(x => x.address == link.target));
+        });
 
         (options.series as GraphSeriesOption).links = links;
 
@@ -102,15 +96,15 @@
             layout: 'force',
             roam: true,
             force: {
-                repulsion: 100,
+                repulsion: 400,
             },
 
             edgeSymbol: ['circle', 'arrow'],
-            edgeSymbolSize: [3, 10],
+            edgeSymbolSize: [3, 9],
             lineStyle: {
-                width: 4,
-                color: "gray",
-                opacity: 1
+                width: 3,
+                color: "black",
+                opacity: 0.2
             },
 
             data: [],
