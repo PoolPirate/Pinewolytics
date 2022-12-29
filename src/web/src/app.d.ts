@@ -9,6 +9,6 @@ declare namespace App {
 }
 
 declare module 'tailwind.config.cjs' {
-	const config: Config
-	export default config
+	const config: Config;
+	export default config;
 }
