@@ -20,17 +20,20 @@
 </script>
 
 <script lang="ts">
-	import { Chart } from 'svelte-echarts';
-	import type { EChartsOptions } from 'svelte-echarts';
+    import type { EChartsOption } from "echarts";
+
 	import type { OsmosisNetTransferDTO } from '$lib/models/OsmosisDTOs';
-	import type { GraphSeriesOption } from 'echarts';
+	import type { GraphSeriesOption, LegendComponentOption } from 'echarts';
+	import Chart from './Chart.svelte';
 
     export let wallets: DeveloperWallet[];
     export let transfers: OsmosisNetTransferDTO[];
     export let depth: number;
+    export let isLoading: boolean;
 
     $: createNodes(wallets);
     $: createLinks(transfers);
+    $: createCategories(depth);
 
     function createNodes(wallets: DeveloperWallet[]) {
         const max = wallets.reduce((max, curr, _) => Math.max(max, curr.amount), 0);
@@ -72,24 +75,29 @@
 
         createNodes(wallets);
     }
-        
-    const categories = [...Array(depth).keys()].map(i => 
-    {
-        return {
-            name: i.toString(),
-        } as GraphCategory;
-    });
+    function createCategories(depth: number) {
+        const categories = [...Array(depth).keys()].map(i => 
+        {
+            return {
+                name: i.toString(),
+            } as GraphCategory;
+        });
 
-	const options: EChartsOptions = {
+        (options.legend as LegendComponentOption).data = categories.map(x => x.name);
+        (options.series as GraphSeriesOption).categories = categories;
+    }
+
+
+	const options: EChartsOption = {
         title: {
-            text: 'Basic Graph'
+            text: 'Developer Wallet Graph'
         },
         tooltip: {
             show: false
         },
         legend: [
         {
-            data: categories.map(x => x.name),
+            data: []
         }],
 		series: {
             type: 'graph',
@@ -109,7 +117,7 @@
 
             data: [],
             links: [],
-            categories: categories
+            categories: []
         }
 	};
 
@@ -123,7 +131,7 @@
     }
 </script>
 
-<Chart {options} />
+<Chart isLoading={isLoading} {options} />
 
 <style>
 </style>

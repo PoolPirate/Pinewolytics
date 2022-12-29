@@ -20,6 +20,6 @@
 <style>
     
     .pad-around {
-        padding: 0px 10%;
+       
     }
 </style>

@@ -1,57 +1,26 @@
 <script lang="ts">
-	import { getInternalNetOSMOTransfers, getOsmosisDeveloperWalletsRecursive, getRelatedWallets } from "$lib/service/queries";
-	import DevWalletsGraph from "./DevWalletsGraph.svelte";
-    import type { DeveloperWallet } from "./DevWalletsGraph.svelte";
-	import { writable } from "svelte/store";
-	import { onMount } from "svelte";
-	import type { OsmosisNetTransferDTO } from "$lib/models/OsmosisDTOs";
+	import WalletSpreadGraph from "$lib/components/WalletSpreadGraph.svelte";
+	import LoadingSpinner from "$lib/LoadingSpinner.svelte";
 	import { getDeveloperMintReceivers, getTotalDeveloperMintedOsmo } from "$lib/service/osmosislcd";
 
-    const depth = 5;
+    const totalOSMOPromise = getTotalDeveloperMintedOsmo();
+    const devMintReceiversPromise = getDeveloperMintReceivers();
+    const initialWalletsPromise = Promise.all([totalOSMOPromise, devMintReceiversPromise]).then(results => {
+        const totalOMSO = results[0];
+        const devMintReceivers = results[1];
 
-    const wallets = writable<DeveloperWallet[]>([]);
-    const transfers = writable<OsmosisNetTransferDTO[]>([]);
-
-    onMount(async () => {
-        const totalOSMO = await getTotalDeveloperMintedOsmo();
-        const devMintReceivers = await getDeveloperMintReceivers();
-        
-        const devAddresses = devMintReceivers.map(x => x.address);
-        const totalAddresses = [...devAddresses];
-
-        wallets.set(devMintReceivers.map(wallet => {
+        return devMintReceivers.map(x => {
             return {
-                address: wallet.address,
-                level: 0,
-                amount: wallet.weight * totalOSMO
-            }
-        }));
-
-        for(let i = 1; i < depth; i++) {
-            const relatedAddresses = await getRelatedWallets(totalAddresses);
-            const devWallets = $wallets;
-
-            relatedAddresses.forEach(address => {
-                totalAddresses.push(address);
-
-                devWallets.push({
-                    address: address,
-                    level: i,
-                    amount: 0
-                });
-            });
-
-            wallets.set(devWallets);
-        }
-
-        transfers.set(await getInternalNetOSMOTransfers(totalAddresses));
-
-
+                address: x.address, 
+                amount: totalOMSO * x.weight
+            };
+        })
     });
 </script>
 
-<DevWalletsGraph wallets={$wallets} transfers={$transfers} depth={depth}></DevWalletsGraph>
+{#await initialWalletsPromise}
+    <LoadingSpinner></LoadingSpinner>
+{:then initialWallets} 
+    <WalletSpreadGraph maxDepth={10} initialWallets={initialWallets}></WalletSpreadGraph>
+{/await}
 
-<style>
-
-</style>
