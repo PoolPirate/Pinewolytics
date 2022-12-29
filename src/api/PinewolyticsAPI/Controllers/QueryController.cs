@@ -15,7 +15,7 @@ public class QueryController : ControllerBase
     }
 
     [HttpGet("Osmosis/Swaps")]
-    [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any)]
+    [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "addresses" })]
     public async Task<IActionResult> GetSwapsAsync([FromQuery] string[] addresses, 
         CancellationToken cancellationToken)
     {
@@ -24,7 +24,7 @@ public class QueryController : ControllerBase
     }
 
     [HttpGet("Osmosis/Transfers")]
-    [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any)]
+    [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "addresses" })]
     public async Task<IActionResult> GetTransfersAsync([FromQuery] string[] addresses, 
         CancellationToken cancellationToken)
     {
@@ -33,7 +33,7 @@ public class QueryController : ControllerBase
     }
 
     [HttpGet("Osmosis/InternalNetTransfers")]
-    [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any)]
+    [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "addresses" })]
     public async Task<IActionResult> GetInternalNetOsmoTransfersAsync([FromQuery] string[] addresses, 
         CancellationToken cancellationToken)
     {
@@ -42,7 +42,7 @@ public class QueryController : ControllerBase
     }
 
     [HttpGet("Osmosis/ExternalNetTransfers")]
-    [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any)]
+    [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "addresses" })]
     public async Task<IActionResult> GetExternalNetOsmoTransfersAsync([FromQuery] string[] addresses, 
         CancellationToken cancellationToken)
     {
@@ -51,7 +51,7 @@ public class QueryController : ControllerBase
     }
 
     [HttpGet("Osmosis/IBCTransfers")]
-    [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any)]
+    [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "addresses" })]
     public async Task<IActionResult> GetIBCTransfersAync([FromQuery] string[] addresses, 
         CancellationToken cancellationToken)
     {
@@ -60,7 +60,7 @@ public class QueryController : ControllerBase
     }
 
     [HttpGet("Osmosis/LPJoins")]
-    [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any)]
+    [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "addresses" })]
     public async Task<IActionResult> GetLPJoinsAsync([FromQuery] string[] addresses, 
         CancellationToken cancellationToken)
     {
@@ -69,7 +69,7 @@ public class QueryController : ControllerBase
     }
 
     [HttpGet("Osmosis/FlowSankey")]
-    [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any)]
+    [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "address", "currency" })]
     public async Task<IActionResult> GetFlowSankeyAsync([FromQuery] string address, [FromQuery] string currency, 
         CancellationToken cancellationToken)
     {
@@ -78,7 +78,7 @@ public class QueryController : ControllerBase
     }
 
     [HttpGet("Osmosis/DeveloperWallets")]
-    [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
+    [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] {"depth"})]
     public async Task<IActionResult> GetDeveloperWalletsRecursiveAsync([FromQuery] int depth,
         CancellationToken cancellationToken)
     {
@@ -87,7 +87,7 @@ public class QueryController : ControllerBase
     }
 
     [HttpGet("Osmosis/RelatedWallets")]
-    [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any)]
+    [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] {"addresses"})]
     public async Task<IActionResult> GetDeveloperWalletsRecursiveAsync([FromQuery] string[] addresses,
     CancellationToken cancellationToken)
     {
