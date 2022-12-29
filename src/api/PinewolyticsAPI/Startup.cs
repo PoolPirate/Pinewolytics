@@ -46,6 +46,16 @@ public class Startup
             policy.AllowAnyOrigin();
         });
 
+        app.UseStaticFiles();
+
+        var options = new RewriteOptions()
+            .AddRewrite("^(?!api\\/|Api\\/)(.+)\\/$", "$1.html", true)
+            .AddRewrite("^(?!api\\/|Api\\/)(.+)", "$1.html", true);
+
+        app.UseRewriter(options);
+
+        app.UseStaticFiles();
+
         app.UseResponseCaching();
 
         app.UseRouting();
@@ -57,5 +67,6 @@ public class Startup
     public void ConfigureRoutes(IEndpointRouteBuilder routes)
     {
         routes.MapControllers();
+        routes.MapFallbackToFile("index.html");
     }
 }
