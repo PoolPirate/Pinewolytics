@@ -7,7 +7,7 @@ export async function getOSMOSwaps(addresses: string[]): Promise<OsmosisSwapDTO[
         params += 'addresses=' + address + '&';
     });
 
-    const response = await fetch('http://localhost:4565/Api/Osmosis/Swaps' + params);
+    const response = await fetch('Api/Osmosis/Swaps' + params);
     return (await response.json()) as OsmosisSwapDTO[];
 }
 
@@ -18,7 +18,7 @@ export async function getOSMOTransfers(addresses: string[]): Promise<OsmosisTran
         params += 'addresses=' + address + '&';
     });
 
-    const response = await fetch('http://localhost:4565/Api/Osmosis/Transfers' + params);
+    const response = await fetch('Api/Osmosis/Transfers' + params);
     return (await response.json()) as OsmosisTransferDTO[];
 }
 
@@ -29,7 +29,7 @@ export async function getInternalNetOSMOTransfers(addresses: string[]): Promise<
         params += 'addresses=' + address + '&';
     });
 
-    const response = await fetch('http://localhost:4565/Api/Osmosis/InternalNetTransfers?=' + params);
+    const response = await fetch('Api/Osmosis/InternalNetTransfers?=' + params);
     return (await response.json()) as OsmosisNetTransferDTO[];
 }
 
@@ -40,7 +40,7 @@ export async function getExternalNetOSMOTransfers(addresses: string[]): Promise<
         params += 'addresses=' + address + '&';
     });
 
-    const response = await fetch('http://localhost:4565/Api/Osmosis/ExternalNetTransfers?=' + params);
+    const response = await fetch('Api/Osmosis/ExternalNetTransfers?=' + params);
     return (await response.json()) as OsmosisNetTransferDTO[];
 }
 
@@ -51,7 +51,7 @@ export async function getOSMOIBCTransfers(addresses: string[]): Promise<OsmosisI
         params += 'addresses=' + address + '&';
     });
 
-    const response = await fetch('http://localhost:4565/Api/Osmosis/IBCTransfers' + params);
+    const response = await fetch('Api/Osmosis/IBCTransfers' + params);
     return (await response.json()) as OsmosisIBCTransferDTO[];
 }
 
@@ -62,17 +62,17 @@ export async function getOSMOLPJoins(addresses: string[]): Promise<OsmosisLPJoin
         params += 'addresses=' + address + '&';
     });
 
-    const response = await fetch('http://localhost:4565/Api/Osmosis/LPJoins' + params);
+    const response = await fetch('Api/Osmosis/LPJoins' + params);
     return (await response.json()) as OsmosisLPJoinDTO[];
 }
 
 export async function getOsmosisFlowSankey(address: string, currency: string): Promise<OsmosisFlowSankeyDTO> {
-    const response = await fetch('http://localhost:4565/Api/Osmosis/FlowSankey?address=' + address + "&currency=" + currency);
+    const response = await fetch('Api/Osmosis/FlowSankey?address=' + address + "&currency=" + currency);
     return (await response.json()) as OsmosisFlowSankeyDTO;
 }
 
 export async function getOsmosisDeveloperWalletsRecursive(depth: number): Promise<string[]> {
-    const response = await fetch('http://localhost:4565/Api/Osmosis/DeveloperWallets?depth=' + depth);
+    const response = await fetch('Api/Osmosis/DeveloperWallets?depth=' + depth);
     return (await response.json()) as string[];
 }
 
@@ -83,6 +83,6 @@ export async function getRelatedWallets(addresses: string[]): Promise<string[]> 
         params += 'addresses=' + address + '&';
     });
 
-    const response = await fetch('http://localhost:4565/Api/Osmosis/RelatedWallets' + params);
+    const response = await fetch('Api/Osmosis/RelatedWallets' + params);
     return (await response.json()) as string[];
 }
