@@ -1,4 +1,6 @@
 ﻿using Common.Services;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Memory;
 using Pinewolytics.Configuration;
 using Pinewolytics.Models;
 using Pinewolytics.Models.FlipsideAPI;
@@ -11,12 +13,13 @@ public class FlipsideClient : Singleton
     private readonly HttpClient Client;
     [Inject]
     private readonly ApiKeyOptions ApiKeyOptions;
+    [Inject]
+    private readonly IMemoryCache Cache;
 
-    public async Task<T[]> RunQueryAsync<T>(string sql, int ttlMinutes = 10, bool allowCache = true,
+    public async Task RunQueryAndCacheAsync(string sql, TimeSpan cacheDuration,
         CancellationToken cancellationToken = default)
-        where T : IFlipsideObject<T>
     {
-        var queueResult = await QueueQueryAsync(sql, ttlMinutes, allowCache, cancellationToken);
+        var queueResult = await QueueQueryAsync(sql, cancellationToken);
 
         if (!queueResult.Cached)
         {
@@ -25,13 +28,51 @@ public class FlipsideClient : Singleton
 
         object[][]? results = await GetQueryResultsAsync(queueResult.Token, cancellationToken: cancellationToken);
 
-        while (results == null)
+        while (results is null)
         {
             await Task.Delay(200, cancellationToken);
             results = await GetQueryResultsAsync(queueResult.Token, cancellationToken: cancellationToken);
         }
 
-        return results.Select(result => {
+        Cache.Set(sql, results, cacheDuration);
+    }
+
+    public async Task<T[]> GetOrRunAsync<T>(string sql,
+        CancellationToken cancellationToken = default)
+        where T : IFlipsideObject<T>
+    {
+        return Cache.TryGetValue<object[][]>(sql, out object[][]? results)
+            ? ParseFlipsideObjects<T>(results!)
+            : await RunQueryAsync<T>(sql, cancellationToken);
+    }
+
+    private async Task<T[]> RunQueryAsync<T>(string sql,
+        CancellationToken cancellationToken = default)
+        where T : IFlipsideObject<T>
+    {
+        var queueResult = await QueueQueryAsync(sql, cancellationToken);
+
+        if (!queueResult.Cached)
+        {
+            await Task.Delay(200, cancellationToken);
+        }
+
+        object[][]? results = await GetQueryResultsAsync(queueResult.Token, cancellationToken: cancellationToken);
+
+        while (results is null)
+        {
+            await Task.Delay(200, cancellationToken);
+            results = await GetQueryResultsAsync(queueResult.Token, cancellationToken: cancellationToken);
+        }
+
+        return ParseFlipsideObjects<T>(results);
+    }
+
+    private T[] ParseFlipsideObjects<T>(object[][] results)
+        where T : IFlipsideObject<T>
+    {
+        return results.Select(result =>
+        {
             if (result.Contains(null))
             {
                 Logger.LogWarning("Query result contains null values!");
@@ -41,14 +82,14 @@ public class FlipsideClient : Singleton
         }).ToArray();
     }
 
-    private async Task<QueueQueryResult> QueueQueryAsync(string sql, int ttlMinutes = 10, bool allowCache = true,
+    private async Task<QueueQueryResult> QueueQueryAsync(string sql,
         CancellationToken cancellationToken = default)
     {
         var content = JsonContent.Create(new Dictionary<string, object>()
         {
             ["sql"] = sql,
-            ["ttl_minutes"] = ttlMinutes,
-            ["cache"] = allowCache
+            ["ttl_minutes"] = 1, //Use own caching instead
+            ["cache"] = false
         });
 
         var request = new HttpRequestMessage(HttpMethod.Post, "https://node-api.flipsidecrypto.com/queries")

@@ -7,7 +7,7 @@ public class CommaDelimitedArrayModelBinder : IModelBinder
 {
     public Task BindModelAsync(ModelBindingContext bindingContext)
     {
-        var modelName = bindingContext.ModelName;
+        string modelName = bindingContext.ModelName;
         var valueProviderResult = bindingContext.ValueProvider.GetValue(modelName);
 
         var elementType = bindingContext.ModelType.GetElementType();
@@ -19,8 +19,8 @@ public class CommaDelimitedArrayModelBinder : IModelBinder
 
         var converter = TypeDescriptor.GetConverter(elementType);
 
-        var s = valueProviderResult.FirstValue ?? "";
-        var values = Array.ConvertAll(s.Split(',', StringSplitOptions.RemoveEmptyEntries),
+        string s = valueProviderResult.FirstValue ?? "";
+        object?[] values = Array.ConvertAll(s.Split(',', StringSplitOptions.RemoveEmptyEntries),
             x => converter.ConvertFromString(x != null ? x.Trim() : ""));
 
         var typedValues = Array.CreateInstance(elementType, values.Length);

@@ -1,6 +1,11 @@
 ﻿using Common.Extensions;
+using Hangfire;
+using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Rewrite;
-using Microsoft.Extensions.FileProviders;
+using Microsoft.EntityFrameworkCore;
+using Pinewolytics.Configuration;
+using Pinewolytics.Database;
+using Pinewolytics.Utils;
 
 namespace Pinewolytics;
 
@@ -29,6 +34,27 @@ public class Startup
         services.AddSingleton<HttpClient>();
         services.AddMemoryCache();
         services.AddResponseCaching();
+
+        services.AddDbContext<PinewolyticsContext>((provider, options) =>
+        {
+            var dbOptions = provider.GetRequiredService<DatabaseOptions>();
+            options.UseNpgsql(dbOptions.AppConnectionString);
+        });
+
+        services.AddHangfire((provider, config) =>
+        {
+            var dbOptions = provider.GetRequiredService<DatabaseOptions>();
+            config.SetDataCompatibilityLevel(CompatibilityLevel.Version_170)
+                  .UseSimpleAssemblyNameTypeSerializer()
+                  .UseRecommendedSerializerSettings()
+                  .UseActivator(new ServiceProviderJobActivator(provider))
+                  .UsePostgreSqlStorage(dbOptions.HangfireConnectionString, new PostgreSqlStorageOptions()
+                  {
+                      PrepareSchemaIfNecessary = true
+                  });
+        });
+
+        services.AddHangfireServer();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -66,6 +92,7 @@ public class Startup
 
     public void ConfigureRoutes(IEndpointRouteBuilder routes)
     {
+        routes.MapHangfireDashboard("/api/hangfire");
         routes.MapControllers();
         routes.MapFallbackToFile("index.html");
     }

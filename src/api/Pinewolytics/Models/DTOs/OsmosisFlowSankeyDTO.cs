@@ -23,7 +23,7 @@ public class OsmosisFlowSankeyDTO : IFlipsideObject<OsmosisFlowSankeyDTO>
 
     public static OsmosisFlowSankeyDTO Parse(string[] rawValues)
     {
-        var div = 1_000_000;
+        int div = 1_000_000;
 
         return new OsmosisFlowSankeyDTO()
         {

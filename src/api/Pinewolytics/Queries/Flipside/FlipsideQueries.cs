@@ -3,7 +3,8 @@
 public static class FlipsideQueries
 {
     public static string ExternalNetOSMOTransfers(string[] addressCluster)
-        => $"""
+    {
+        return $"""
         WITH scope AS (
         {string.Join(" UNION\n", addressCluster.Select(address => $"SELECT '{address}' AS address"))}
         ),
@@ -21,9 +22,11 @@ public static class FlipsideQueries
         FROM transfers
         GROUP BY sender, receiver 
         """;
+    }
 
     public static string InternalNetOSMOTransfers(string[] addressCluster)
-    => $"""
+    {
+        return $"""
         WITH scope AS (
         {string.Join(" UNION\n", addressCluster.Select(address => $"SELECT '{address}' AS address"))}
         ),
@@ -40,9 +43,11 @@ public static class FlipsideQueries
         FROM transfers
         GROUP BY sender, receiver 
         """;
+    }
 
     public static string RelatedAddresses(string[] addressCluster)
-        => $"""
+    {
+        return $"""
         WITH scope AS (
         {string.Join(" UNION\n", addressCluster.Select(address => $"SELECT '{address}' AS address"))}
         )
@@ -58,4 +63,5 @@ public static class FlipsideQueries
                sum(CASE WHEN sender NOT IN (SELECT address FROM scope) THEN amount ELSE 0 END)
         
         """;
+    }
 }

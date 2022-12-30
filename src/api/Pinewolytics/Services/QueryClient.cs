@@ -2,7 +2,6 @@
 using Pinewolytics.Models;
 using Pinewolytics.Models.DTOs;
 using Pinewolytics.Queries.Flipside;
-using System.Runtime;
 using System.Text;
 
 namespace Pinewolytics.Services;
@@ -37,7 +36,7 @@ public class QueryClient : Singleton
         
         """;
 
-        return await Flipside.RunQueryAsync<OsmosisSwapDTO>(sql, cancellationToken: cancellationToken);
+        return await Flipside.GetOrRunAsync<OsmosisSwapDTO>(sql, cancellationToken: cancellationToken);
     }
 
     public async Task<OsmosisTransferDTO[]> GetOsmoTransfersAsync(string[] addresses, CancellationToken cancellationToken)
@@ -67,7 +66,7 @@ public class QueryClient : Singleton
         FROM transfers
         """;
 
-        return await Flipside.RunQueryAsync<OsmosisTransferDTO>(sql, cancellationToken: cancellationToken);
+        return await Flipside.GetOrRunAsync<OsmosisTransferDTO>(sql, cancellationToken: cancellationToken);
     }
 
     public async Task<OsmosisNetTransferDTO[]> GetInternalNetOsmoTransfersAsync(string[] addresses, CancellationToken cancellationToken)
@@ -78,7 +77,7 @@ public class QueryClient : Singleton
         }
 
         string sql = FlipsideQueries.InternalNetOSMOTransfers(addresses);
-        return await Flipside.RunQueryAsync<OsmosisNetTransferDTO>(sql, cancellationToken: cancellationToken);
+        return await Flipside.GetOrRunAsync<OsmosisNetTransferDTO>(sql, cancellationToken: cancellationToken);
     }
 
     public async Task<OsmosisNetTransferDTO[]> GetExternalNetOsmoTransfersAsync(string[] addresses, CancellationToken cancellationToken)
@@ -89,7 +88,7 @@ public class QueryClient : Singleton
         }
 
         string sql = FlipsideQueries.ExternalNetOSMOTransfers(addresses);
-        return await Flipside.RunQueryAsync<OsmosisNetTransferDTO>(sql, cancellationToken: cancellationToken);
+        return await Flipside.GetOrRunAsync<OsmosisNetTransferDTO>(sql, cancellationToken: cancellationToken);
     }
 
     public async Task<OsmosisIBCTransferDTO[]> GetOsmoIBCTransfersAsync(string[] addresses, CancellationToken cancellationToken)
@@ -124,7 +123,7 @@ public class QueryClient : Singleton
 
         Console.WriteLine(sql);
 
-        return await Flipside.RunQueryAsync<OsmosisIBCTransferDTO>(sql, cancellationToken: cancellationToken);
+        return await Flipside.GetOrRunAsync<OsmosisIBCTransferDTO>(sql, cancellationToken: cancellationToken);
     }
 
     public async Task<OsmosisLPJoinDTO[]> GetOsmoLPJoinsAsync(string[] addresses, CancellationToken cancellationToken)
@@ -153,7 +152,7 @@ public class QueryClient : Singleton
         FROM lp_joins
         """;
 
-        return await Flipside.RunQueryAsync<OsmosisLPJoinDTO>(sql, cancellationToken: cancellationToken);
+        return await Flipside.GetOrRunAsync<OsmosisLPJoinDTO>(sql, cancellationToken: cancellationToken);
     }
 
     public async Task<OsmosisFlowSankeyDTO> GetOsmosisFlowSankeyDataAsync(string address, string currency, CancellationToken cancellationToken)
@@ -215,7 +214,7 @@ public class QueryClient : Singleton
           (SELECT COALESCE(sum(amount), 0) FROM staking WHERE action = 'undelegate') AS netUnstaked
         """;
 
-        var results = await Flipside.RunQueryAsync<OsmosisFlowSankeyDTO>(sql, cancellationToken: cancellationToken);
+        var results = await Flipside.GetOrRunAsync<OsmosisFlowSankeyDTO>(sql, cancellationToken: cancellationToken);
         return results.First();
     }
 
@@ -232,7 +231,7 @@ public class QueryClient : Singleton
         )
         """);
 
-        for(int i = 1; i <= depth; i++)
+        for (int i = 1; i <= depth; i++)
         {
             sqlBuilder.Append(
             $"""
@@ -261,7 +260,7 @@ public class QueryClient : Singleton
 
         string sql = sqlBuilder.ToString();
 
-        var results = await Flipside.RunQueryAsync<FlipsidePrimitiveObject<string>>(sql, cancellationToken: cancellationToken);
+        var results = await Flipside.GetOrRunAsync<FlipsidePrimitiveObject<string>>(sql, cancellationToken: cancellationToken);
         return results.Select(x => x.Value).ToArray();
     }
 
@@ -273,7 +272,7 @@ public class QueryClient : Singleton
         }
 
         string sql = FlipsideQueries.RelatedAddresses(addresses);
-        var results = await Flipside.RunQueryAsync<FlipsidePrimitiveObject<string>>(sql, cancellationToken: cancellationToken);
+        var results = await Flipside.GetOrRunAsync<FlipsidePrimitiveObject<string>>(sql, cancellationToken: cancellationToken);
         return results.Select(x => x.Value).ToArray();
     }
 }

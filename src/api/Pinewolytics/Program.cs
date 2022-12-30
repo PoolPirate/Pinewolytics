@@ -1,5 +1,7 @@
 ﻿using Common.Extensions;
+using Microsoft.EntityFrameworkCore;
 using Pinewolytics.Configuration;
+using Pinewolytics.Database;
 using System.Reflection;
 
 namespace Pinewolytics;
@@ -20,6 +22,8 @@ public class Program
         Application = CreateApplication(args);
         Provider = Application.Services;
         Logger = Application.Services.GetRequiredService<ILogger<Startup>>();
+
+        await MigrateDatabseAsync();
 
         await Provider.InitializeApplicationAsync(Assembly);
 
@@ -46,10 +50,18 @@ public class Program
         return host;
     }
 
-    static string GetListenUrl()
+    private static string GetListenUrl()
     {
         var bindingOptions = Provider.GetRequiredService<BindingOptions>();
         return $"http://{bindingOptions.BindAddress}:{bindingOptions.ApplicationPort}";
+    }
+
+    private static async Task MigrateDatabseAsync()
+    {
+        using var scope = Provider.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<PinewolyticsContext>();
+
+        await dbContext.Database.MigrateAsync();
     }
 
     public static async Task ShutdownAsync()

@@ -18,7 +18,7 @@ public class QueryController : ControllerBase
     [HttpGet("Osmosis/Swaps")]
     [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "addresses" })]
     public async Task<IActionResult> GetSwapsAsync(
-        [FromQuery][ModelBinder(typeof(CommaDelimitedArrayModelBinder))] string[] addresses, 
+        [FromQuery][ModelBinder(typeof(CommaDelimitedArrayModelBinder))] string[] addresses,
         CancellationToken cancellationToken)
     {
         var swaps = await QueryClient.GetOsmosisSwapsAsync(addresses, cancellationToken);
@@ -77,7 +77,7 @@ public class QueryController : ControllerBase
 
     [HttpGet("Osmosis/FlowSankey")]
     [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "address", "currency" })]
-    public async Task<IActionResult> GetFlowSankeyAsync([FromQuery] string address, [FromQuery] string currency, 
+    public async Task<IActionResult> GetFlowSankeyAsync([FromQuery] string address, [FromQuery] string currency,
         CancellationToken cancellationToken)
     {
         var sankey = await QueryClient.GetOsmosisFlowSankeyDataAsync(address, currency, cancellationToken);
@@ -85,21 +85,21 @@ public class QueryController : ControllerBase
     }
 
     [HttpGet("Osmosis/DeveloperWallets")]
-    [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] {"depth"})]
+    [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "depth" })]
     public async Task<IActionResult> GetDeveloperWalletsRecursiveAsync([FromQuery] int depth,
         CancellationToken cancellationToken)
     {
-        var wallets = await QueryClient.GetDeveloperWalletsRecursiveAsync(depth, cancellationToken);
+        string[] wallets = await QueryClient.GetDeveloperWalletsRecursiveAsync(depth, cancellationToken);
         return Ok(wallets);
     }
 
     [HttpGet("Osmosis/RelatedWallets")]
-    [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] {"addresses"})]
+    [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "addresses" })]
     public async Task<IActionResult> GetDeveloperWalletsRecursiveAsync(
         [FromQuery][ModelBinder(typeof(CommaDelimitedArrayModelBinder))] string[] addresses,
         CancellationToken cancellationToken)
     {
-        var wallets = await QueryClient.GetRelatedAddressesAsync(addresses, cancellationToken);
-        return base.Ok((object)wallets);
+        string[] wallets = await QueryClient.GetRelatedAddressesAsync(addresses, cancellationToken);
+        return base.Ok(wallets);
     }
 }

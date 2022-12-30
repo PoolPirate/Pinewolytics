@@ -2,5 +2,5 @@
 
 public interface IFlipsideObject<T>
 {
-    public abstract static T Parse(string[] rawValues);
+    public static abstract T Parse(string[] rawValues);
 }

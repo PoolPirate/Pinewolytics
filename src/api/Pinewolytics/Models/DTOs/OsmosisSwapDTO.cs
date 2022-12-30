@@ -12,14 +12,16 @@ public class OsmosisSwapDTO : IFlipsideObject<OsmosisSwapDTO>
     public required double ToAmount { get; init; }
     public required string ToCurrency { get; init; }
 
-    public static OsmosisSwapDTO Parse(string[] rawValues) 
-        => new OsmosisSwapDTO()
-           {
-               BlockTimestamp = DateTimeOffset.Parse(rawValues[0]),
-               Trader = rawValues[1],
-               FromAmount = double.Parse(rawValues[2]),
-               FromCurrency = rawValues[3],
-               ToAmount = double.Parse(rawValues[4]),
-               ToCurrency = rawValues[5]
-           };
+    public static OsmosisSwapDTO Parse(string[] rawValues)
+    {
+        return new OsmosisSwapDTO()
+        {
+            BlockTimestamp = DateTimeOffset.Parse(rawValues[0]),
+            Trader = rawValues[1],
+            FromAmount = double.Parse(rawValues[2]),
+            FromCurrency = rawValues[3],
+            ToAmount = double.Parse(rawValues[4]),
+            ToCurrency = rawValues[5]
+        };
+    }
 }
