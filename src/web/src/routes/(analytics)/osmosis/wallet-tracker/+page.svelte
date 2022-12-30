@@ -8,10 +8,7 @@
 	const sankeyPromise = getOsmosisFlowSankey(wallet, currency);
 </script>
 
-<h1>Dev Wallet Tracker</h1>
-
-<h1>Osmosis Tokenomics</h1>
-<img src="https://miro.medium.com/max/720/0*hjY8neGuW_2qxKTa" />
+<h1>Wallet Tracker</h1>
 
 {#await sankeyPromise}
 	<p>Loading</p>
