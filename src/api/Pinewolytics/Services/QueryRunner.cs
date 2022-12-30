@@ -1,4 +1,5 @@
 ﻿using Common.Services;
+using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Pinewolytics.Database;
 
@@ -18,7 +19,14 @@ public class QueryRunner : Singleton
 
         var scheduledQuery = await dbContext.ScheduledQueries
             .Where(x => x.Name == name)
-            .SingleAsync();
+            .SingleOrDefaultAsync();
+
+        if (scheduledQuery is null)
+        {
+            Logger.LogWarning("Deleting query schedule for {name}", name);
+            RecurringJob.RemoveIfExists(name);
+            return;
+        }
 
         Logger.LogDebug("Executing {name} query to refresh cache", name);
 
