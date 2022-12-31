@@ -6,18 +6,13 @@
 </script>
 
 <script lang="ts">
-	import {
-		getInternalNetOSMOTransfers,
-		getOsmosisDeveloperWalletsRecursive,
-		getRelatedWallets
-	} from '$lib/service/queries';
+	import { getInternalNetOSMOTransfers, getRelatedWallets } from '$lib/service/queries';
 	import { writable } from 'svelte/store';
-	import { onMount } from 'svelte';
 	import type { OsmosisNetTransferDTO } from '$lib/models/OsmosisDTOs';
 	import WalletGraph, { type DeveloperWallet } from './WalletGraph.svelte';
 
 	export let maxDepth: number;
-	export let initialWallets: InitialWallet[];
+	export let initialWallets: InitialWallet[] | null;
 
 	const depth = writable<number>(0);
 	const wallets = writable<DeveloperWallet[]>([]);
@@ -25,7 +20,13 @@
 
 	const isLoading = writable<boolean>(true);
 
-	onMount(async () => {
+	$: startTracing(initialWallets);
+
+	async function startTracing(initialWallets: InitialWallet[] | null) {
+		if (initialWallets == null) {
+			return;
+		}
+
 		const initialAddresses = initialWallets.map((x) => x.address);
 
 		const totalAddresses = [...initialAddresses];
@@ -65,7 +66,7 @@
 
 		transfers.set(await getInternalNetOSMOTransfers(totalAddresses));
 		isLoading.set(false);
-	});
+	}
 </script>
 
 <WalletGraph wallets={$wallets} transfers={$transfers} depth={$depth + 1} isLoading={$isLoading} />

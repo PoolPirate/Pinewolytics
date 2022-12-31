@@ -1,27 +1,23 @@
 <script lang="ts">
-	import WalletSpreadGraph from '$lib/components/WalletSpreadGraph.svelte';
-	import LoadingSpinner from '$lib/LoadingSpinner.svelte';
+	import WalletSpreadGraph, { type InitialWallet } from '$lib/components/WalletSpreadGraph.svelte';
 	import { getDeveloperMintReceivers, getTotalDeveloperMintedOsmo } from '$lib/service/osmosislcd';
+	import { onMount } from 'svelte';
+	import { writable } from 'svelte/store';
 
-	const totalOSMOPromise = getTotalDeveloperMintedOsmo();
-	const devMintReceiversPromise = getDeveloperMintReceivers();
-	const initialWalletsPromise = Promise.all([totalOSMOPromise, devMintReceiversPromise]).then(
-		(results) => {
-			const totalOMSO = results[0];
-			const devMintReceivers = results[1];
+	const initialWallets = writable<InitialWallet[] | null>(null);
 
-			return devMintReceivers.map((x) => {
-				return {
-					address: x.address,
-					amount: totalOMSO * x.weight
-				};
-			});
-		}
-	);
+	onMount(async () => {
+		const totalOMSO = await getTotalDeveloperMintedOsmo();
+		const devMintReceivers = await getDeveloperMintReceivers();
+		const wallets = devMintReceivers.map((x) => {
+			return {
+				address: x.address,
+				amount: totalOMSO * x.weight
+			};
+		});
+
+		initialWallets.set(wallets);
+	});
 </script>
 
-{#await initialWalletsPromise}
-	<LoadingSpinner />
-{:then initialWallets}
-	<WalletSpreadGraph maxDepth={10} {initialWallets} />
-{/await}
+<WalletSpreadGraph maxDepth={10} initialWallets={$initialWallets} />
