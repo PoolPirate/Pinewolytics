@@ -10,7 +10,7 @@
 	import { writable } from 'svelte/store';
 	import type { OsmosisNetTransferDTO } from '$lib/models/OsmosisDTOs';
 	import WalletGraph, { type DeveloperWallet } from './WalletGraph.svelte';
-
+	import { browser } from '$app/environment';
 	export let maxDepth: number;
 	export let initialWallets: InitialWallet[] | null;
 
@@ -23,7 +23,7 @@
 	$: startTracing(initialWallets);
 
 	async function startTracing(initialWallets: InitialWallet[] | null) {
-		if (initialWallets == null) {
+		if (initialWallets == null || !browser) {
 			return;
 		}
 
