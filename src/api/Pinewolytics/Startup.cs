@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
 using Pinewolytics.Configuration;
 using Pinewolytics.Database;
+using Pinewolytics.Hubs;
 using Pinewolytics.Utils;
 
 namespace Pinewolytics;
@@ -55,6 +56,8 @@ public class Startup
         });
 
         services.AddHangfireServer();
+
+        services.AddSignalR();
     }
 
     // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -92,8 +95,11 @@ public class Startup
 
     public void ConfigureRoutes(IEndpointRouteBuilder routes)
     {
+        routes.MapHub<LunaDataHub>("api/hub/lunadata");
+
         routes.MapHangfireDashboard("/api/hangfire");
         routes.MapControllers();
+
         routes.MapFallbackToFile("index.html");
     }
 }

@@ -19,8 +19,8 @@
 
 	beforeUpdate(() => {
 		const rootElement = document.querySelector(':root')! as any;
-		rootElement.style.setProperty('--color1', 'red');
-		rootElement.style.setProperty('--color2', 'blue');
+		rootElement.style.setProperty('--color1', 'green');
+		rootElement.style.setProperty('--color2', 'orange');
 		rootElement.style.setProperty('--pattern', "url('" + pattern + "')");
 	});
 </script>
