@@ -14,7 +14,7 @@ public class LunaDataHub : Hub<ILunaClient>
 
     public override Task OnConnectedAsync()
     {
-        Clients.Caller.UpdateBlockHeight(LunaDataClient.PeakBlockHeight);
+        Clients.Caller.UpdatePeakBlockInfo(LunaDataClient.PeakBlockHeight, LunaDataClient.PeakBlockTimestamp);
         Clients.Caller.UpdatePrice(LunaDataClient.Price);
         return base.OnConnectedAsync();
     }

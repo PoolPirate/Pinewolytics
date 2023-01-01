@@ -15,11 +15,12 @@ public class LunaDataClient : Singleton
     private readonly CoinGeckoClient CoinGeckoClient;
 
     public ulong PeakBlockHeight { get; private set; }
+    public DateTimeOffset PeakBlockTimestamp { get; private set; }
     public double Price { get; private set; }
 
     protected override async ValueTask RunAsync()
     {
-        _ = RunRefresherAsync(nameof(PeakBlockHeight), new PeriodicTimer(TimeSpan.FromSeconds(1.5)), RefreshPeakBlockHeightAsync);
+        _ = RunRefresherAsync("peak block info", new PeriodicTimer(TimeSpan.FromSeconds(1.5)), RefreshLatestBlockInfoAsync);
         _ = RunRefresherAsync(nameof(Price), new PeriodicTimer(TimeSpan.FromSeconds(10)), RefreshPriceAsync);
     }
 
@@ -40,16 +41,17 @@ public class LunaDataClient : Singleton
         }
     }
 
-    private async Task RefreshPeakBlockHeightAsync()
+    private async Task RefreshLatestBlockInfoAsync()
     {
-        ulong height = await LunaLCDClient.GetPeakBlockHeightAsync();
+        var (height, timestamp) = await LunaLCDClient.GetLatestBlockInfoAsync();
 
-        if (height > PeakBlockHeight)
+        if (height > PeakBlockHeight || timestamp > PeakBlockTimestamp)
         {
-            await LunaDataHubContext.Clients.All.UpdateBlockHeight(height);
+            await LunaDataHubContext.Clients.All.UpdatePeakBlockInfo(height, timestamp);
         }
 
         PeakBlockHeight = height;        
+        PeakBlockTimestamp = timestamp;
     }
 
     private async Task RefreshPriceAsync()

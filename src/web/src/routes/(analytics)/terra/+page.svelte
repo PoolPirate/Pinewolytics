@@ -2,9 +2,14 @@
 	import { HubConnectionBuilder } from '@microsoft/signalr';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
+	import RefreshAnimation from './RefreshAnimation.svelte';
 
 	const blockHeight = writable<number>(0);
+	var blockHeightAnimation: RefreshAnimation;
+	const blockTimestamp = writable<Date>(new Date());
+	var blockTimestampAnimation: RefreshAnimation;
 	const price = writable<number>(0);
+	var priceAnimation: RefreshAnimation;
 
 	onMount(async () => {
 		let connection = new HubConnectionBuilder()
@@ -14,17 +19,43 @@
 
 		connection.on('UpdatePrice', (newPrice) => {
 			price.set(newPrice);
+			priceAnimation.play();
 		});
-		connection.on('UpdateBlockHeight', (newBlockHeight) => {
+		connection.on('UpdatePeakBlockInfo', (newBlockHeight, newBlockTimestamp) => {
 			blockHeight.set(newBlockHeight);
+			blockTimestamp.set(new Date(newBlockTimestamp));
+
+			blockHeightAnimation.play();
+			blockTimestampAnimation.play();
 		});
 
 		await connection.start();
 	});
 </script>
 
-<div class="bg-gray-400 w-11/12 m-8 rounded-3xl p-4 opacity-75 h-full border">
-	<p class="text-center">Add charts here</p>
-	<p>Block Height - #{$blockHeight}</p>
-	<p>Price - {$price}$</p>
+<div
+	class="bg-gray-200 mx-8 rounded-b-3xl p-4 opacity-75 h-full border border-t-0 w-10/12 lg:w-8/12 2xl:w-1/2"
+>
+	<ul
+		class="text-center grid justify-items-center 2xl:grid-cols-3 gap-4
+			   [&>li]:bg-gray-400 [&>li]:p-3 [&>li]:rounded-xl [&>li]:w-full [&>li]:relative [&>li]
+			   [&>li>h2]:font-bold
+			   [&>li>svg]:absolute [&>li>svg]:w-12"
+	>
+		<li>
+			<RefreshAnimation bind:this={blockHeightAnimation} />
+			<h2>Block Height</h2>
+			<p>{$blockHeight}</p>
+		</li>
+		<li>
+			<RefreshAnimation bind:this={blockTimestampAnimation} />
+			<h2>Block Timestamp</h2>
+			<p>{$blockTimestamp.toLocaleString()}</p>
+		</li>
+		<li>
+			<RefreshAnimation bind:this={priceAnimation} />
+			<h2>Price</h2>
+			<p>{$price}$</p>
+		</li>
+	</ul>
 </div>

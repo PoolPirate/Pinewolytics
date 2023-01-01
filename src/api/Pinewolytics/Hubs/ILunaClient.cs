@@ -3,5 +3,5 @@
 public interface ILunaClient
 {
     Task UpdatePrice(double price);
-    Task UpdateBlockHeight(ulong blockHeight);
+    Task UpdatePeakBlockInfo(ulong height, DateTimeOffset timestamp);
 }

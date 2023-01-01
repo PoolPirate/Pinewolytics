@@ -1,5 +1,6 @@
 ﻿using Common.Services;
 using Newtonsoft.Json;
+using System.Text.Json.Nodes;
 
 namespace Pinewolytics.Services.ApiClients;
 
@@ -11,12 +12,39 @@ public class LunaLCDClient : Singleton
     [Inject]
     private readonly HttpClient Client;
 
-    public async Task<ulong> GetPeakBlockHeightAsync()
+    public async Task<(ulong Height, DateTimeOffset Timestamp)> GetLatestBlockInfoAsync()
     {
         var response = await Client.GetAsync(LatestBlockEndpoint());
         response.EnsureSuccessStatusCode();
 
-        dynamic result = JsonConvert.DeserializeObject(await response.Content.ReadAsStringAsync());
-        return result.block.header.height;
+        var result = await response.Content.ReadFromJsonAsync<JsonObject>();
+
+        if (result is null)
+        {
+            throw new Exception("Unexpected json format");
+        }
+        if (!result.TryGetPropertyValue("block", out var blockNode))
+        {
+            throw new Exception("Unexpected json format");
+        }
+        if (!blockNode!.AsObject().TryGetPropertyValue("header", out var headerNode))
+        {
+            throw new Exception("Unexpected json format");
+        }
+        if (!headerNode!.AsObject().TryGetPropertyValue("height", out var heightValue))
+        {
+            throw new Exception("Unexpected json format");
+        }
+        if (!headerNode!.AsObject().TryGetPropertyValue("time", out var timeValue))
+        {
+            throw new Exception("Unexpected json format");
+        }
+        //
+
+        return
+        (
+            Height: ulong.Parse( heightValue!.AsValue().GetValue<string>()),
+            Timestamp: timeValue!.AsValue().GetValue<DateTimeOffset>()
+        );
     }
 }
