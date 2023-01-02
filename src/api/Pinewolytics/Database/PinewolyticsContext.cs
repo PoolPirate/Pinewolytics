@@ -22,6 +22,9 @@ public class PinewolyticsContext : DbContext
             b.Property(x => x.Query)
             .IsRequired();
 
+            b.Property(x => x.TypeName)
+            .IsRequired();
+
             b.Property(x => x.Interval)
             .IsRequired();
 

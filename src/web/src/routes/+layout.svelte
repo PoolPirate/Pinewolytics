@@ -7,13 +7,18 @@
 	import pattern from '$lib/static/pattern.png';
 	import { beforeUpdate, onMount } from 'svelte';
 
-	onMount(tickRotation);
+	onMount(() => {
+		tickRotation();
+
+		const rootElement = document.querySelector(':root')! as any;
+		rootElement.style.setProperty('--pattern', "url('" + pattern + "')");
+	});
 
 	function tickRotation() {
 		const rootElement = document.querySelector(':root')! as any;
 		rootElement.style.setProperty('--rotation', rotation);
 
-		rotation++;
+		rotation += 1;
 		setTimeout(tickRotation, 50);
 	}
 
@@ -21,7 +26,6 @@
 		const rootElement = document.querySelector(':root')! as any;
 		rootElement.style.setProperty('--color1', 'green');
 		rootElement.style.setProperty('--color2', 'orange');
-		rootElement.style.setProperty('--pattern', "url('" + pattern + "')");
 	});
 </script>
 

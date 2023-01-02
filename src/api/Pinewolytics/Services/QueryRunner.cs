@@ -2,6 +2,9 @@
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Pinewolytics.Database;
+using Pinewolytics.Models;
+using Pinewolytics.Models.Entities;
+using System.Reflection;
 
 namespace Pinewolytics.Services;
 
@@ -11,6 +14,8 @@ public class QueryRunner : Singleton
 
     [Inject]
     private readonly FlipsideClient Flipside;
+    [Inject]
+    private readonly QuerySubscriptionService QuerySusbcriptionService;
 
     public async Task RunAndCacheQueryAsync(string name)
     {
@@ -28,8 +33,23 @@ public class QueryRunner : Singleton
             return;
         }
 
-        Logger.LogDebug("Executing {name} query to refresh cache", name);
+        await RunAndCacheQueryAsync(scheduledQuery);
+    }
 
-        await Flipside.RunQueryAndCacheAsync(scheduledQuery.Query, scheduledQuery.Interval + OverlapCacheDuration);
+    public async Task RunAndCacheQueryAsync(ScheduledQuery scheduledQuery)
+    {
+        Logger.LogDebug("Executing {name} query to refresh cache", scheduledQuery.Name);
+
+        var type = Assembly.GetExecutingAssembly()
+            .GetTypes()
+            .SingleOrDefault(x => x.Name == scheduledQuery.TypeName)!;
+
+        await Flipside.RunQueryAndCacheAsync(
+            scheduledQuery.Name,
+            type,
+            scheduledQuery.Query,
+            scheduledQuery.Interval + OverlapCacheDuration);
+
+        await QuerySusbcriptionService.BroadcastQueryUpdate(scheduledQuery.Name);1
     }
 }

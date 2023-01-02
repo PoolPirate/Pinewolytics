@@ -55,8 +55,6 @@ public class Startup
                   });
         });
 
-        services.AddHangfireServer();
-
         services.AddSignalR();
     }
 
@@ -96,6 +94,7 @@ public class Startup
     public void ConfigureRoutes(IEndpointRouteBuilder routes)
     {
         routes.MapHub<LunaDataHub>("api/hub/lunadata");
+        routes.MapHub<QueryHub>("api/hub/query");
 
         routes.MapHangfireDashboard("/api/hangfire");
         routes.MapControllers();

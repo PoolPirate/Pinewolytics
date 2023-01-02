@@ -1,6 +1,6 @@
 ﻿using Common.Services;
 using Pinewolytics.Models;
-using Pinewolytics.Models.DTOs;
+using Pinewolytics.Models.DTOs.Osmosis;
 using Pinewolytics.Queries.Flipside;
 using System.Text;
 

@@ -1,4 +1,4 @@
-﻿namespace Pinewolytics.Models.DTOs;
+﻿namespace Pinewolytics.Models.DTOs.Osmosis;
 
 public class OsmosisFlowSankeyDTO : IFlipsideObject<OsmosisFlowSankeyDTO>
 {

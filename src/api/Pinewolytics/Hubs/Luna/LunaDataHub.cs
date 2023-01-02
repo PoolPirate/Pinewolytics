@@ -3,7 +3,7 @@ using Pinewolytics.Services.DataClients;
 
 namespace Pinewolytics.Hubs;
 
-public class LunaDataHub : Hub<ILunaClient>
+public class LunaDataHub : Hub<ILunaDataHubClient>
 {
     private readonly LunaDataClient LunaDataClient;
 

@@ -8,7 +8,7 @@ namespace Pinewolytics.Services.DataClients;
 public class LunaDataClient : Singleton
 {
     [Inject]
-    private readonly IHubContext<LunaDataHub, ILunaClient> LunaDataHubContext;
+    private readonly IHubContext<LunaDataHub, ILunaDataHubClient> LunaDataHubContext;
     [Inject]
     private readonly LunaLCDClient LunaLCDClient;
     [Inject]

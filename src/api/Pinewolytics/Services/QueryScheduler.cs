@@ -1,5 +1,6 @@
 ﻿using Common.Services;
 using Hangfire;
+using Hangfire.Server;
 using Hangfire.Storage;
 using Pinewolytics.Database;
 using Pinewolytics.Models.Entities;
@@ -8,7 +9,12 @@ namespace Pinewolytics.Services;
 
 public class QueryScheduler : Singleton
 {
-    protected override ValueTask InitializeAsync()
+    private BackgroundJobServer BackgroundProcessor;
+
+    [Inject]
+    private readonly QueryRunner QueryRunner;
+
+    protected override async ValueTask InitializeAsync()
     {
         using var scope = Provider.CreateScope();
 
@@ -21,9 +27,14 @@ public class QueryScheduler : Singleton
         foreach (var scheduledQuery in scheduledQueries)
         {
             ScheduleQuery(scheduledQuery);
+            await QueryRunner.RunAndCacheQueryAsync(scheduledQuery);
         }
 
-        return ValueTask.CompletedTask;
+        BackgroundProcessor = new BackgroundJobServer(new  BackgroundJobServerOptions()
+        {
+            ServerName = "Processor",
+            
+        });
     }
 
     private void ScheduleQuery(ScheduledQuery scheduledQuery)
