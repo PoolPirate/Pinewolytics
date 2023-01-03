@@ -2,7 +2,6 @@
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Pinewolytics.Database;
-using Pinewolytics.Models;
 using Pinewolytics.Models.Entities;
 using System.Reflection;
 
@@ -13,9 +12,9 @@ public class QueryRunner : Singleton
     private readonly TimeSpan OverlapCacheDuration = TimeSpan.FromSeconds(60);
 
     [Inject]
-    private readonly FlipsideClient Flipside;
+    private readonly FlipsideClient Flipside = null!;
     [Inject]
-    private readonly QuerySubscriptionService QuerySusbcriptionService;
+    private readonly QuerySubscriptionService QuerySusbcriptionService = null!;
 
     public async Task RunAndCacheQueryAsync(string name)
     {
@@ -50,6 +49,6 @@ public class QueryRunner : Singleton
             scheduledQuery.Query,
             scheduledQuery.Interval + OverlapCacheDuration);
 
-        await QuerySusbcriptionService.BroadcastQueryUpdate(scheduledQuery.Name);1
+        await QuerySusbcriptionService.BroadcastQueryUpdate(scheduledQuery.Name);
     }
 }

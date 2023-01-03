@@ -11,11 +11,11 @@ namespace Pinewolytics.Services;
 public class FlipsideClient : Singleton
 {
     [Inject]
-    private readonly HttpClient Client;
+    private readonly HttpClient Client = null!;
     [Inject]
-    private readonly ApiKeyOptions ApiKeyOptions;
+    private readonly ApiKeyOptions ApiKeyOptions = null!;
     [Inject]
-    private readonly IMemoryCache Cache;
+    private readonly IMemoryCache Cache = null!;
 
     public async Task RunQueryAndCacheAsync(string key, Type type, string sql, TimeSpan cacheDuration,
         CancellationToken cancellationToken = default)
@@ -35,7 +35,7 @@ public class FlipsideClient : Singleton
             rows = await GetQueryResultsAsync(queueResult.Token, cancellationToken: cancellationToken);
         }
 
-        var result = ParseFlipsideObjects(type, rows);
+        object[] result = ParseFlipsideObjects(type, rows);
         Cache.Set(key, result, cacheDuration);
     }
 
@@ -51,7 +51,9 @@ public class FlipsideClient : Singleton
     public async Task<T[]> RunQueryAsync<T>(string sql,
         CancellationToken cancellationToken)
         where T : IFlipsideObject<T>
-        => ((await RunQueryAsync(sql, typeof(T), cancellationToken)) as T[])!;
+    {
+        return (await RunQueryAsync(sql, typeof(T), cancellationToken)).Cast<T>().ToArray()!;
+    }
 
     private async Task<object[]> RunQueryAsync(string sql, Type type,
         CancellationToken cancellationToken = default)
@@ -63,20 +65,21 @@ public class FlipsideClient : Singleton
             await Task.Delay(200, cancellationToken);
         }
 
-        object[][]? results = await GetQueryResultsAsync(queueResult.Token, cancellationToken: cancellationToken);
+        object[][]? rows = await GetQueryResultsAsync(queueResult.Token, cancellationToken: cancellationToken);
 
-        while (results is null)
+        while (rows is null)
         {
             await Task.Delay(200, cancellationToken);
-            results = await GetQueryResultsAsync(queueResult.Token, cancellationToken: cancellationToken);
+            rows = await GetQueryResultsAsync(queueResult.Token, cancellationToken: cancellationToken);
         }
 
-        return ParseFlipsideObjects(type, results);
+        var result = ParseFlipsideObjects(type, rows);
+        return result;
     }
 
-    private object[] ParseFlipsideObjects(Type type, object[][] results)
+    private object[] ParseFlipsideObjects(Type type, object[][] rows)
     {
-        return results.Select(result =>
+        return rows.Select(result =>
         {
             if (result.Contains(null))
             {
@@ -90,10 +93,11 @@ public class FlipsideClient : Singleton
                 throw new InvalidOperationException($"Missing method on Type {type.Name}");
             }
             //
-            return method.Invoke(
-                null, 
+            var parsed = method.Invoke(
+                null,
                 new[] { result.Select(x => x?.ToString() ?? "").ToArray() }
             )!;
+            return parsed;
         }).ToArray();
     }
 

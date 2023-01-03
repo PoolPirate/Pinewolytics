@@ -1,5 +1,4 @@
 ﻿using Common.Services;
-using Newtonsoft.Json;
 using System.Text.Json.Nodes;
 
 namespace Pinewolytics.Services.ApiClients;
@@ -7,10 +6,13 @@ namespace Pinewolytics.Services.ApiClients;
 public class LunaLCDClient : Singleton
 {
     private readonly Uri ApiEndpoint = new Uri("https://phoenix-lcd.terra.dev", UriKind.Absolute);
-    private Uri LatestBlockEndpoint() => new Uri(ApiEndpoint, "blocks/latest");
+    private Uri LatestBlockEndpoint()
+    {
+        return new Uri(ApiEndpoint, "blocks/latest");
+    }
 
     [Inject]
-    private readonly HttpClient Client;
+    private readonly HttpClient Client = null!;
 
     public async Task<(ulong Height, DateTimeOffset Timestamp)> GetLatestBlockInfoAsync()
     {
@@ -43,7 +45,7 @@ public class LunaLCDClient : Singleton
 
         return
         (
-            Height: ulong.Parse( heightValue!.AsValue().GetValue<string>()),
+            Height: ulong.Parse(heightValue!.AsValue().GetValue<string>()),
             Timestamp: timeValue!.AsValue().GetValue<DateTimeOffset>()
         );
     }

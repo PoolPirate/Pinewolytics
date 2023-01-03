@@ -9,7 +9,7 @@ namespace Pinewolytics.Services;
 public class QueryClient : Singleton
 {
     [Inject]
-    private readonly FlipsideClient Flipside;
+    private readonly FlipsideClient Flipside = null!;
 
     public async Task<OsmosisSwapDTO[]> GetOsmosisSwapsAsync(string[] addresses, CancellationToken cancellationToken)
     {

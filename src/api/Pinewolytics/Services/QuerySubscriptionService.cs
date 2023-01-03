@@ -2,7 +2,6 @@
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Memory;
 using Pinewolytics.Hubs;
-using static Microsoft.EntityFrameworkCore.DbLoggerCategory.Database;
 
 namespace Pinewolytics.Services;
 
@@ -12,9 +11,9 @@ public class QuerySubscriptionService : Singleton
     private readonly Dictionary<string, List<string>> Subscriptions = new Dictionary<string, List<string>>();
 
     [Inject]
-    private readonly IMemoryCache Cache;
+    private readonly IMemoryCache Cache = null!;
     [Inject]
-    private readonly IHubContext<QueryHub, IQueryHubClient> QueryHubContext;
+    private readonly IHubContext<QueryHub, IQueryHubClient> QueryHubContext = null!;
 
     public async Task GetAndSubscribeAsync(string connectionId, string queryName)
     {
@@ -60,9 +59,9 @@ public class QuerySubscriptionService : Singleton
                 .Select(x => x.Key);
         }
 
-        foreach (var client in targetClients)
+        foreach (string client in targetClients)
         {
-            await QueryHubContext.Clients.Client(client).SendQueryResult(queryName, value);
+            await QueryHubContext.Clients.Client(client).SendQueryResult(queryName, value!);
         }
     }
 }

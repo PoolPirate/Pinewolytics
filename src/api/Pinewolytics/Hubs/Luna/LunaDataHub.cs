@@ -1,21 +1,9 @@
-﻿using Microsoft.AspNetCore.SignalR;
-using Pinewolytics.Services.DataClients;
+﻿namespace Pinewolytics.Hubs.Luna;
 
-namespace Pinewolytics.Hubs;
-
-public class LunaDataHub : Hub<ILunaDataHubClient>
+public class LunaDataHub : DataHub<LunaDataClient, ILunaDataHubClient>
 {
-    private readonly LunaDataClient LunaDataClient;
-
-    public LunaDataHub(LunaDataClient lunaDataClient)
+    public LunaDataHub(LunaDataClient client)
+        : base(client)
     {
-        LunaDataClient = lunaDataClient;
-    }
-
-    public override Task OnConnectedAsync()
-    {
-        Clients.Caller.UpdatePeakBlockInfo(LunaDataClient.PeakBlockHeight, LunaDataClient.PeakBlockTimestamp);
-        Clients.Caller.UpdatePrice(LunaDataClient.Price);
-        return base.OnConnectedAsync();
     }
 }

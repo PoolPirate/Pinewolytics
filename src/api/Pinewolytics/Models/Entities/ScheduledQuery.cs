@@ -8,7 +8,7 @@ public class ScheduledQuery
     public TimeSpan Interval { get; private set; }
 
     public ScheduledQuery(string name, string query, string typeName, TimeSpan interval)
-     {
+    {
         Name = name;
         Query = query;
         TypeName = typeName;

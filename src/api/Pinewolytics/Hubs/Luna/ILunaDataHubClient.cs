@@ -1,7 +1,8 @@
-﻿namespace Pinewolytics.Hubs;
+﻿namespace Pinewolytics.Hubs.Luna;
 
 public interface ILunaDataHubClient
 {
-    Task UpdatePrice(double price);
-    Task UpdatePeakBlockInfo(ulong height, DateTimeOffset timestamp);
+    Task Price(double price);
+    Task PeakBlockHeight(ulong height);
+    Task PeakBlockTimestamp(DateTimeOffset timestamp);
 }

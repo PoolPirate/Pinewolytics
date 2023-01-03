@@ -17,9 +17,11 @@ public class FlipsidePrimitiveObject<T> : IFlipsideObject<FlipsidePrimitiveObjec
             throw new ArgumentException($"Expecting exactly one column, got {rawValues.Length}");
         }
         //
-        return new FlipsidePrimitiveObject<T>()
+        var k = new FlipsidePrimitiveObject<T>()
         {
             Value = (T)Convert.ChangeType(rawValues[0], typeof(T))
         };
+
+        return k;
     }
 }

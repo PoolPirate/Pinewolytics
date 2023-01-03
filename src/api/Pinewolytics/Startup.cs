@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Pinewolytics.Configuration;
 using Pinewolytics.Database;
 using Pinewolytics.Hubs;
+using Pinewolytics.Hubs.Luna;
+using Pinewolytics.Hubs.Optimism;
 using Pinewolytics.Utils;
 
 namespace Pinewolytics;
@@ -93,7 +95,8 @@ public class Startup
 
     public void ConfigureRoutes(IEndpointRouteBuilder routes)
     {
-        routes.MapHub<LunaDataHub>("api/hub/lunadata");
+        routes.MapHub<LunaDataHub>("api/hub/luna");
+        routes.MapHub<OptimismDataHub>("api/hub/optimism");
         routes.MapHub<QueryHub>("api/hub/query");
 
         routes.MapHangfireDashboard("/api/hangfire");

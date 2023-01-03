@@ -2,33 +2,20 @@
 	import { HubConnectionBuilder } from '@microsoft/signalr';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
-	import RefreshAnimation from './RefreshAnimation.svelte';
+	import RefreshAnimation from '../terra/RefreshAnimation.svelte';
 
-	const blockHeight = writable<number>(0);
-	var blockHeightAnimation: RefreshAnimation;
-	const blockTimestamp = writable<Date>(new Date());
-	var blockTimestampAnimation: RefreshAnimation;
 	const price = writable<number>(0);
 	var priceAnimation: RefreshAnimation;
 
 	onMount(async () => {
 		let connection = new HubConnectionBuilder()
-			.withUrl('/api/hub/luna')
+			.withUrl('/api/hub/optimism')
 			.withAutomaticReconnect()
 			.build();
 
 		connection.on('Price', (newPrice) => {
 			price.set(newPrice);
 			priceAnimation.play();
-		});
-		connection.on('PeakBlockHeight', (newBlockHeight) => {
-			blockHeight.set(newBlockHeight);
-
-			blockHeightAnimation.play();
-		});
-		connection.on('PeakBlockTimestamp', (newBlockTimestamp) => {
-			blockTimestamp.set(new Date(newBlockTimestamp));
-			blockTimestampAnimation.play();
 		});
 
 		await connection.start();
@@ -44,16 +31,6 @@
 			   [&>li>h2]:font-bold
 			   [&>li>svg]:absolute [&>li>svg]:w-12"
 	>
-		<li>
-			<RefreshAnimation bind:this={blockHeightAnimation} />
-			<h2>Block Height</h2>
-			<p>{$blockHeight}</p>
-		</li>
-		<li>
-			<RefreshAnimation bind:this={blockTimestampAnimation} />
-			<h2>Block Timestamp</h2>
-			<p>{$blockTimestamp.toLocaleString()}</p>
-		</li>
 		<li>
 			<RefreshAnimation bind:this={priceAnimation} />
 			<h2>Price</h2>
