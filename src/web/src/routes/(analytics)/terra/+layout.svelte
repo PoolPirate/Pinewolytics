@@ -14,8 +14,6 @@
 
 <AnalyticsLayout>
 	<nav slot="nav" class="h-full w-full flex flex-row items-center">
-		<BackToMenuLink />
-
 		<h2 class="ml-auto font-bold text-xl">Terra</h2>
 		<img src={luna2logo} alt="Luna 2.0" class="ml-6 max-w-full max-h-full p-1" />
 	</nav>
