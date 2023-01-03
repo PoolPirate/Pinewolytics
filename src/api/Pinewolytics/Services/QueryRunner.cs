@@ -39,9 +39,25 @@ public class QueryRunner : Singleton
     {
         Logger.LogDebug("Executing {name} query to refresh cache", scheduledQuery.Name);
 
-        var type = Assembly.GetExecutingAssembly()
-            .GetTypes()
-            .SingleOrDefault(x => x.Name == scheduledQuery.TypeName)!;
+        string[] typeParts = scheduledQuery.TypeName.Split('<');
+        string baseTypeName = typeParts[0];
+
+        var typeArgs = new List<Type>();
+
+        if (typeParts.Length == 2)
+        {
+            string[] paramTypeNames = typeParts[1].Split(",");
+            paramTypeNames[^1] = paramTypeNames[^1][..^1];
+
+            typeArgs.AddRange(paramTypeNames.Select(x => GetTypeParamByName(x)));
+        }
+
+        var type = GetTypeByName(typeArgs.Count == 0 ? baseTypeName : $"{baseTypeName}`{typeArgs.Count}");
+
+        if (typeArgs.Count > 0)
+        {
+            type = type.MakeGenericType(typeArgs.ToArray());
+        }
 
         await Flipside.RunQueryAndCacheAsync(
             scheduledQuery.Name,
@@ -51,4 +67,14 @@ public class QueryRunner : Singleton
 
         await QuerySusbcriptionService.BroadcastQueryUpdate(scheduledQuery.Name);
     }
+
+    private static Type GetTypeByName(string name) 
+        => Assembly.GetExecutingAssembly()
+            .GetTypes()
+            .SingleOrDefault(x => x.Name == name) ?? throw new InvalidOperationException($"Unable to find type {name}");
+
+    private static Type GetTypeParamByName(string name)
+        => Assembly.GetAssembly(typeof(Int32))!
+            .GetTypes()
+            .SingleOrDefault(x => x.Name == name) ?? throw new InvalidOperationException($"Unable to find type {name}");
 }

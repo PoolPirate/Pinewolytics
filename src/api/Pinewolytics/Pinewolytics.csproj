@@ -20,4 +20,8 @@
 		<PackageReference Include="Playwo.Common" Version="2.2.0" />
 		<PackageReference Include="Polly.Extensions.Http" Version="3.0.0" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Models\DTOs\Optimism\" />
+	</ItemGroup>
 </Project>

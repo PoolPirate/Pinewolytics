@@ -108,7 +108,7 @@ public class FlipsideClient : Singleton
         {
             ["sql"] = sql,
             ["ttl_minutes"] = 1, //Use own caching instead
-            ["cache"] = false
+            ["cache"] = true
         });
 
         var request = new HttpRequestMessage(HttpMethod.Post, "https://node-api.flipsidecrypto.com/queries")
