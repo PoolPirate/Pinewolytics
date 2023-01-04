@@ -13,6 +13,8 @@
 		type: 'value'
 	};
 	export let legend: LegendComponentOption = {};
+	let clazz: string = '';
+	export { clazz as class };
 
 	var options: EChartsOption;
 
@@ -69,4 +71,4 @@
 	}
 </script>
 
-<Chart isLoading={false} {options} />
+<Chart class={clazz} isLoading={false} {options} />

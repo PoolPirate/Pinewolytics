@@ -1,16 +1,26 @@
 <script lang="ts">
-	import {createQueryListener, QueryName, QuerySubscriptionBuilder} from '$lib/service/querysubscription';
+	import {
+		createQueryListener,
+		QueryName,
+		QuerySubscriptionBuilder
+	} from '$lib/service/querysubscription';
 	import type { LegendComponentOption, SeriesOption, YAXisComponentOption } from 'echarts';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
 	import TimeSeriesChartRoundLog from '$lib/charts/TimeSeriesChart.svelte';
-	import type {TerraTotalFeeDTO, TerraTransactionMetricsDTO} from '$lib/models/DTOs/TerraDTOs';
-	import SingleValueChart from "$lib/charts/SingleValueChart.svelte";
+	import type { TerraTotalFeeDTO, TerraTransactionMetricsDTO } from '$lib/models/DTOs/TerraDTOs';
+	import SingleValueChart from '$lib/charts/SingleValueChart.svelte';
 
-	const subscriptionBuilder = new QuerySubscriptionBuilder()
-	const valuesStoreTransactionMetric = createQueryListener(subscriptionBuilder,QueryName.TerraTransactionMetricsHistory)
-	const valuesStoreTotalFeesHistory = createQueryListener(subscriptionBuilder,QueryName.TerraTotalFeesHistory)
+	const subscriptionBuilder = new QuerySubscriptionBuilder();
+	const valuesStoreTransactionMetric = createQueryListener(
+		subscriptionBuilder,
+		QueryName.TerraTransactionMetricsHistory
+	);
+	const valuesStoreTotalFeesHistory = createQueryListener(
+		subscriptionBuilder,
+		QueryName.TerraTotalFeesHistory
+	);
 	const seriesFeeTotal = writable<SeriesOption[]>([]);
 	const seriesFee = writable<SeriesOption[]>([]);
 
@@ -20,30 +30,26 @@
 
 	$: makeSeriesFeeTotal($valuesStoreTotalFeesHistory);
 
-	function helpme(a,b) {
-		return a-b;
-    }
-
 	function makeSeriesFeeTotal(values: TerraTotalFeeDTO[]) {
-		if(values.length == 0)
-            return
+		if (values.length == 0) return;
 
-		const sortValues = values.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+		const sortValues = values.sort(
+			(a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
+		);
 
-		var last30 =  helpme(sortValues[.0].feesSinceInception,sortValues[30].feesSinceInception)
-		var last60 =  helpme(sortValues[30].feesSinceInception,sortValues[60].feesSinceInception)
-		var last90 =  helpme(sortValues[90].feesSinceInception,sortValues[120].feesSinceInception)
+		var last30 = sortValues[0.0].feesSinceInception - sortValues[30].feesSinceInception;
+		var last60 = sortValues[30].feesSinceInception - sortValues[60].feesSinceInception;
+		var last90 = sortValues[90].feesSinceInception - sortValues[120].feesSinceInception;
 
-        const lastmax = Math.max(last90,last60,last30)
+		const lastmax = Math.max(last90, last60, last30);
 
-		 last30 /= lastmax
-		 last60 /=  lastmax
-		 last90 /=  lastmax
+		last30 /= lastmax;
+		last60 /= lastmax;
+		last90 /= lastmax;
 
-
-		const gaugeData=[
+		const gaugeData = [
 			{
-				value: Math.ceil(last30*100),
+				value: Math.ceil(last30 * 100),
 				name: 'last30',
 				title: {
 					offsetCenter: ['0%', '-30%']
@@ -54,7 +60,7 @@
 				}
 			},
 			{
-				value: Math.ceil(last60*100),
+				value: Math.ceil(last60 * 100),
 				name: 'last60',
 				title: {
 					offsetCenter: ['0%', '0%']
@@ -65,7 +71,7 @@
 				}
 			},
 			{
-				value: Math.ceil(last90*100),
+				value: Math.ceil(last90 * 100),
 				name: 'last90',
 				title: {
 					offsetCenter: ['0%', '30%']
@@ -75,8 +81,7 @@
 					offsetCenter: ['0%', '40%']
 				}
 			}
-		]
-
+		];
 
 		seriesFeeTotal.set([
 			{
@@ -90,8 +95,7 @@
 					show: true,
 					overlap: false,
 					roundCap: true,
-					clip: false,
-
+					clip: false
 				},
 				axisLine: {
 					lineStyle: {
@@ -107,11 +111,11 @@
 					show: false
 				},
 				axisLabel: {
-					show: false,
+					show: false
 				},
 				data: gaugeData,
 				title: {
-					fontSize: 14,
+					fontSize: 14
 				},
 				detail: {
 					width: 50,
@@ -123,9 +127,9 @@
 					borderWidth: 1,
 					formatter: '{value}%'
 				}
-				},
-		]);}
-
+			}
+		]);
+	}
 
 	$: makeSeriesFee($valuesStoreTransactionMetric);
 

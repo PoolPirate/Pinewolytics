@@ -92,15 +92,13 @@
 	export let options: echarts.EChartsOption;
 	export let loadingOptions: EChartsLoadingOption = null!;
 
+	let clazz: string;
+	export { clazz as class };
 	export let isLoading: boolean;
 	export let { theme, renderer } = DEFAULT_OPTIONS;
 </script>
 
-<div class="chart" use:chartable={{ renderer, theme, options, isLoading, loadingOptions }} />
-
-<style>
-	.chart {
-		height: 100%;
-		width: 100%;
-	}
-</style>
+<div
+	class="{clazz} w-full h-full"
+	use:chartable={{ renderer, theme, options, isLoading, loadingOptions }}
+/>
