@@ -30,6 +30,10 @@
 	$: makeTotalSeries($walletMetrics);
 
 	function makeNewSeries(values: TerraWalletMetricsDTO[]) {
+		if (values.length == 0) {
+			return;
+		}
+
 		newSeries.set([
 			{
 				type: 'line',
@@ -49,6 +53,10 @@
 	}
 
 	function makeTotalSeries(values: TerraWalletMetricsDTO[]) {
+		if (values.length == 0) {
+			return;
+		}
+
 		totalSeries.set([
 			{
 				type: 'line',

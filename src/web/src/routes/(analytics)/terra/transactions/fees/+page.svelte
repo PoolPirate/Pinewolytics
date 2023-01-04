@@ -34,7 +34,9 @@
 	$: makeSeriesFeeTotal($valuesStoreTotalFeesHistory);
 
 	function makeSeriesFeeTotal(values: TerraTotalFeeDTO[]) {
-		if (values.length == 0) return;
+		if (values.length == 0) {
+			return;
+		}
 
 		const sortValues = values.sort(
 			(a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
@@ -135,6 +137,10 @@
 	$: makeSeriesFee($valuesStoreTransactionMetric);
 
 	function makeSeriesFee(values: TerraTransactionMetricsDTO[]) {
+		if (values.length == 0) {
+			return;
+		}
+
 		seriesFee.set([
 			{
 				name: 'minimumFee',

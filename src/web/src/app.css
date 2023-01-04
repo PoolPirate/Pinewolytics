@@ -9,3 +9,7 @@
 .h-128 {
 	height: 32rem;
 }
+
+body {
+	font-family: 'PT Sans', serif;
+}

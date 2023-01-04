@@ -30,6 +30,10 @@
 
 	$: makeTxCountSeries($txMetricQuery);
 	function makeTxCountSeries(values: TerraTransactionMetricsDTO[]) {
+		if (values.length == 0) {
+			return;
+		}
+
 		txCountSeries.set([
 			{
 				type: 'line',
@@ -173,6 +177,9 @@
 					},
 					title: {
 						offsetCenter: ['50%', '85%']
+					},
+					itemStyle: {
+						color: 'purple'
 					}
 				},
 				{
