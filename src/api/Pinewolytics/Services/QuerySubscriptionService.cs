@@ -29,7 +29,7 @@ public class QuerySubscriptionService : Singleton
             }
         }
 
-        if (Cache.TryGetValue(queryName, out object[]? value))
+        if (Cache.TryGetValue(queryName, out object? value))
         {
             await QueryHubContext.Clients.Client(connectionId).SendQueryResult(queryName, value!);
         }
