@@ -1,31 +1,44 @@
 <script lang="ts">
 	import Hamburger from '$lib/components/Hamburger.svelte';
+	import { onMount } from 'svelte';
+	import { screens } from 'tailwindcss/defaultTheme';
 
-	var open: boolean;
+	var open: boolean = true;
+
+	var sidebarElement: Element = null!;
+
+	onMount(() => {
+		window.matchMedia('(max-width: ' + screens.xl + ')').addEventListener('change', (result) => {
+			open = open || !result.matches;
+			console.log(result);
+		});
+	});
 </script>
 
-<div class="fixed m-4 ontopontop">
+<div class="fixed m-4 ontopontop xl:hidden">
 	<Hamburger bind:open />
 </div>
 
-<div class="pointer-events-none fixed w-1/2 lg:w-1/4 h-screen ontop">
-	<div
-		class:open
-		class="pointer-events-auto sidebar ontop w-full h-full px-4 pt-16
+<div bind:this={sidebarElement} class="flex flex-row">
+	<div class="fixed xl:relative pointer-events-none w-1/2 lg:w-1/4 h-screen ontop">
+		<div
+			class:open
+			class="pointer-events-auto sidebar ontop w-full h-full px-4 pt-16
 		       [&>aside]:flex [&>aside]:flex-col
 			   [&>*>a]:p-4 [&>*>a]:bg-gray-400 [&>*>a]:m-2"
-	>
-		<slot name="sidebar" />
-	</div>
-</div>
-
-<div class="flex flex-col w-full h-screen">
-	<div class="relative flex flex-row justify-around items-center h-14 navbar px-4 text-white">
-		<slot name="nav" />
+		>
+			<slot name="sidebar" />
+		</div>
 	</div>
 
-	<div class="flex justify-center w-full h-full h-full overflow-x-hidden overflow-y-auto">
-		<slot name="main" />
+	<div class="flex flex-col w-full h-screen">
+		<div class="relative flex flex-row justify-around items-center h-14 navbar px-4 text-white">
+			<slot name="nav" />
+		</div>
+
+		<div class="flex justify-center w-full h-full h-full overflow-x-hidden overflow-y-auto">
+			<slot name="main" />
+		</div>
 	</div>
 </div>
 

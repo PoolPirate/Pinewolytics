@@ -56,7 +56,6 @@
 		}
 
 		function handleResize() {
-			console.log('RESIZE');
 			echartsInstance.resize();
 		}
 
