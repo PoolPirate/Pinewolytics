@@ -10,7 +10,6 @@
 	onMount(() => {
 		window.matchMedia('(max-width: ' + screens.xl + ')').addEventListener('change', (result) => {
 			open = open || !result.matches;
-			console.log(result);
 		});
 	});
 </script>
