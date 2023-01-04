@@ -25,7 +25,8 @@
 		options = {
 			legend: legend,
 			series: series,
-			title: title
+			title: title,
+			yAxis: yAxis
 		};
 	}
 </script>
