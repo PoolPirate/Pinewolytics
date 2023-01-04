@@ -1,8 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Common.Configuration;
+using System.ComponentModel.DataAnnotations;
 
 namespace Pinewolytics.Configuration;
 
-public class AuthorizationOptions
+public class AuthorizationOptions : Option
 {
     [Required]
     public string HangfireCookieSecret { get; set; } = null!;
