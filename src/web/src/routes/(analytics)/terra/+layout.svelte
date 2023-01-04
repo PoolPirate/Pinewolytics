@@ -20,6 +20,7 @@
 		<NavLink href="/terra/transactions/speed">Speed</NavLink>
 		<NavLink href="/terra/transactions/fees">Transaction Fees</NavLink>
 		<NavLink href="/terra/wallets">Wallets</NavLink>
+		<NavLink href="/terra/contracts">Contracts</NavLink>
 
 		<LinkBumper />
 		<NavLink href="/terra/about">About</NavLink>

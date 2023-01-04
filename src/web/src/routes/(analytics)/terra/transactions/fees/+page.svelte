@@ -44,7 +44,6 @@
 			(a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
 		);
 
-		const latestMonth = new Date(sortValues[0].timestamp).getMonth();
 		const boundaries = [];
 
 		var offset = 0;

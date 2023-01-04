@@ -21,7 +21,6 @@
 	var options: EChartsOption;
 
 	$: makeOptions(series);
-	$: console.log(series.length);
 
 	function makeOptions(series: SeriesOption[]) {
 		options = {
