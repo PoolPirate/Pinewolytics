@@ -30,7 +30,7 @@
 </div>
 
 <div class="flex flex-row">
-	<div class="fixed xl:relative pointer-events-none w-1/2 lg:w-1/4 h-screen ontop">
+	<div class="fixed limit-shrink xl:relative pointer-events-none w-1/2 lg:w-1/4 h-screen ontop">
 		<div
 			class:open
 			class:animateSidebar
@@ -58,6 +58,10 @@
 		z-index: 5;
 	}
 
+	.limit-shrink {
+		min-width: 250px;
+	}
+
 	.navbar:before {
 		content: ' ';
 		display: block;
@@ -75,7 +79,6 @@
 		left: -100%;
 		overflow-x: hidden;
 		z-index: 5;
-		min-width: 250px;
 	}
 
 	.animateSidebar {
