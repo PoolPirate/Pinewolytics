@@ -4,12 +4,19 @@
 	import { screens } from 'tailwindcss/defaultTheme';
 
 	var open: boolean = true;
+	var forcedOpen: boolean = false;
 
 	var sidebarElement: Element = null!;
 
 	onMount(() => {
 		window.matchMedia('(max-width: ' + screens.xl + ')').addEventListener('change', (result) => {
-			open = open || !result.matches;
+			if (forcedOpen && result.matches) {
+				open = false;
+			} else {
+				open = open || !result.matches;
+			}
+
+			forcedOpen = !result.matches;
 		});
 	});
 </script>
