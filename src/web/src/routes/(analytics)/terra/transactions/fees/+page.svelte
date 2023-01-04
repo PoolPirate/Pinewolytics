@@ -223,7 +223,7 @@
 
 <div class="xl:grid grid-cols-2 mt-2 p-2 w-full transparent-background rounded-lg">
 	<TimeSeriesChartRoundLog class="h-128" {yAxis} {legend} series={$seriesFee} />
-	<SingleValueChart class="h-128" {yAxis} {legend} series={$seriesFeeTotal} />
+	<SingleValueChart class="h-128" {legend} series={$seriesFeeTotal} />
 </div>
 
 <style>
