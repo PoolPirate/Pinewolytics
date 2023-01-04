@@ -32,3 +32,7 @@ export interface TerraContractMetricsDTO {
     newContracts: number;
     totalContracts: number;
 }
+
+export interface TerraTotalFeeDTO {
+    feesSinceInception: number;
+}

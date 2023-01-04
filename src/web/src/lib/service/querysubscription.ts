@@ -1,5 +1,5 @@
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
-import type { TerraContractMetricsDTO, TerraTransactionMetricsDTO, TerraValidatorCountDTO, TerraWalletMetricsDTO } from '$lib/models/DTOs/TerraDTOs';
+import type { TerraContractMetricsDTO, TerraTotalFeeDTO, TerraTransactionMetricsDTO, TerraValidatorCountDTO, TerraWalletMetricsDTO } from '$lib/models/DTOs/TerraDTOs';
 import type { TimeSeriesEntryDTO2 } from '$lib/models/SharedDTOs';
 
 export enum QueryName {
@@ -7,6 +7,7 @@ export enum QueryName {
     TerraTransactionMetricsHistory = "terra-transaction-metrics-history",
     TerraWalletMetricsHistory = "terra-wallet-metrics-history",
     TerraContractMetricsHistory = "terra-contract-metrics-history",
+    TerraTotalFees = "terra-total-fees",
 
     OptimismTransactionCountHistory = "optimism-transaction-history"
 }
@@ -16,6 +17,7 @@ const queryTypes = {
     [QueryName.TerraTransactionMetricsHistory]: { } as TerraTransactionMetricsDTO[],
     [QueryName.TerraWalletMetricsHistory]: { } as TerraWalletMetricsDTO[],
     [QueryName.TerraContractMetricsHistory]: { } as TerraContractMetricsDTO[],
+    [QueryName.TerraTotalFees]: { } as TerraTotalFeeDTO,
 
     [QueryName.OptimismTransactionCountHistory]: { } as TimeSeriesEntryDTO2[],
 }
