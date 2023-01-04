@@ -14,7 +14,7 @@
 	});
 </script>
 
-<div class="fixed m-4 ontopontop xl:hidden">
+<div class="fixed m-4 xl:hidden z-10">
 	<Hamburger bind:open />
 </div>
 
@@ -22,9 +22,9 @@
 	<div class="fixed xl:relative pointer-events-none w-1/2 lg:w-1/4 h-screen ontop">
 		<div
 			class:open
-			class="pointer-events-auto sidebar ontop w-full h-full px-4 pt-16
-		       [&>aside]:flex [&>aside]:flex-col
-			   [&>*>a]:p-4 [&>*>a]:bg-gray-400 [&>*>a]:m-2"
+			class="flex flex-col justify-between pointer-events-auto w-full h-full px-4 pt-16 pb-4
+			   sidebar transparent-background xl:bg-transparent bg-black
+		       [&>aside]:contents"
 		>
 			<slot name="sidebar" />
 		</div>
@@ -35,18 +35,15 @@
 			<slot name="nav" />
 		</div>
 
-		<div class="flex justify-center w-full h-full h-full overflow-x-hidden overflow-y-auto">
+		<main class="flex justify-center w-full h-full h-full overflow-x-hidden overflow-y-auto">
 			<slot name="main" />
-		</div>
+		</main>
 	</div>
 </div>
 
 <style>
 	.ontop {
-		z-index: 2;
-	}
-	.ontopontop {
-		z-index: 3;
+		z-index: 5;
 	}
 
 	.navbar:before {
@@ -64,12 +61,31 @@
 		position: absolute;
 		top: 0;
 		left: -100%;
-		background-color: black;
 		overflow-x: hidden;
 		transition: left 0.4s ease-in-out;
+		z-index: 5;
 	}
 
 	.open {
 		left: 0;
+	}
+
+	.transparent-background {
+		position: relative;
+	}
+
+	.transparent-background::before {
+		content: ' ';
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		background: black;
+		opacity: 75%;
+		border-radius: inherit;
+		pointer-events: none;
+		z-index: -1;
+		border-right: white 4px solid;
 	}
 </style>

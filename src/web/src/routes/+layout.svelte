@@ -31,9 +31,7 @@
 
 <div class="background">
 	<div class="pattern">
-		<div>
-			<slot />
-		</div>
+		<slot />
 	</div>
 </div>
 

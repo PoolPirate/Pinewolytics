@@ -17,7 +17,5 @@
 		<h2 class="ml-auto font-bold text-xl">Osmosis</h2>
 		<img src={osmologo} alt="Luna 2.0" class="ml-6 max-w-full max-h-full p-1" />
 	</nav>
-	<main slot="main" class="h-full w-11/12">
-		<slot />
-	</main>
+	<slot slot="main" />
 </AnalyticsLayout>

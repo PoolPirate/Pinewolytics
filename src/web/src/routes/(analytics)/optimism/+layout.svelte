@@ -3,20 +3,22 @@
 	import AnalyticsLayout from '../AnalyticsLayout.svelte';
 	import optimismLogo from '$lib/static/logo/optimism.svg';
 	import { beforeUpdate } from 'svelte';
+	import NavLink from '$lib/links/NavLink.svelte';
 
 	beforeUpdate(() => {
 		const rootElement = document.querySelector(':root')! as any;
 
-		rootElement.style.setProperty('--color1', '#fe0420');
-		rootElement.style.setProperty('--color2', '#ffffff');
+		rootElement.style.setProperty('--color1', '#ffffff');
+		rootElement.style.setProperty('--color2', '#fe0420');
 	});
 </script>
 
 <AnalyticsLayout>
 	<aside slot="sidebar">
-		<a href="/optimism">Overview</a>
-		<a href="/optimism/transactions">Transactions</a>
-		<a href="/optimism/op-token">$OP Token</a>
+		<NavLink href="/optimism">Overview</NavLink>
+		<NavLink href="/optimism/transactions">Transactions</NavLink>
+		<NavLink href="/optimism/op-token">$OP Token</NavLink>
+		<BackToMenuLink />
 	</aside>
 
 	<nav slot="nav" class="h-full w-full flex flex-row items-center">
@@ -24,7 +26,5 @@
 		<img src={optimismLogo} alt="Optimism" class="ml-6 max-w-full max-h-full p-1" />
 	</nav>
 	<nav />
-	<main slot="main" class="h-full w-11/12">
-		<slot />
-	</main>
+	<slot slot="main" />
 </AnalyticsLayout>

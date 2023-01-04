@@ -3,6 +3,7 @@
 	import AnalyticsLayout from '../AnalyticsLayout.svelte';
 	import luna2logo from '$lib/static/logo/luna2.png';
 	import { beforeUpdate } from 'svelte';
+	import NavLink from '$lib/links/NavLink.svelte';
 
 	beforeUpdate(() => {
 		const rootElement = document.querySelector(':root')! as any;
@@ -14,9 +15,11 @@
 
 <AnalyticsLayout>
 	<aside slot="sidebar">
-		<a href="/terra">Overview</a>
-		<a href="/terra/transactions/fees">Transaction Fees</a>
-		<a href="/terra/wallets">Wallets</a>
+		<NavLink href="/terra">Overview</NavLink>
+		<NavLink href="/terra/transactions/fees">Transaction Fees</NavLink>
+		<NavLink href="/terra/wallets">Wallets</NavLink>
+
+		<BackToMenuLink />
 	</aside>
 
 	<nav slot="nav" class="h-full w-full flex flex-row items-center">
@@ -24,7 +27,5 @@
 		<img src={luna2logo} alt="Luna 2.0" class="ml-6 max-w-full max-h-full p-1" />
 	</nav>
 
-	<main slot="main" class="h-full w-11/12">
-		<slot />
-	</main>
+	<slot slot="main" />
 </AnalyticsLayout>
