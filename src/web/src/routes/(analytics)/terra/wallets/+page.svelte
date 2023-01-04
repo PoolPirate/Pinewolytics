@@ -77,21 +77,19 @@
 	}
 </script>
 
-<div class="flex flex-col p-3 w-full">
-	<div class="p-3 transparent-background rounded-lg text-black">
-		<h1 class="text-center text-2xl">Wallet Activity on Terra</h1>
+<div class="p-3 transparent-background rounded-lg text-black">
+	<h1 class="text-center text-2xl">Wallet Activity on Terra</h1>
 
-		<h2 class="text-xl font-bold">Definitions</h2>
-		<b>Sender:</b>
-		<p>An address posting a transaction on the network</p>
-		<b>Receiver:</b>
-		<p>An address receiving $LUNA tokens</p>
-	</div>
+	<h2 class="text-xl font-bold">Definitions</h2>
+	<b>Sender:</b>
+	<p>An address posting a transaction on the network</p>
+	<b>Receiver:</b>
+	<p>An address receiving $LUNA tokens</p>
+</div>
 
-	<div class="xl:grid grid-cols-2 mt-2 p-2 w-full transparent-background rounded-lg">
-		<TimeSeriesChart class="h-128" series={$newSeries} />
-		<TimeSeriesChart class="h-128" series={$totalSeries} />
-	</div>
+<div class="xl:grid grid-cols-2 mt-2 p-2 w-full transparent-background rounded-lg">
+	<TimeSeriesChart class="h-128" series={$newSeries} />
+	<TimeSeriesChart class="h-128" series={$totalSeries} />
 </div>
 
 <style>

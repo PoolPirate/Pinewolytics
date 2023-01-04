@@ -3,10 +3,8 @@
 	import { onMount } from 'svelte';
 	import { screens } from 'tailwindcss/defaultTheme';
 
-	var open: boolean = true;
+	var open: boolean = false;
 	var forcedOpen: boolean = false;
-
-	var sidebarElement: Element = null!;
 
 	onMount(() => {
 		window.matchMedia('(max-width: ' + screens.xl + ')').addEventListener('change', (result) => {
@@ -25,7 +23,7 @@
 	<Hamburger bind:open />
 </div>
 
-<div bind:this={sidebarElement} class="flex flex-row">
+<div class="flex flex-row">
 	<div class="fixed xl:relative pointer-events-none w-1/2 lg:w-1/4 h-screen ontop">
 		<div
 			class:open
@@ -71,6 +69,7 @@
 		overflow-x: hidden;
 		transition: left 0.4s ease-in-out;
 		z-index: 5;
+		min-width: 250px;
 	}
 
 	.open {

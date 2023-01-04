@@ -4,7 +4,8 @@
 		EChartsOption,
 		SeriesOption,
 		YAXisComponentOption,
-		LegendComponentOption
+		LegendComponentOption,
+		TitleComponentOption
 	} from 'echarts';
 	import jsonLogo from '$lib/static/logo/json.svg';
 
@@ -12,6 +13,7 @@
 	export let yAxis: YAXisComponentOption = {
 		type: 'value'
 	};
+	export let title: TitleComponentOption = {};
 	export let legend: LegendComponentOption = {};
 	let clazz: string = '';
 	export { clazz as class };
@@ -23,6 +25,7 @@
 	function makeOptions(series: SeriesOption[]) {
 		options = {
 			legend: legend,
+			title: title,
 			tooltip: {
 				trigger: 'axis',
 				axisPointer: {

@@ -4,15 +4,16 @@
 		EChartsOption,
 		SeriesOption,
 		YAXisComponentOption,
-		LegendComponentOption
+		LegendComponentOption,
+		TitleComponentOption
 	} from 'echarts';
-	import jsonLogo from '$lib/static/logo/json.svg';
 
-	export let series: SeriesOption[];
+	export let series: SeriesOption;
 	export let yAxis: YAXisComponentOption = {
 		type: 'value'
 	};
-	export let legend: LegendComponentOption = {};
+	export let title: TitleComponentOption = null!;
+	export let legend: LegendComponentOption = null!;
 	let clazz: string = '';
 	export { clazz as class };
 
@@ -20,14 +21,11 @@
 
 	$: makeOptions(series);
 
-	function makeOptions(series: SeriesOption[]) {
+	function makeOptions(series: SeriesOption) {
 		options = {
 			legend: legend,
-			toolbox: {
-				itemSize: 40,
-				left: 'right'
-			},
-			series: series
+			series: series,
+			title: title
 		};
 	}
 </script>

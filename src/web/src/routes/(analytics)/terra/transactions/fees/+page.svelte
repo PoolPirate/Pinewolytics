@@ -21,7 +21,7 @@
 		subscriptionBuilder,
 		QueryName.TerraTotalFeesHistory
 	);
-	const seriesFeeTotal = writable<SeriesOption[]>([]);
+	const seriesFeeTotal = writable<SeriesOption>({});
 	const seriesFee = writable<SeriesOption[]>([]);
 
 	onMount(async () => {
@@ -83,52 +83,50 @@
 			}
 		];
 
-		seriesFeeTotal.set([
-			{
-				type: 'gauge',
-				startAngle: 90,
-				endAngle: -270,
-				pointer: {
-					show: false
-				},
-				progress: {
-					show: true,
-					overlap: false,
-					roundCap: true,
-					clip: false
-				},
-				axisLine: {
-					lineStyle: {
-						width: 40
-					}
-				},
-				splitLine: {
-					show: false,
-					distance: 0,
-					length: 10
-				},
-				axisTick: {
-					show: false
-				},
-				axisLabel: {
-					show: false
-				},
-				data: gaugeData,
-				title: {
-					fontSize: 14
-				},
-				detail: {
-					width: 50,
-					height: 14,
-					fontSize: 14,
-					color: 'inherit',
-					borderColor: 'inherit',
-					borderRadius: 20,
-					borderWidth: 1,
-					formatter: '{value}%'
+		seriesFeeTotal.set({
+			type: 'gauge',
+			startAngle: 90,
+			endAngle: -270,
+			pointer: {
+				show: false
+			},
+			progress: {
+				show: true,
+				overlap: false,
+				roundCap: true,
+				clip: false
+			},
+			axisLine: {
+				lineStyle: {
+					width: 40
 				}
+			},
+			splitLine: {
+				show: false,
+				distance: 0,
+				length: 10
+			},
+			axisTick: {
+				show: false
+			},
+			axisLabel: {
+				show: false
+			},
+			data: gaugeData,
+			title: {
+				fontSize: 14
+			},
+			detail: {
+				width: 50,
+				height: 14,
+				fontSize: 14,
+				color: 'inherit',
+				borderColor: 'inherit',
+				borderRadius: 20,
+				borderWidth: 1,
+				formatter: '{value}%'
 			}
-		]);
+		});
 	}
 
 	$: makeSeriesFee($valuesStoreTransactionMetric);
@@ -213,5 +211,37 @@
 	};
 </script>
 
-<TimeSeriesChartRoundLog {yAxis} {legend} series={$seriesFee} />
-<SingleValueChart {yAxis} {legend} series={$seriesFeeTotal} />
+<div class="p-3 transparent-background rounded-lg text-black">
+	<h1 class="text-center text-2xl">Wallet Activity on Terra</h1>
+
+	<h2 class="text-xl font-bold">Definitions</h2>
+	<b>Sender:</b>
+	<p>An address posting a transaction on the network</p>
+	<b>Receiver:</b>
+	<p>An address receiving $LUNA tokens</p>
+</div>
+
+<div class="xl:grid grid-cols-2 mt-2 p-2 w-full transparent-background rounded-lg">
+	<TimeSeriesChartRoundLog class="h-128" {yAxis} {legend} series={$seriesFee} />
+	<SingleValueChart class="h-128" {yAxis} {legend} series={$seriesFeeTotal} />
+</div>
+
+<style>
+	.transparent-background {
+		position: relative;
+	}
+
+	.transparent-background::before {
+		content: ' ';
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		background: white;
+		opacity: 50%;
+		border-radius: inherit;
+		pointer-events: none;
+		z-index: -1;
+	}
+</style>
