@@ -74,4 +74,4 @@
 	}
 </script>
 
-<Chart class={clazz} isLoading={false} {options} />
+<Chart class={clazz} isLoading={series.length == 0} {options} />

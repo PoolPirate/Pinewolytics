@@ -8,10 +8,7 @@
 		TitleComponentOption
 	} from 'echarts';
 
-	export let series: SeriesOption;
-	export let yAxis: YAXisComponentOption = {
-		type: 'value'
-	};
+	export let series: SeriesOption | null;
 	export let title: TitleComponentOption | undefined = undefined;
 	export let legend: LegendComponentOption | undefined = undefined;
 	let clazz: string = '';
@@ -21,14 +18,13 @@
 
 	$: makeOptions(series);
 
-	function makeOptions(series: SeriesOption) {
+	function makeOptions(series: SeriesOption | null) {
 		options = {
 			legend: legend,
-			series: series,
-			title: title,
-			yAxis: yAxis
+			series: series == null ? {} : series,
+			title: title
 		};
 	}
 </script>
 
-<Chart class={clazz} isLoading={false} {options} />
+<Chart class={clazz} isLoading={series == null} {options} />
