@@ -85,6 +85,14 @@ public class Startup
 
         app.UseStaticFiles();
 
+        app.UseHangfireDashboard("/api/hangfire", new DashboardOptions()
+        {
+            Authorization = new[] { new HangfireDashboardAuthorizationFilter() },
+            IsReadOnlyFunc =
+        ctx => HangfireDashboardAuthorizationFilter.AllowWriteAccess(
+            ctx, app.ApplicationServices.GetRequiredService<AuthorizationOptions>(), env.IsProduction())
+        });
+
         app.UseResponseCaching();
 
         app.UseRouting();
@@ -99,7 +107,6 @@ public class Startup
         routes.MapHub<OptimismDataHub>("api/hub/optimism");
         routes.MapHub<QueryHub>("api/hub/query");
 
-        routes.MapHangfireDashboard("/api/hangfire");
         routes.MapControllers();
 
         routes.MapFallbackToFile("index.html");
