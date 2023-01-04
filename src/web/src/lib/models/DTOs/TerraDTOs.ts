@@ -34,5 +34,7 @@ export interface TerraContractMetricsDTO {
 }
 
 export interface TerraTotalFeeDTO {
+    timestamp: string;
+    
     feesSinceInception: number;
 }

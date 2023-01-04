@@ -17,7 +17,7 @@ const queryTypes = {
     [QueryName.TerraTransactionMetricsHistory]: { } as TerraTransactionMetricsDTO[],
     [QueryName.TerraWalletMetricsHistory]: { } as TerraWalletMetricsDTO[],
     [QueryName.TerraContractMetricsHistory]: { } as TerraContractMetricsDTO[],
-    [QueryName.TerraTotalFees]: { } as TerraTotalFeeDTO,
+    [QueryName.TerraTotalFees]: { } as TerraTotalFeeDTO[],
 
     [QueryName.OptimismTransactionCountHistory]: { } as TimeSeriesEntryDTO2[],
 }
