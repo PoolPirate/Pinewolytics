@@ -18,7 +18,7 @@
 		top: 0;
 		bottom: 0;
 		z-index: -1;
-		background-color: var(--color2);
+		background: linear-gradient(45odeg, var(--color1), var(--color2));
 		opacity: 80%;
 	}
 </style>

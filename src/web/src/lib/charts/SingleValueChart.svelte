@@ -12,8 +12,8 @@
 	export let yAxis: YAXisComponentOption = {
 		type: 'value'
 	};
-	export let title: TitleComponentOption = null!;
-	export let legend: LegendComponentOption = null!;
+	export let title: TitleComponentOption | undefined = undefined;
+	export let legend: LegendComponentOption | undefined = undefined;
 	let clazz: string = '';
 	export { clazz as class };
 

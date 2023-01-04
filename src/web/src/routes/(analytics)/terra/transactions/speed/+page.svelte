@@ -22,8 +22,8 @@
 		QueryName.TerraTransactionMetricsHistory
 	);
 	const txCountSeries = writable<SeriesOption[]>([]);
-	const tpsSeries = writable<SeriesOption>({});
-	const bpsSeries = writable<SeriesOption>({});
+	const tpsSeries = writable<SeriesOption>();
+	const bpsSeries = writable<SeriesOption>();
 
 	$: makeTxCountSeries($txMetricQuery);
 	function makeTxCountSeries(values: TerraTransactionMetricsDTO[]) {
@@ -95,6 +95,9 @@
 					},
 					title: {
 						offsetCenter: ['50%', '85%']
+					},
+					itemStyle: {
+						color: 'purple'
 					}
 				},
 				{
@@ -105,7 +108,8 @@
 					},
 					title: {
 						offsetCenter: ['-50%', '85%']
-					}
+					},
+					itemStyle: {}
 				}
 			]
 		});

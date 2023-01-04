@@ -3,10 +3,14 @@
 	import { onMount } from 'svelte';
 	import { screens } from 'tailwindcss/defaultTheme';
 
+	var animateSidebar = false;
+
 	var open: boolean = false;
 	var forcedOpen: boolean = false;
 
 	onMount(() => {
+		open = window.innerWidth > Number.parseInt(screens.xl.split('px')[0]);
+
 		window.matchMedia('(max-width: ' + screens.xl + ')').addEventListener('change', (result) => {
 			if (forcedOpen && result.matches) {
 				open = false;
@@ -16,6 +20,8 @@
 
 			forcedOpen = !result.matches;
 		});
+
+		setTimeout(() => (animateSidebar = true));
 	});
 </script>
 
@@ -27,6 +33,7 @@
 	<div class="fixed xl:relative pointer-events-none w-1/2 lg:w-1/4 h-screen ontop">
 		<div
 			class:open
+			class:animateSidebar
 			class="flex flex-col justify-between pointer-events-auto w-full h-full px-4 pt-16 pb-4
 			   sidebar transparent-background xl:bg-transparent bg-black
 		       [&>aside]:contents"
@@ -67,9 +74,12 @@
 		top: 0;
 		left: -100%;
 		overflow-x: hidden;
-		transition: left 0.4s ease-in-out;
 		z-index: 5;
 		min-width: 250px;
+	}
+
+	.animateSidebar {
+		transition: left 0.4s ease-in-out;
 	}
 
 	.open {
