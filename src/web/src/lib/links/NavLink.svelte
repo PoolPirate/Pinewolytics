@@ -2,7 +2,7 @@
 	export let href: string;
 </script>
 
-<a {href} class="m-2 p-4 rounded-lg hover:font-bold">
+<a {href} class="m-2 p-2 rounded-lg hover:font-bold">
 	<slot />
 </a>
 
