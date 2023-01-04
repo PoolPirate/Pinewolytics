@@ -17,7 +17,7 @@ public class FlipsideClient : Singleton
     [Inject]
     private readonly IMemoryCache Cache = null!;
 
-    public async Task RunQueryAndCacheAsync(string key, Type type, string sql, TimeSpan cacheDuration,
+    public async Task RunQueryAndCacheAsync(string key, Type type, string sql,
         CancellationToken cancellationToken = default)
     {
         var queueResult = await QueueQueryAsync(sql, cancellationToken);
@@ -36,7 +36,7 @@ public class FlipsideClient : Singleton
         }
 
         object[] result = ParseFlipsideObjects(type, rows);
-        Cache.Set(key, result, cacheDuration);
+        Cache.Set(key, result);
     }
 
     public async Task<T[]> GetOrRunAsync<T>(string sql,

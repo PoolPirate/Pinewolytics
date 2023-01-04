@@ -9,8 +9,6 @@ namespace Pinewolytics.Services;
 
 public class QueryRunner : Singleton
 {
-    private readonly TimeSpan OverlapCacheDuration = TimeSpan.FromSeconds(60);
-
     [Inject]
     private readonly FlipsideClient Flipside = null!;
     [Inject]
@@ -62,8 +60,7 @@ public class QueryRunner : Singleton
         await Flipside.RunQueryAndCacheAsync(
             scheduledQuery.Name,
             type,
-            scheduledQuery.Query,
-            scheduledQuery.Interval + OverlapCacheDuration);
+            scheduledQuery.Query);
 
         await QuerySusbcriptionService.BroadcastQueryUpdate(scheduledQuery.Name);
     }

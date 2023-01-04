@@ -12,8 +12,6 @@ public class QueryHub : Hub<IQueryHubClient>
         QuerySubscriptionService = querySubscriptionService;
     }
 
-
-
     public override Task OnDisconnectedAsync(Exception? exception)
     {
         QuerySubscriptionService.ClearSubscriptions(Context.ConnectionId);
