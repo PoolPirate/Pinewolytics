@@ -36,7 +36,7 @@ public class FlipsideClient : Singleton
         }
 
         object[] result = ParseFlipsideObjects(type, rows);
-        Cache.Set(key, result);
+        Cache.Set(key, result.Length == 1 ? result[0] : result);
     }
 
     public async Task<T[]> GetOrRunAsync<T>(string sql,
