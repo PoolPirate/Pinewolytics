@@ -21,4 +21,7 @@ export interface TerraWalletMetricsDTO {
     totalReceivers: number;
     totalSenders: number;
     totalSendersAndReceivers: number;
+
+    senders: number;
+    receivers: number;
 }
