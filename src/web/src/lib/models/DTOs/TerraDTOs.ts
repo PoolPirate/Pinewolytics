@@ -14,3 +14,11 @@ export interface TerraTransactionMetricsDTO {
     transactionCount: number;
     blockCount: number;
 }
+
+export interface TerraWalletMetricsDTO {
+    timestamp :string;
+
+    totalReceivers: number;
+    totalSenders: number;
+    totalSendersAndReceivers: number;
+}
