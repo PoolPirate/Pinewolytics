@@ -88,9 +88,9 @@
 		<p>An address receiving $LUNA tokens</p>
 	</div>
 
-	<div class="xl:grid grid-cols-2 h-128 mt-2 w-full transparent-background rounded-lg">
-		<TimeSeriesChart series={$newSeries} />
-		<TimeSeriesChart series={$totalSeries} />
+	<div class="xl:grid grid-cols-2 mt-2 p-2 w-full transparent-background rounded-lg">
+		<TimeSeriesChart class="h-128" series={$newSeries} />
+		<TimeSeriesChart class="h-128" series={$totalSeries} />
 	</div>
 </div>
 
