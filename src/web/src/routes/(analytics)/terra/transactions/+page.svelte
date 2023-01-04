@@ -5,15 +5,14 @@
 	import { writable } from 'svelte/store';
 
 	import TimeSeriesChartRoundLog from '$lib/charts/TimeSeriesChartRoundLog.svelte';
-	import type {TerraTransactionMetricsDTO} from '$lib/models/DTOs/TerraDTOs'
-
+	import type { TerraTransactionMetricsDTO } from '$lib/models/DTOs/TerraDTOs';
 
 	const valuesStore = writable<TerraTransactionMetricsDTO[]>([]);
 	const series = writable<SeriesOption[]>([]);
 
 	onMount(async () => {
 		await new QuerySubscriptionBuilder()
-			.addQuery(QueryName.TerraTransactionMetricHistory, (value) => {
+			.addQuery(QueryName.TerraTransactionMetricsHistory, (value) => {
 				valuesStore.set(value);
 			})
 			.start();
@@ -37,7 +36,7 @@
 				},
 				data: values
 					.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-					.map((x) => [new Date(x.timestamp).getTime(), x.minimumFee]),
+					.map((x) => [new Date(x.timestamp).getTime(), x.minimumFee])
 			},
 			{
 				name: 'maximumFee',
@@ -52,7 +51,7 @@
 				},
 				data: values
 					.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-					.map((x) => [new Date(x.timestamp).getTime(), x.maximumFee]),
+					.map((x) => [new Date(x.timestamp).getTime(), x.maximumFee])
 			},
 			{
 				name: 'medianFee',
@@ -67,7 +66,7 @@
 				},
 				data: values
 					.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-					.map((x) => [new Date(x.timestamp).getTime(), x.medianFee]),
+					.map((x) => [new Date(x.timestamp).getTime(), x.medianFee])
 			},
 			{
 				name: 'averageFee',
@@ -82,7 +81,7 @@
 				},
 				data: values
 					.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-					.map((x) => [new Date(x.timestamp).getTime(), x.averageFee]),
+					.map((x) => [new Date(x.timestamp).getTime(), x.averageFee])
 			}
 		]);
 	}
