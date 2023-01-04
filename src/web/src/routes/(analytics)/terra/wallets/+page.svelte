@@ -1,25 +1,30 @@
 <script lang="ts">
 	import TimeSeriesChart from '$lib/charts/TimeSeriesChart.svelte';
 	import type { TerraWalletMetricsDTO } from '$lib/models/DTOs/TerraDTOs';
-	import { QueryName, QuerySubscriptionBuilder } from '$lib/service/querysubscription';
+	import {
+		createQueryListener,
+		QueryName,
+		QuerySubscriptionBuilder
+	} from '$lib/service/querysubscription';
 	import type { SeriesOption } from 'echarts';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
-	const valuesStore = writable<TerraWalletMetricsDTO[]>([]);
+	const subscriptionBuilder = new QuerySubscriptionBuilder();
+
+	const walletMetrics = createQueryListener(
+		subscriptionBuilder,
+		QueryName.TerraWalletMetricsHistory
+	);
 	const newSeries = writable<SeriesOption[]>([]);
 	const totalSeries = writable<SeriesOption[]>([]);
 
 	onMount(async () => {
-		await new QuerySubscriptionBuilder()
-			.addQuery(QueryName.TerraWalletMetricsHistory, (value) => {
-				valuesStore.set(value);
-			})
-			.start();
+		await subscriptionBuilder.start();
 	});
 
-	$: makeNewSeries($valuesStore);
-	$: makeTotalSeries($valuesStore);
+	$: makeNewSeries($walletMetrics);
+	$: makeTotalSeries($walletMetrics);
 
 	function makeNewSeries(values: TerraWalletMetricsDTO[]) {
 		newSeries.set([

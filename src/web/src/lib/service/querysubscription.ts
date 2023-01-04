@@ -1,6 +1,8 @@
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import type { TerraContractMetricsDTO, TerraTotalFeeDTO, TerraTransactionMetricsDTO, TerraValidatorCountDTO, TerraWalletMetricsDTO } from '$lib/models/DTOs/TerraDTOs';
 import type { TimeSeriesEntryDTO2 } from '$lib/models/SharedDTOs';
+import { writable } from 'svelte/store';
+import { browser } from '$app/environment';
 
 export enum QueryName {
     TerraValidatorCountHistory = "terra-validator-count-history",
@@ -13,13 +15,13 @@ export enum QueryName {
 }
 
 const queryTypes = {
-    [QueryName.TerraValidatorCountHistory]: { } as TerraValidatorCountDTO[],
-    [QueryName.TerraTransactionMetricsHistory]: { } as TerraTransactionMetricsDTO[],
-    [QueryName.TerraWalletMetricsHistory]: { } as TerraWalletMetricsDTO[],
-    [QueryName.TerraContractMetricsHistory]: { } as TerraContractMetricsDTO[],
-    [QueryName.TerraTotalFees]: { } as TerraTotalFeeDTO[],
+    [QueryName.TerraValidatorCountHistory]: [] as TerraValidatorCountDTO[],
+    [QueryName.TerraTransactionMetricsHistory]: [] as TerraTransactionMetricsDTO[],
+    [QueryName.TerraWalletMetricsHistory]: [] as TerraWalletMetricsDTO[],
+    [QueryName.TerraContractMetricsHistory]: []as TerraContractMetricsDTO[],
+    [QueryName.TerraTotalFees]: [] as TerraTotalFeeDTO[],
 
-    [QueryName.OptimismTransactionCountHistory]: { } as TimeSeriesEntryDTO2[],
+    [QueryName.OptimismTransactionCountHistory]: [] as TimeSeriesEntryDTO2[],
 }
 
 interface QuerySubscription {
@@ -34,6 +36,12 @@ export class QuerySubscriptionBuilder {
 
     constructor() {
         this.subscriptions = [];
+
+        if (!browser) {
+            this.connection = null!;
+            return;
+        }
+
         this.connection = new HubConnectionBuilder()
             .withUrl('/api/hub/query')
             .withAutomaticReconnect()
@@ -57,8 +65,8 @@ export class QuerySubscriptionBuilder {
     }
 
     addQuery<
-        T extends QueryName, // <- T points to a key
-        R extends (typeof queryTypes)[T] // <- R points to the type of that key
+        T extends QueryName,
+        R extends (typeof queryTypes)[T]
     >(name: T, handler: (data : R) => void) {
         this.subscriptions.push({
             queryName: name,
@@ -66,4 +74,19 @@ export class QuerySubscriptionBuilder {
         });
         return this;
     }
+}
+
+export function createQueryListener<
+        T extends QueryName,
+        R extends (typeof queryTypes)[T] 
+>(builder: QuerySubscriptionBuilder, queryName: T) {
+    const { subscribe, set } = writable<R>(queryTypes[queryName] as any);
+
+    builder.addQuery(queryName, value => {
+        set(value as any);
+    });
+
+    return {
+        subscribe
+    };
 }

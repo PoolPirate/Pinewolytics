@@ -3,7 +3,7 @@ import type {
 	OsmosisLPJoinDTO,
 	OsmosisSwapDTO,
 	OsmosisTransferDTO
-} from '$lib/models/OsmosisDTOs';
+} from '$lib/models/DTOs/OsmosisDTOs';
 
 export function netSwapBalanceChange(addresses: string[], swaps: OsmosisSwapDTO[]) {
 	const fromOsmoTotal = swaps
