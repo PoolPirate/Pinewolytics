@@ -8,19 +8,21 @@
 	import { onDestroy, onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
-	import TimeSeriesChartRoundLog from '$lib/charts/TimeSeriesChart.svelte';
+	import TimeSeriesChart from '$lib/charts/TimeSeriesChart.svelte';
 	import type { TerraTotalFeeDTO, TerraTransactionMetricsDTO } from '$lib/models/DTOs/TerraDTOs';
 	import SingleValueChart from '$lib/charts/SingleValueChart.svelte';
+	import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils';
 
 	const subscriptionBuilder = new QuerySubscriptionBuilder();
-	const valuesStoreTransactionMetric = createQueryListener(
+	const transactionMetricsHistoryQuery = createQueryListener(
 		subscriptionBuilder,
 		QueryName.TerraTransactionMetricsHistory
 	);
-	const valuesStoreTotalFeesHistory = createQueryListener(
+	const totalFeeHistoryQuery = createQueryListener(
 		subscriptionBuilder,
 		QueryName.TerraTotalFeesHistory
 	);
+
 	const seriesFeeTotal = writable<SeriesOption>();
 	const seriesFee = writable<SeriesOption[]>([]);
 
@@ -31,7 +33,7 @@
 		subscriptionBuilder.dispose();
 	});
 
-	$: makeSeriesFeeTotal($valuesStoreTotalFeesHistory);
+	$: makeSeriesFeeTotal($totalFeeHistoryQuery);
 
 	function makeSeriesFeeTotal(values: TerraTotalFeeDTO[]) {
 		if (values.length == 0) {
@@ -42,20 +44,38 @@
 			(a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
 		);
 
-		var last30 = sortValues[0.0].feesSinceInception - sortValues[30].feesSinceInception;
-		var last60 = sortValues[30].feesSinceInception - sortValues[60].feesSinceInception;
-		var last90 = sortValues[90].feesSinceInception - sortValues[120].feesSinceInception;
+		const latestMonth = new Date(sortValues[0].timestamp).getMonth();
+		const boundaries = [];
 
-		const lastmax = Math.max(last90, last60, last30);
+		var offset = 0;
 
-		last30 /= lastmax;
-		last60 /= lastmax;
-		last90 /= lastmax;
+		for (let i = 0; i < 3; i++) {
+			const lastDayIndex =
+				sortValues.slice(offset).findIndex((value, index, arr) => {
+					const nextMonth = new Date(arr[index + 1].timestamp).getMonth();
+					const currMonth = new Date(value.timestamp).getMonth();
+					return nextMonth != currMonth;
+				}) + offset;
+
+			offset = lastDayIndex + 1;
+
+			boundaries.push(lastDayIndex);
+		}
+
+		var lastMonths = [
+			sortValues[0].feesSinceInception - sortValues[boundaries[0]].feesSinceInception,
+			sortValues[boundaries[0]].feesSinceInception - sortValues[boundaries[1]].feesSinceInception,
+			sortValues[boundaries[1]].feesSinceInception - sortValues[boundaries[2]].feesSinceInception
+		];
+
+		const limit = Math.max(...lastMonths);
 
 		const gaugeData = [
 			{
-				value: Math.ceil(last30 * 100),
-				name: 'last30',
+				value: lastMonths[0],
+				name: new Date(sortValues[boundaries[0]].timestamp).toLocaleDateString('en', {
+					month: 'long'
+				}),
 				title: {
 					offsetCenter: ['0%', '-30%']
 				},
@@ -65,8 +85,10 @@
 				}
 			},
 			{
-				value: Math.ceil(last60 * 100),
-				name: 'last60',
+				value: lastMonths[1],
+				name: new Date(sortValues[boundaries[1]].timestamp).toLocaleDateString('en', {
+					month: 'long'
+				}),
 				title: {
 					offsetCenter: ['0%', '0%']
 				},
@@ -76,8 +98,10 @@
 				}
 			},
 			{
-				value: Math.ceil(last90 * 100),
-				name: 'last90',
+				value: lastMonths[2],
+				name: new Date(sortValues[boundaries[2]].timestamp).toLocaleDateString('en', {
+					month: 'long'
+				}),
 				title: {
 					offsetCenter: ['0%', '30%']
 				},
@@ -92,6 +116,7 @@
 			type: 'gauge',
 			startAngle: 90,
 			endAngle: -270,
+			max: limit,
 			pointer: {
 				show: false
 			},
@@ -129,12 +154,12 @@
 				borderColor: 'inherit',
 				borderRadius: 20,
 				borderWidth: 1,
-				formatter: '{value}%'
+				formatter: (value) => Math.round((100 * value) / limit) + '%'
 			}
 		});
 	}
 
-	$: makeSeriesFee($valuesStoreTransactionMetric);
+	$: makeSeriesFee($transactionMetricsHistoryQuery);
 
 	function makeSeriesFee(values: TerraTransactionMetricsDTO[]) {
 		if (values.length == 0) {
@@ -221,18 +246,12 @@
 </script>
 
 <div class="p-3 transparent-background rounded-lg text-black">
-	<h1 class="text-center text-2xl">Wallet Activity on Terra</h1>
-
-	<h2 class="text-xl font-bold">Definitions</h2>
-	<b>Sender:</b>
-	<p>An address posting a transaction on the network</p>
-	<b>Receiver:</b>
-	<p>An address receiving $LUNA tokens</p>
+	<h1 class="text-center text-2xl">Transaction Fees Paid on Terra</h1>
 </div>
 
-<div class="xl:grid grid-cols-2 mt-2 p-2 w-full transparent-background rounded-lg">
-	<TimeSeriesChartRoundLog class="h-128" {yAxis} {legend} series={$seriesFee} />
+<div class="xl:grid grid-cols-1 mt-2 p-2 w-full transparent-background rounded-lg">
 	<SingleValueChart class="h-128" series={$seriesFeeTotal} />
+	<TimeSeriesChart class="h-128" {yAxis} {legend} series={$seriesFee} />
 </div>
 
 <style>
