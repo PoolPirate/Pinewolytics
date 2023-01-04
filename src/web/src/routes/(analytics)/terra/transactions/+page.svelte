@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { QueryName, QuerySubscriptionBuilder } from '$lib/service/querysubscription';
-	import type { SeriesOption } from 'echarts';
+	import type { LegendComponentOption, SeriesOption, YAXisComponentOption } from 'echarts';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
-	import TimeSeriesChartRoundLog from '$lib/charts/TimeSeriesChartRoundLog.svelte';
+	import TimeSeriesChartRoundLog from '$lib/charts/TimeSeriesChart.svelte';
 	import type { TerraTransactionMetricsDTO } from '$lib/models/DTOs/TerraDTOs';
 
 	const valuesStore = writable<TerraTransactionMetricsDTO[]>([]);
@@ -85,6 +85,19 @@
 			}
 		]);
 	}
+
+	const legend: LegendComponentOption = {
+		inactiveColor: '#fff',
+		textStyle: {
+			fontSize: 16
+		},
+		data: ['minimumFee', 'maximumFee', 'medianFee', 'averageFee']
+	};
+
+	const yAxis: YAXisComponentOption = {
+		type: 'log',
+		min: 0.0001
+	};
 </script>
 
-<TimeSeriesChartRoundLog series={$series} />
+<TimeSeriesChartRoundLog {yAxis} {legend} series={$series} />

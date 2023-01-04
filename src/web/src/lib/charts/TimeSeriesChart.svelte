@@ -1,9 +1,18 @@
 <script lang="ts">
 	import Chart from '$lib/components/Chart.svelte';
-	import type { EChartsOption, SeriesOption } from 'echarts';
+	import type {
+		EChartsOption,
+		SeriesOption,
+		YAXisComponentOption,
+		LegendComponentOption
+	} from 'echarts';
 	import jsonLogo from '$lib/static/logo/json.svg';
 
 	export let series: SeriesOption[];
+	export let yAxis: YAXisComponentOption = {
+		type: 'value'
+	};
+	export let legend: LegendComponentOption = {};
 
 	var options: EChartsOption;
 
@@ -11,15 +20,20 @@
 
 	function makeOptions(series: SeriesOption[]) {
 		options = {
+			legend: legend,
 			tooltip: {
-				trigger: 'axis'
+				trigger: 'axis',
+				axisPointer: {
+					type: 'cross',
+					label: {
+						backgroundColor: '#6a7985'
+					}
+				}
 			},
 			xAxis: {
 				type: 'time'
 			},
-			yAxis: {
-				type: 'value'
-			},
+			yAxis: yAxis,
 			toolbox: {
 				itemSize: 40,
 				left: 'center',
@@ -42,11 +56,11 @@
 			dataZoom: [
 				{
 					type: 'inside',
-					start: 95,
+					start: 50,
 					end: 100
 				},
 				{
-					start: 95,
+					start: 50,
 					end: 100
 				}
 			],
