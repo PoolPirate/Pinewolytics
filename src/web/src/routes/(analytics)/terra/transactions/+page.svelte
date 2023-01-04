@@ -18,9 +18,11 @@
 			.start();
 	});
 
-	$: makeSeries($valuesStore);
 
-	function makeSeries(values: TerraTransactionMetricsDTO[]) {
+
+	$: makeSeriesFee($valuesStore);
+
+	function makeSeriesFee(values: TerraTransactionMetricsDTO[]) {
 		series.set([
 			{
 				name: 'minimumFee',

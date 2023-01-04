@@ -24,27 +24,18 @@
 	function makeSeries(values: TimeSeriesEntryDTO2[]) {
 		series.set([
 			{
+				name: 'Transaction Count',
 				type: 'line',
 				data: values
 					.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
 					.map((x) => [new Date(x.timestamp).getTime(), x.value1]),
-				name: 'Transaction Count',
 				symbol: 'none',
 				sampling: 'sum',
-				itemStyle: {
-					color: 'rgb(255, 70, 131)'
+				markLine: {
+					data: [{ type: 'max', name: 'Max' }]
 				},
 				areaStyle: {
-					color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-						{
-							offset: 0,
-							color: 'green'
-						},
-						{
-							offset: 1,
-							color: 'lime'
-						}
-					])
+					origin: "auto"
 				}
 			},
 			{
@@ -55,20 +46,11 @@
 				name: 'Address Count',
 				symbol: 'none',
 				sampling: 'sum',
-				itemStyle: {
-					color: 'rgb(255, 70, 131)'
+				markLine: {
+					data: [{ type: 'max', name: 'Max' }]
 				},
 				areaStyle: {
-					color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-						{
-							offset: 0,
-							color: 'blue'
-						},
-						{
-							offset: 1,
-							color: 'black'
-						}
-					])
+					origin: "auto"
 				}
 			}
 		]);
