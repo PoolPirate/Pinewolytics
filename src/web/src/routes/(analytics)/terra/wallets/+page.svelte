@@ -7,7 +7,7 @@
 		QuerySubscriptionBuilder
 	} from '$lib/service/querysubscription';
 	import type { SeriesOption } from 'echarts';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
 	const subscriptionBuilder = new QuerySubscriptionBuilder();
@@ -21,6 +21,9 @@
 
 	onMount(async () => {
 		await subscriptionBuilder.start();
+	});
+	onDestroy(async () => {
+		subscriptionBuilder.dispose();
 	});
 
 	$: makeNewSeries($walletMetrics);

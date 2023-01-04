@@ -8,13 +8,16 @@
 		QuerySubscriptionBuilder
 	} from '$lib/service/querysubscription';
 	import type { LegendComponentOption, SeriesOption, TitleComponentOption } from 'echarts';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
 	const subscriptionBuilder = new QuerySubscriptionBuilder();
 
 	onMount(async () => {
 		await subscriptionBuilder.start();
+	});
+	onDestroy(() => {
+		subscriptionBuilder.dispose();
 	});
 
 	const txMetricQuery = createQueryListener(

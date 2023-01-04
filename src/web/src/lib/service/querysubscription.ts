@@ -36,7 +36,7 @@ interface QuerySubscription {
 }
 
 export class QuerySubscriptionBuilder {
-	private connection: HubConnection;
+	private connection: HubConnection | null;
 
 	private subscriptions: QuerySubscription[];
 
@@ -63,12 +63,23 @@ export class QuerySubscriptionBuilder {
 	}
 
 	async start() {
+        if (this.connection == null) {
+            return;
+        }
+
 		await this.connection.start();
 
 		this.subscriptions.forEach(async (name) => {
-			await this.connection.send('GetAndSubscribe', name.queryName);
+			await this.connection!.send('GetAndSubscribe', name.queryName);
 		});
 	}
+
+    dispose() {
+        if (this.connection == null) {
+            return;
+        }
+        this.connection.stop();
+    }
 
 	addQuery<T extends QueryName, R extends typeof queryTypes[T]>(
 		name: T,

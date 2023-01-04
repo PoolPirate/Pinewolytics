@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { HubConnectionBuilder } from '@microsoft/signalr';
-	import { onMount } from 'svelte';
+	import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
+	import { onDestroy, onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import RefreshAnimation from './RefreshAnimation.svelte';
 
@@ -11,8 +11,10 @@
 	const price = writable<number>(0);
 	var priceAnimation: RefreshAnimation;
 
+	var connection: HubConnection;
+
 	onMount(async () => {
-		let connection = new HubConnectionBuilder()
+		connection = new HubConnectionBuilder()
 			.withUrl('/api/hub/luna')
 			.withAutomaticReconnect()
 			.build();
@@ -32,6 +34,13 @@
 		});
 
 		await connection.start();
+	});
+	onDestroy(() => {
+		if (connection == null) {
+			return;
+		}
+
+		connection.stop();
 	});
 </script>
 

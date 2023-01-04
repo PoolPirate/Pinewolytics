@@ -5,7 +5,7 @@
 		QuerySubscriptionBuilder
 	} from '$lib/service/querysubscription';
 	import type { LegendComponentOption, SeriesOption, YAXisComponentOption } from 'echarts';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
 	import TimeSeriesChartRoundLog from '$lib/charts/TimeSeriesChart.svelte';
@@ -21,11 +21,14 @@
 		subscriptionBuilder,
 		QueryName.TerraTotalFeesHistory
 	);
-	const seriesFeeTotal = writable<SeriesOption>({});
+	const seriesFeeTotal = writable<SeriesOption>();
 	const seriesFee = writable<SeriesOption[]>([]);
 
 	onMount(async () => {
 		await subscriptionBuilder.start();
+	});
+	onDestroy(() => {
+		subscriptionBuilder.dispose();
 	});
 
 	$: makeSeriesFeeTotal($valuesStoreTotalFeesHistory);
@@ -223,7 +226,7 @@
 
 <div class="xl:grid grid-cols-2 mt-2 p-2 w-full transparent-background rounded-lg">
 	<TimeSeriesChartRoundLog class="h-128" {yAxis} {legend} series={$seriesFee} />
-	<SingleValueChart class="h-128" {legend} series={$seriesFeeTotal} />
+	<SingleValueChart class="h-128" series={$seriesFeeTotal} />
 </div>
 
 <style>
