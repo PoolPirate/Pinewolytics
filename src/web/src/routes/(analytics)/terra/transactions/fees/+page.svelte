@@ -5,25 +5,47 @@
 	import { writable } from 'svelte/store';
 
 	import TimeSeriesChartRoundLog from '$lib/charts/TimeSeriesChart.svelte';
-	import type { TerraTransactionMetricsDTO } from '$lib/models/DTOs/TerraDTOs';
+	import type {TerraTotalFeeDTO, TerraTransactionMetricsDTO} from '$lib/models/DTOs/TerraDTOs';
 
-	const valuesStore = writable<TerraTransactionMetricsDTO[]>([]);
-	const series = writable<SeriesOption[]>([]);
+	const valuesStoreTransactionMetric = writable<TerraTransactionMetricsDTO[]>([]);
+	const valuesStoreTotalFeesHistory = writable<TerraTotalFeeDTO[]>([]);
+	const seriesFeeTotal = writable<SeriesOption[]>([]);
+	const seriesFee = writable<SeriesOption[]>([]);
 
 	onMount(async () => {
 		await new QuerySubscriptionBuilder()
 			.addQuery(QueryName.TerraTransactionMetricsHistory, (value) => {
-				valuesStore.set(value);
+				valuesStoreTransactionMetric.set(value);
+			})
+			.addQuery(QueryName.TerraTotalFeesHistory, (value) => {
+				valuesStoreTotalFeesHistory.set(value);
 			})
 			.start();
 	});
 
+	$: makeSeriesFeeTotal($valuesStoreTotalFeesHistory);
+
+	function makeSeriesFeeTotal(values: TerraTotalFeeDTO[]) {
+
+		seriesFeeTotal.set([
+			{
+				type: 'bar',
+				data: values
+					.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+					.map((x) => [new Date(x.timestamp).getTime(), x.feesSinceInception]),
+
+				showBackground: true,
+				backgroundStyle: {
+					color: 'rgba(180, 180, 180, 0.2)'
+				}
+			},
+		]);}
 
 
-	$: makeSeriesFee($valuesStore);
+	$: makeSeriesFee($valuesStoreTransactionMetric);
 
 	function makeSeriesFee(values: TerraTransactionMetricsDTO[]) {
-		series.set([
+		seriesFee.set([
 			{
 				name: 'minimumFee',
 				type: 'line',
@@ -102,4 +124,5 @@
 	};
 </script>
 
-<TimeSeriesChartRoundLog {yAxis} {legend} series={$series} />
+<TimeSeriesChartRoundLog {yAxis} {legend} series={$seriesFee} />
+<TimeSeriesChartRoundLog {yAxis} {legend} series={$seriesFeeTotal} />
