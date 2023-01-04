@@ -16,6 +16,7 @@
 	<aside slot="sidebar">
 		<a href="/terra">Overview</a>
 		<a href="/terra/transactions">Transactions</a>
+		<a href="/terra/wallets">Wallets</a>
 	</aside>
 
 	<nav slot="nav" class="h-full w-full flex flex-row items-center">

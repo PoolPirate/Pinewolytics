@@ -36,7 +36,7 @@
 			yAxis: yAxis,
 			toolbox: {
 				itemSize: 40,
-				left: 'center',
+				left: 'right',
 				feature: {
 					saveAsImage: {
 						show: true
