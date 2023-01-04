@@ -25,3 +25,10 @@ export interface TerraWalletMetricsDTO {
     senders: number;
     receivers: number;
 }
+
+export interface TerraContractMetricsDTO {
+    timestamp: string;
+
+    newContracts: number;
+    totalContracts: number;
+}
