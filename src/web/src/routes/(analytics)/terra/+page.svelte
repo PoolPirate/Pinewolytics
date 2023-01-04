@@ -36,7 +36,7 @@
 </script>
 
 <div
-	class="bg-gray-200 mx-8 rounded-b-3xl p-4 opacity-75 h-full border border-t-0 w-10/12 lg:w-8/12 2xl:w-1/2"
+	class="ml-auto mr-auto bg-gray-200 mx-8 rounded-b-3xl p-4 opacity-75 h-full border border-t-0 w-10/12 lg:w-8/12 2xl:w-1/2"
 >
 	<ul
 		class="text-center grid justify-items-center 2xl:grid-cols-3 gap-4

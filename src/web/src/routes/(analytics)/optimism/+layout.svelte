@@ -24,5 +24,7 @@
 		<img src={optimismLogo} alt="Optimism" class="ml-6 max-w-full max-h-full p-1" />
 	</nav>
 	<nav />
-	<slot slot="main" />
+	<main slot="main" class="h-full w-11/12">
+		<slot />
+	</main>
 </AnalyticsLayout>

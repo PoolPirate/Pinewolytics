@@ -23,5 +23,8 @@
 		<h2 class="ml-auto font-bold text-xl">Terra</h2>
 		<img src={luna2logo} alt="Luna 2.0" class="ml-6 max-w-full max-h-full p-1" />
 	</nav>
-	<slot slot="main" />
+
+	<main slot="main" class="h-full w-11/12">
+		<slot />
+	</main>
 </AnalyticsLayout>

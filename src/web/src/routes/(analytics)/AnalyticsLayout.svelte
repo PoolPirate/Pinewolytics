@@ -24,9 +24,9 @@
 		<slot name="nav" />
 	</div>
 
-	<main class="flex flex-col items-center w-full h-full h-full overflow-x-hidden overflow-y-auto">
+	<div class="flex justify-center w-full h-full h-full overflow-x-hidden overflow-y-auto">
 		<slot name="main" />
-	</main>
+	</div>
 </div>
 
 <style>

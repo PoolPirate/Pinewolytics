@@ -56,9 +56,12 @@
 		}
 
 		function handleResize() {
+			console.log('RESIZE');
 			echartsInstance.resize();
 		}
-		window.addEventListener('resize', handleResize);
+
+		new ResizeObserver(handleResize).observe(element);
+
 		return {
 			destroy() {
 				echartsInstance.dispose();
