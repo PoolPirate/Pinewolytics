@@ -5,7 +5,7 @@ import type {
 	OsmosisNetTransferDTO,
 	OsmosisSwapDTO,
 	OsmosisTransferDTO
-} from '$lib/models/OsmosisDTOs';
+} from '$lib/models/DTOs/OsmosisDTOs';
 
 export async function getOSMOSwaps(addresses: string[]): Promise<OsmosisSwapDTO[]> {
 	const response = await fetch('/Api/Osmosis/Swaps' + makeAddressParams(addresses));

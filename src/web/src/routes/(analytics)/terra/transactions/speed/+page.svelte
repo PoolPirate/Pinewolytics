@@ -48,7 +48,6 @@
 			});
 
 		if (isWeeklyMode) {
-			console.log(isWeeklyMode);
 			newTxCountSeries = DaySeriesToWeekSeriesByLast(newTxCountSeries);
 		}
 

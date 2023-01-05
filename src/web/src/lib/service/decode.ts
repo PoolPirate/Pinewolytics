@@ -54,7 +54,6 @@ export function sumSwapFromVolume(swaps: OsmosisSwapDTO[]) {
 }
 
 export function sumSwapToVolume(swaps: OsmosisSwapDTO[]) {
-	console.log(swaps.sort((a, b) => a.toAmount - b.toAmount));
 	return swaps.reduce((last, curr, _) => last + curr.toAmount, 0);
 }
 

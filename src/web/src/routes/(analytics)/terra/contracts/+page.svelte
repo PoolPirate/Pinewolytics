@@ -63,8 +63,6 @@
 			newContractsSeries = DaySeriesToWeekSeriesBySum(newContractsSeries);
 		}
 
-		console.log(totalContractsSeries);
-
 		contractsChart.set([
 			{
 				type: 'line',
