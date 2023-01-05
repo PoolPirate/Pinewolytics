@@ -7,9 +7,11 @@
 		QueryName,
 		QuerySubscriptionBuilder
 	} from '$lib/service/querysubscription';
+	import { DaySeriesToWeekSeriesByLast, type TimeSeriesEntry } from '$lib/service/transform';
 	import type { LegendComponentOption, SeriesOption, TitleComponentOption } from 'echarts';
-	import { onDestroy, onMount } from 'svelte';
-	import { writable } from 'svelte/store';
+	import { getContext, onDestroy, onMount } from 'svelte';
+	import { writable, type Readable } from 'svelte/store';
+	import { isWeeklyModeStoreName } from '../../+layout.svelte';
 
 	const subscriptionBuilder = new QuerySubscriptionBuilder();
 
@@ -24,24 +26,37 @@
 		subscriptionBuilder,
 		QueryName.TerraTransactionMetricsHistory
 	);
-	const txCountSeries = writable<SeriesOption[]>([]);
-	const tpsSeries = writable<SeriesOption>();
-	const bpsSeries = writable<SeriesOption>();
+	const newTxCountChart = writable<SeriesOption[]>([]);
+	const AverageTPSChart = writable<SeriesOption>();
+	const averageBlockTimeChart = writable<SeriesOption>();
 
-	$: makeTxCountSeries($txMetricQuery);
-	function makeTxCountSeries(values: TerraTransactionMetricsDTO[]) {
+	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
+
+	$: makeNewTxCountSeries($txMetricQuery, $isWeeklyModeStore);
+	function makeNewTxCountSeries(values: TerraTransactionMetricsDTO[], isWeeklyMode: boolean) {
 		if (values.length == 0) {
 			return;
 		}
 
-		txCountSeries.set([
+		var newTxCountSeries = values
+			.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+			.map<TimeSeriesEntry>((x) => {
+				return {
+					timestamp: new Date(x.timestamp),
+					value: x.transactionCount
+				};
+			});
+
+		if (isWeeklyMode) {
+			console.log(isWeeklyMode);
+			newTxCountSeries = DaySeriesToWeekSeriesByLast(newTxCountSeries);
+		}
+
+		newTxCountChart.set([
 			{
 				type: 'line',
 				name: 'Transaction Count',
-				data: values
-					.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-					.map((value) => [new Date(value.timestamp).getTime(), value.transactionCount])
-					.slice(1),
+				data: newTxCountSeries.map((x) => [x.timestamp, x.value]),
 				areaStyle: {}
 			}
 		]);
@@ -64,7 +79,7 @@
 
 		const decimals = 3;
 
-		tpsSeries.set({
+		AverageTPSChart.set({
 			type: 'gauge',
 			max: 1.5 * Math.max(dayTPS, monthTPS),
 			detail: {
@@ -139,7 +154,7 @@
 
 		const decimals = 3;
 
-		bpsSeries.set({
+		averageBlockTimeChart.set({
 			type: 'gauge',
 			max: 1.5 * Math.max(dayBlockTime, monthBlockTime),
 			detail: {
@@ -202,14 +217,14 @@
 		<SingleValueChart
 			title={{ left: 'center', text: 'Transactions Per Second' }}
 			class="h-64"
-			series={$tpsSeries}
+			series={$AverageTPSChart}
 		/>
 		<SingleValueChart
 			title={{ left: 'center', text: 'Block Time' }}
 			class="h-64"
-			series={$bpsSeries}
+			series={$averageBlockTimeChart}
 		/>
 	</div>
 
-	<TimeSeriesChart class="h-128" series={$txCountSeries} />
+	<TimeSeriesChart class="h-128" series={$newTxCountChart} />
 </div>

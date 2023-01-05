@@ -6,9 +6,16 @@
 		QueryName,
 		QuerySubscriptionBuilder
 	} from '$lib/service/querysubscription';
+	import {
+		DaySeriesToWeekSeriesByAvg,
+		DaySeriesToWeekSeriesByLast,
+		DaySeriesToWeekSeriesBySum
+	} from '$lib/service/transform';
+	import type { TimeSeriesEntry } from '$lib/service/transform';
 	import type { SeriesOption } from 'echarts';
-	import { onDestroy, onMount } from 'svelte';
-	import { writable } from 'svelte/store';
+	import { getContext, onDestroy, onMount } from 'svelte';
+	import { writable, type Readable } from 'svelte/store';
+	import { isWeeklyModeStoreName } from '../+layout.svelte';
 
 	const subscriptionBuilder = new QuerySubscriptionBuilder();
 
@@ -16,8 +23,6 @@
 		subscriptionBuilder,
 		QueryName.TerraWalletMetricsHistory
 	);
-	const newSeries = writable<SeriesOption[]>([]);
-	const totalSeries = writable<SeriesOption[]>([]);
 
 	onMount(async () => {
 		await subscriptionBuilder.start();
@@ -26,63 +31,108 @@
 		subscriptionBuilder.dispose();
 	});
 
-	$: makeNewSeries($walletMetrics);
-	$: makeTotalSeries($walletMetrics);
+	const newWalletsChart = writable<SeriesOption[]>([]);
+	const totalWalletsChart = writable<SeriesOption[]>([]);
 
-	function makeNewSeries(values: TerraWalletMetricsDTO[]) {
+	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
+
+	$: makeNewSeries($walletMetrics, $isWeeklyModeStore);
+	function makeNewSeries(values: TerraWalletMetricsDTO[], isWeeklyMode: boolean) {
 		if (values.length == 0) {
 			return;
 		}
 
-		newSeries.set([
+		var sendersSeries = values
+			.map<TimeSeriesEntry>((x) => {
+				return {
+					timestamp: new Date(x.timestamp),
+					value: x.senders
+				};
+			})
+			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+		var receiverSeries = values
+			.map<TimeSeriesEntry>((x) => {
+				return {
+					timestamp: new Date(x.timestamp),
+					value: x.receivers
+				};
+			})
+			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+		if (isWeeklyMode) {
+			sendersSeries = DaySeriesToWeekSeriesByAvg(sendersSeries);
+			receiverSeries = DaySeriesToWeekSeriesByAvg(receiverSeries);
+		}
+
+		newWalletsChart.set([
 			{
 				type: 'line',
 				name: 'Senders',
-				data: values
-					.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-					.map((x) => [new Date(x.timestamp).getTime(), x.senders])
+				data: sendersSeries.map((x) => [x.timestamp, x.value])
 			},
 			{
 				type: 'line',
 				name: 'Receivers',
-				data: values
-					.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-					.map((x) => [new Date(x.timestamp).getTime(), x.receivers])
+				data: receiverSeries.map((x) => [x.timestamp, x.value])
 			}
 		]);
 	}
 
-	function makeTotalSeries(values: TerraWalletMetricsDTO[]) {
+	$: makeTotalSeries($walletMetrics, $isWeeklyModeStore);
+	function makeTotalSeries(values: TerraWalletMetricsDTO[], isWeeklyMode: boolean) {
 		if (values.length == 0) {
 			return;
 		}
 
-		totalSeries.set([
+		var totalSendersSeries = values
+			.map<TimeSeriesEntry>((x) => {
+				return {
+					timestamp: new Date(x.timestamp),
+					value: x.totalSenders
+				};
+			})
+			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+		var totalReceiverSeries = values
+			.map<TimeSeriesEntry>((x) => {
+				return {
+					timestamp: new Date(x.timestamp),
+					value: x.totalReceivers
+				};
+			})
+			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+		var totalWalletsSeries = values
+			.map<TimeSeriesEntry>((x) => {
+				return {
+					timestamp: new Date(x.timestamp),
+					value:
+						x.totalSendersAndReceivers +
+						(x.totalReceivers - x.totalSendersAndReceivers) +
+						(x.totalSenders - x.totalSendersAndReceivers)
+				};
+			})
+			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+		if (isWeeklyMode) {
+			totalSendersSeries = DaySeriesToWeekSeriesByLast(totalSendersSeries);
+			totalReceiverSeries = DaySeriesToWeekSeriesByLast(totalReceiverSeries);
+			totalWalletsSeries = DaySeriesToWeekSeriesByLast(totalWalletsSeries);
+		}
+
+		totalWalletsChart.set([
 			{
 				type: 'line',
 				name: 'Total Receivers',
-				data: values
-					.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-					.map((x) => [new Date(x.timestamp).getTime(), x.totalReceivers])
+				data: totalReceiverSeries.map((x) => [x.timestamp, x.value])
 			},
 			{
 				type: 'line',
 				name: 'Total Senders',
-				data: values
-					.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-					.map((x) => [new Date(x.timestamp).getTime(), x.totalSenders])
+				data: totalSendersSeries.map((x) => [x.timestamp, x.value])
 			},
 			{
 				type: 'line',
 				name: 'Total Wallets',
-				data: values
-					.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-					.map((x) => [
-						new Date(x.timestamp).getTime(),
-						x.totalSendersAndReceivers +
-							(x.totalReceivers - x.totalSendersAndReceivers) +
-							(x.totalSenders - x.totalSendersAndReceivers)
-					])
+				data: totalWalletsSeries.map((x) => [x.timestamp, x.value])
 			}
 		]);
 	}
@@ -99,8 +149,8 @@
 </div>
 
 <div class="xl:grid grid-cols-2 mt-2 p-2 w-full transparent-background rounded-lg">
-	<TimeSeriesChart class="h-128" series={$newSeries} />
-	<TimeSeriesChart class="h-128" series={$totalSeries} />
+	<TimeSeriesChart class="h-128" series={$newWalletsChart} />
+	<TimeSeriesChart class="h-128" series={$totalWalletsChart} />
 </div>
 
 <style>

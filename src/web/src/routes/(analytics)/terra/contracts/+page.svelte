@@ -6,9 +6,15 @@
 		QueryName,
 		QuerySubscriptionBuilder
 	} from '$lib/service/querysubscription';
+	import {
+		DaySeriesToWeekSeriesByLast,
+		DaySeriesToWeekSeriesBySum,
+		type TimeSeriesEntry
+	} from '$lib/service/transform';
 	import type { SeriesOption } from 'echarts';
-	import { onDestroy, onMount } from 'svelte';
-	import { writable } from 'svelte/store';
+	import { getContext, onDestroy, onMount } from 'svelte';
+	import { writable, type Readable } from 'svelte/store';
+	import { isWeeklyModeStoreName } from '../+layout.svelte';
 
 	const subscriptionBuilder = new QuerySubscriptionBuilder();
 	const contractMetricsHistoryQuery = createQueryListener(
@@ -23,47 +29,71 @@
 		subscriptionBuilder.dispose();
 	});
 
-	const totalContractsSeries = writable<SeriesOption[]>([]);
-	const newContractsSeries = writable<SeriesOption[]>([]);
+	const totalContractsChart = writable<SeriesOption[]>([]);
+	const newContractsChart = writable<SeriesOption[]>([]);
 
-	$: makeTotalContractsSeries($contractMetricsHistoryQuery);
-	function makeTotalContractsSeries(values: TerraContractMetricsDTO[]) {
+	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
+
+	$: makeTotalContractsSeries($contractMetricsHistoryQuery, $isWeeklyModeStore);
+	function makeTotalContractsSeries(values: TerraContractMetricsDTO[], isWeeklyMode: boolean) {
 		if (values.length == 0) {
 			return;
 		}
 
-		totalContractsSeries.set([
+		var totalContractsSeries = values
+			.map<TimeSeriesEntry>((x) => {
+				return {
+					timestamp: new Date(x.timestamp),
+					value: x.totalContracts
+				};
+			})
+			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+		if (isWeeklyMode) {
+			totalContractsSeries = DaySeriesToWeekSeriesByLast(totalContractsSeries);
+		}
+
+		totalContractsChart.set([
 			{
 				type: 'line',
 				areaStyle: {},
 				name: 'Total Contracts Deployed',
-				data: values
-					.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-					.map((value) => [new Date(value.timestamp), value.totalContracts])
+				data: totalContractsSeries.map((x) => [x.timestamp, x.value])
 			}
 		]);
 	}
 
-	$: makeNewContractsSeries($contractMetricsHistoryQuery);
-	function makeNewContractsSeries(values: TerraContractMetricsDTO[]) {
+	$: makeNewContractsSeries($contractMetricsHistoryQuery, $isWeeklyModeStore);
+	function makeNewContractsSeries(values: TerraContractMetricsDTO[], isWeeklyMode: boolean) {
 		if (values.length == 0) {
 			return;
 		}
 
-		newContractsSeries.set([
+		var newContractsSeries = values
+			.map<TimeSeriesEntry>((x) => {
+				return {
+					timestamp: new Date(x.timestamp),
+					value: x.newContracts
+				};
+			})
+			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+		if (isWeeklyMode) {
+			newContractsSeries = DaySeriesToWeekSeriesBySum(newContractsSeries);
+		}
+
+		newContractsChart.set([
 			{
 				type: 'line',
 				areaStyle: {},
 				name: 'New Contracts Deployed',
-				data: values
-					.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-					.map((value) => [new Date(value.timestamp), value.newContracts])
+				data: newContractsSeries.map((x) => [x.timestamp, x.value])
 			}
 		]);
 	}
 </script>
 
 <div class="grid grid-cols-1">
-	<TimeSeriesChart class="h-128" series={$totalContractsSeries} />
-	<TimeSeriesChart class="h-128" series={$newContractsSeries} />
+	<TimeSeriesChart class="h-128" series={$totalContractsChart} />
+	<TimeSeriesChart class="h-128" series={$newContractsChart} />
 </div>

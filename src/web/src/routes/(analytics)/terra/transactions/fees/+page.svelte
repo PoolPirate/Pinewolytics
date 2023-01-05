@@ -5,13 +5,20 @@
 		QuerySubscriptionBuilder
 	} from '$lib/service/querysubscription';
 	import type { LegendComponentOption, SeriesOption, YAXisComponentOption } from 'echarts';
-	import { onDestroy, onMount } from 'svelte';
-	import { writable } from 'svelte/store';
+	import { getContext, onDestroy, onMount } from 'svelte';
+	import { writable, type Readable } from 'svelte/store';
 
 	import TimeSeriesChart from '$lib/charts/TimeSeriesChart.svelte';
 	import type { TerraTotalFeeDTO, TerraTransactionMetricsDTO } from '$lib/models/DTOs/TerraDTOs';
 	import SingleValueChart from '$lib/charts/SingleValueChart.svelte';
 	import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils';
+	import {
+		DaySeriesToWeekSeriesByAvg,
+		DaySeriesToWeekSeriesByMax,
+		DaySeriesToWeekSeriesByMin,
+		type TimeSeriesEntry
+	} from '$lib/service/transform';
+	import { isWeeklyModeStoreName } from '../../+layout.svelte';
 
 	const subscriptionBuilder = new QuerySubscriptionBuilder();
 	const transactionMetricsHistoryQuery = createQueryListener(
@@ -23,9 +30,6 @@
 		QueryName.TerraTotalFeesHistory
 	);
 
-	const seriesFeeTotal = writable<SeriesOption>();
-	const seriesFee = writable<SeriesOption[]>([]);
-
 	onMount(async () => {
 		await subscriptionBuilder.start();
 	});
@@ -33,8 +37,12 @@
 		subscriptionBuilder.dispose();
 	});
 
-	$: makeSeriesFeeTotal($totalFeeHistoryQuery);
+	const totalFeeChart = writable<SeriesOption>();
+	const gasFeesChart = writable<SeriesOption[]>([]);
 
+	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
+
+	$: makeSeriesFeeTotal($totalFeeHistoryQuery);
 	function makeSeriesFeeTotal(values: TerraTotalFeeDTO[]) {
 		if (values.length == 0) {
 			return;
@@ -111,7 +119,7 @@
 			}
 		];
 
-		seriesFeeTotal.set({
+		totalFeeChart.set({
 			type: 'gauge',
 			startAngle: 90,
 			endAngle: -270,
@@ -158,16 +166,56 @@
 		});
 	}
 
-	$: makeSeriesFee($transactionMetricsHistoryQuery);
+	$: makeSeriesFee($transactionMetricsHistoryQuery, $isWeeklyModeStore);
 
-	function makeSeriesFee(values: TerraTransactionMetricsDTO[]) {
+	function makeSeriesFee(values: TerraTransactionMetricsDTO[], isWeeklyMode: boolean) {
 		if (values.length == 0) {
 			return;
 		}
 
-		seriesFee.set([
+		var minimumFeeSeries = values
+			.map<TimeSeriesEntry>((x) => {
+				return {
+					timestamp: new Date(x.timestamp),
+					value: x.minimumFee
+				};
+			})
+			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+		var maximumFeeSeries = values
+			.map<TimeSeriesEntry>((x) => {
+				return {
+					timestamp: new Date(x.timestamp),
+					value: x.maximumFee
+				};
+			})
+			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+		var medianFeeSeries = values
+			.map<TimeSeriesEntry>((x) => {
+				return {
+					timestamp: new Date(x.timestamp),
+					value: x.medianFee
+				};
+			})
+			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+		var averageFeeSeries = values
+			.map<TimeSeriesEntry>((x) => {
+				return {
+					timestamp: new Date(x.timestamp),
+					value: x.averageFee
+				};
+			})
+			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+		if (isWeeklyMode) {
+			minimumFeeSeries = DaySeriesToWeekSeriesByMin(minimumFeeSeries);
+			maximumFeeSeries = DaySeriesToWeekSeriesByMax(maximumFeeSeries);
+			medianFeeSeries = DaySeriesToWeekSeriesByAvg(medianFeeSeries);
+			averageFeeSeries = DaySeriesToWeekSeriesByAvg(averageFeeSeries);
+		}
+
+		gasFeesChart.set([
 			{
-				name: 'minimumFee',
+				name: 'Minimum Fee',
 				type: 'line',
 				smooth: true,
 
@@ -178,12 +226,10 @@
 				emphasis: {
 					focus: 'series'
 				},
-				data: values
-					.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-					.map((x) => [new Date(x.timestamp).getTime(), x.minimumFee])
+				data: minimumFeeSeries.map((x) => [x.timestamp, x.value])
 			},
 			{
-				name: 'maximumFee',
+				name: 'Maximum Fee',
 				type: 'line',
 				smooth: true,
 				lineStyle: {
@@ -193,12 +239,10 @@
 				emphasis: {
 					focus: 'series'
 				},
-				data: values
-					.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-					.map((x) => [new Date(x.timestamp).getTime(), x.maximumFee])
+				data: maximumFeeSeries.map((x) => [x.timestamp, x.value])
 			},
 			{
-				name: 'medianFee',
+				name: 'Median Fee',
 				type: 'line',
 				smooth: true,
 				lineStyle: {
@@ -208,12 +252,10 @@
 				emphasis: {
 					focus: 'series'
 				},
-				data: values
-					.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-					.map((x) => [new Date(x.timestamp).getTime(), x.medianFee])
+				data: medianFeeSeries.map((x) => [x.timestamp, x.value])
 			},
 			{
-				name: 'averageFee',
+				name: 'Average Fee',
 				type: 'line',
 				smooth: true,
 				lineStyle: {
@@ -223,9 +265,7 @@
 				emphasis: {
 					focus: 'series'
 				},
-				data: values
-					.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
-					.map((x) => [new Date(x.timestamp).getTime(), x.averageFee])
+				data: averageFeeSeries.map((x) => [x.timestamp, x.value])
 			}
 		]);
 	}
@@ -233,9 +273,8 @@
 	const legend: LegendComponentOption = {
 		inactiveColor: '#fff',
 		textStyle: {
-			fontSize: 16
-		},
-		data: ['minimumFee', 'maximumFee', 'medianFee', 'averageFee']
+			fontSize: 14
+		}
 	};
 
 	const yAxis: YAXisComponentOption = {
@@ -249,8 +288,8 @@
 </div>
 
 <div class="xl:grid grid-cols-1 mt-2 p-2 w-full transparent-background rounded-lg">
-	<SingleValueChart class="h-128" series={$seriesFeeTotal} />
-	<TimeSeriesChart class="h-128" {yAxis} {legend} series={$seriesFee} />
+	<SingleValueChart class="h-128" series={$totalFeeChart} />
+	<TimeSeriesChart class="h-128" {yAxis} {legend} series={$gasFeesChart} />
 </div>
 
 <style>
