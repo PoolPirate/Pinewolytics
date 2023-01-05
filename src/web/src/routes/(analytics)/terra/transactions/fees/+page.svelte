@@ -37,13 +37,13 @@
 		subscriptionBuilder.dispose();
 	});
 
-	const totalFeeChart = writable<SeriesOption>();
+	const monthlyTotalFeeChart = writable<SeriesOption>();
 	const gasFeesChart = writable<SeriesOption[]>([]);
 
 	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
-	$: makeSeriesFeeTotal($totalFeeHistoryQuery);
-	function makeSeriesFeeTotal(values: TerraTotalFeeDTO[]) {
+	$: makeMonthlyTotalFeeChart($totalFeeHistoryQuery);
+	function makeMonthlyTotalFeeChart(values: TerraTotalFeeDTO[]) {
 		if (values.length == 0) {
 			return;
 		}
@@ -84,7 +84,7 @@
 					month: 'long'
 				}),
 				title: {
-					offsetCenter: ['0%', '-30%']
+					offsetCenter: ['0%', '-33%']
 				},
 				detail: {
 					valueAnimation: true,
@@ -97,7 +97,7 @@
 					month: 'long'
 				}),
 				title: {
-					offsetCenter: ['0%', '0%']
+					offsetCenter: ['0%', '-3%']
 				},
 				detail: {
 					valueAnimation: true,
@@ -106,11 +106,14 @@
 			},
 			{
 				value: lastMonths[2],
+				itemStyle: {
+					color: 'purple'
+				},
 				name: new Date(sortValues[boundaries[2]].timestamp).toLocaleDateString('en', {
 					month: 'long'
 				}),
 				title: {
-					offsetCenter: ['0%', '30%']
+					offsetCenter: ['0%', '27%']
 				},
 				detail: {
 					valueAnimation: true,
@@ -119,7 +122,7 @@
 			}
 		];
 
-		totalFeeChart.set({
+		monthlyTotalFeeChart.set({
 			type: 'gauge',
 			startAngle: 90,
 			endAngle: -270,
@@ -154,14 +157,14 @@
 				fontSize: 14
 			},
 			detail: {
-				width: 50,
+				width: 100,
 				height: 14,
 				fontSize: 14,
 				color: 'inherit',
 				borderColor: 'inherit',
 				borderRadius: 20,
 				borderWidth: 1,
-				formatter: (value) => Math.round((100 * value) / limit) + '%'
+				formatter: (value) => Math.round(value).toLocaleString() + ' $LUNA'
 			}
 		});
 	}
@@ -287,12 +290,25 @@
 	<h1 class="text-center text-2xl">Transaction Fees Paid on Terra</h1>
 </div>
 
-<div class="xl:grid grid-cols-1 mt-2 p-2 w-full transparent-background rounded-lg">
-	<SingleValueChart
-		title={{ text: 'Total Fees Paid In Last Months' }}
-		class="h-128"
-		series={$totalFeeChart}
-	/>
+<div class="grid grid-cols-1 mt-2 p-2 w-full transparent-background rounded-lg">
+	<div class="grid grid-cols-2">
+		<div class="h-128 flex flex-col justify-center items-center">
+			<div class="p-16 bg-white rounded-xl text-center">
+				<h3 class="font-bold text-xl">Total Amount Of Fees Ever Paid</h3>
+				<p>
+					{$totalFeeHistoryQuery
+						.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0]
+						?.feesSinceInception?.toLocaleString()} $LUNA
+				</p>
+			</div>
+		</div>
+		<SingleValueChart
+			title={{ text: 'Total Fees Paid In Last Months' }}
+			class="h-128"
+			series={$monthlyTotalFeeChart}
+		/>
+	</div>
+
 	<TimeSeriesChart
 		title={{ text: 'Transaction Fee Per Transaction' }}
 		class="h-128"

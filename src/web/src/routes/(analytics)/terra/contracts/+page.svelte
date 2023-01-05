@@ -8,6 +8,7 @@
 	} from '$lib/service/querysubscription';
 	import {
 		DaySeriesToWeekSeriesByLast,
+		DaySeriesToWeekSeriesByMax,
 		DaySeriesToWeekSeriesBySum,
 		type TimeSeriesEntry
 	} from '$lib/service/transform';
@@ -30,11 +31,12 @@
 	});
 
 	const contractsChart = writable<SeriesOption[]>([]);
+	const developersChart = writable<SeriesOption[]>([]);
 
 	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
-	$: makeTotalContractsSeries($contractMetricsHistoryQuery, $isWeeklyModeStore);
-	function makeTotalContractsSeries(values: TerraContractMetricsDTO[], isWeeklyMode: boolean) {
+	$: makeContractsChart($contractMetricsHistoryQuery, $isWeeklyModeStore);
+	function makeContractsChart(values: TerraContractMetricsDTO[], isWeeklyMode: boolean) {
 		if (values.length == 0) {
 			return;
 		}
@@ -61,6 +63,8 @@
 			newContractsSeries = DaySeriesToWeekSeriesBySum(newContractsSeries);
 		}
 
+		console.log(totalContractsSeries);
+
 		contractsChart.set([
 			{
 				type: 'line',
@@ -79,22 +83,87 @@
 		]);
 	}
 
-	//$: makeNewContractsSeries($contractMetricsHistoryQuery, $isWeeklyModeStore);
-	function makeNewContractsSeries(values: TerraContractMetricsDTO[], isWeeklyMode: boolean) {
+	$: makeDevelopersChart($contractMetricsHistoryQuery, $isWeeklyModeStore);
+	function makeDevelopersChart(values: TerraContractMetricsDTO[], isWeeklyMode: boolean) {
 		if (values.length == 0) {
 			return;
 		}
 
+		var totalDevlopersSeries = values
+			.map<TimeSeriesEntry>((x) => {
+				return {
+					timestamp: new Date(x.timestamp),
+					value: x.totalDevelopers
+				};
+			})
+			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+		var activeDevelopersChart = values
+			.map<TimeSeriesEntry>((x) => {
+				return {
+					timestamp: new Date(x.timestamp),
+					value: x.activeDevelopers
+				};
+			})
+			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
 		if (isWeeklyMode) {
+			totalDevlopersSeries = DaySeriesToWeekSeriesByLast(totalDevlopersSeries);
+			activeDevelopersChart = DaySeriesToWeekSeriesByMax(activeDevelopersChart);
 		}
+
+		developersChart.set([
+			{
+				type: 'line',
+				yAxisIndex: 0,
+				areaStyle: {},
+				name: 'Total Developers',
+				data: totalDevlopersSeries.map((x) => [x.timestamp, x.value])
+			},
+			{
+				type: 'bar',
+				z: 10,
+				yAxisIndex: 1,
+				name: 'Active Developers',
+				data: activeDevelopersChart.map((x) => [x.timestamp, x.value])
+			}
+		]);
 	}
 </script>
 
-<div class="grid grid-cols-1">
+<div class="grid grid-cols-1 mt-2 p-2 w-full transparent-background rounded-lg">
 	<TimeSeriesChart
 		yAxis={[{ type: 'log', min: 0.99 }, { type: 'value' }]}
 		title={{ text: 'Contracts Deployed' }}
 		class="h-128"
 		series={$contractsChart}
 	/>
+
+	<h2 class="text-xl" />
+
+	<TimeSeriesChart
+		yAxis={[{ type: 'log', min: 0.99 }, { type: 'value' }]}
+		title={{ text: 'Addresses Deploying A Contract' }}
+		class="h-128"
+		series={$developersChart}
+	/>
 </div>
+
+<style>
+	.transparent-background {
+		position: relative;
+	}
+
+	.transparent-background::before {
+		content: ' ';
+		position: absolute;
+		left: 0;
+		right: 0;
+		top: 0;
+		bottom: 0;
+		background: white;
+		opacity: 50%;
+		border-radius: inherit;
+		pointer-events: none;
+		z-index: -1;
+	}
+</style>
