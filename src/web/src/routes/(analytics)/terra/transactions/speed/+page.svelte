@@ -112,10 +112,10 @@
 					value: dayTPS,
 					name: 'Today',
 					detail: {
-						offsetCenter: ['50%', '110%']
+						offsetCenter: ['60%', '110%']
 					},
 					title: {
-						offsetCenter: ['50%', '85%']
+						offsetCenter: ['60%', '85%']
 					},
 					itemStyle: {
 						color: 'purple'
@@ -125,10 +125,10 @@
 					value: monthTPS,
 					name: '30D Average',
 					detail: {
-						offsetCenter: ['-50%', '110%']
+						offsetCenter: ['-60%', '110%']
 					},
 					title: {
-						offsetCenter: ['-50%', '85%']
+						offsetCenter: ['-60%', '85%']
 					},
 					itemStyle: {}
 				}
@@ -212,7 +212,7 @@
 </script>
 
 <div class="grid grid-cols-1 mt-2 p-2 w-full transparent-background rounded-lg">
-	<div class="grid grid-cols-2">
+	<div class="grid grid-cols-1 sm:grid-cols-2">
 		<SingleValueChart
 			title={{ left: 'center', text: 'Transactions Per Second' }}
 			class="h-64"

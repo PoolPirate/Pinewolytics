@@ -291,7 +291,7 @@
 </div>
 
 <div class="grid grid-cols-1 mt-2 p-2 w-full transparent-background rounded-lg">
-	<div class="grid grid-cols-2">
+	<div class="grid grid-cols-1 md:grid-cols-2">
 		<div class="h-128 flex flex-col justify-center items-center">
 			<div class="p-16 bg-white rounded-xl text-center">
 				<h3 class="font-bold text-xl">Total Amount Of Fees Ever Paid</h3>
@@ -302,6 +302,7 @@
 				</p>
 			</div>
 		</div>
+
 		<SingleValueChart
 			title={{ text: 'Total Fees Paid In Last Months' }}
 			class="h-128"
