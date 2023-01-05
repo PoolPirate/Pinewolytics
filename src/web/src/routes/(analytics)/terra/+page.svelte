@@ -10,6 +10,10 @@
 	var blockTimestampAnimation: RefreshAnimation;
 	const price = writable<number>(0);
 	var priceAnimation: RefreshAnimation;
+	const totalSupply = writable<number>(0);
+	var totalSupplyAnimation: RefreshAnimation;
+	const circulatingSupply = writable<number>(0);
+	var circulatingSupplyAnimation: RefreshAnimation;
 
 	var connection: HubConnection;
 
@@ -31,6 +35,14 @@
 		connection.on('PeakBlockTimestamp', (newBlockTimestamp) => {
 			blockTimestamp.set(new Date(newBlockTimestamp));
 			blockTimestampAnimation.play();
+		});
+		connection.on('TotalSupply', (newTotalSupply) => {
+			totalSupply.set(newTotalSupply);
+			totalSupplyAnimation.play();
+		});
+		connection.on('CirculatingSupply', (newCirculatingSupply) => {
+			circulatingSupply.set(newCirculatingSupply);
+			circulatingSupplyAnimation.play();
 		});
 
 		await connection.start();
@@ -67,6 +79,16 @@
 			<RefreshAnimation bind:this={priceAnimation} />
 			<h2>Price</h2>
 			<p>{$price}$</p>
+		</li>
+		<li>
+			<RefreshAnimation bind:this={totalSupplyAnimation} />
+			<h2>Total Supply</h2>
+			<p>{Math.round($totalSupply / 1000000).toLocaleString()} $LUNA</p>
+		</li>
+		<li>
+			<RefreshAnimation bind:this={circulatingSupplyAnimation} />
+			<h2>Circulating Supply</h2>
+			<p>{Math.round($circulatingSupply / 1000000).toLocaleString()} $LUNA</p>
 		</li>
 	</ul>
 </div>

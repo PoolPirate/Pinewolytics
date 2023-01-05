@@ -29,4 +29,16 @@ public class LunaDataClient : BaseDataClient<LunaDataHub, ILunaDataHubClient>
     {
         return await CoinGeckoClient.GetLunaPriceAsync();
     }
+
+    [RealtimeValue(30 * SECONDS, nameof(ILunaDataHubClient.TotalSupply))]
+    private async Task<double> LoadTotalSupplyAsync()
+    {
+        return await LunaLCDClient.GetTotalSupplyAsync();
+    }
+
+    [RealtimeValue(30 * SECONDS, nameof(ILunaDataHubClient.CirculatingSupply))]
+    private async Task<double> LoadCirculatingSupplyAsync()
+    {
+        return await LunaLCDClient.GetCirculatingSupplyAsync();
+    }
 }

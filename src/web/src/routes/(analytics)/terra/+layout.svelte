@@ -31,7 +31,6 @@
 	<aside slot="sidebar">
 		<NavLink href="/terra">Overview</NavLink>
 		<NavLink href="/terra/supply/richlist">Richlist</NavLink>
-		<NavLink href="/terra/supply/tokenomics">Tokenomics</NavLink>
 		<NavLink href="/terra/transactions/speed">Speed</NavLink>
 		<NavLink href="/terra/transactions/fees">Transaction Fees</NavLink>
 		<NavLink href="/terra/wallets">Wallets</NavLink>
