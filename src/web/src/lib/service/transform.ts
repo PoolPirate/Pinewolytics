@@ -8,11 +8,28 @@ export interface TimeSeriesEntry {
 export function DaySeriesToWeekSeries(series: TimeSeriesEntry[], combinator: (dailyValues: number[]) => number) {
     const outputSeries: TimeSeriesEntry[] = [];
 
-    var currentWeek: Date = series[0].timestamp;
+    if (series[0].timestamp > series[1].timestamp) {
+        throw Error("Invalid Ordering");
+    }
+
+    var currentWeek: Date = new Date(
+        series[0].timestamp.getFullYear(),
+        series[0].timestamp.getMonth(),
+        series[0].timestamp.getDate()
+    );
+
+    if (currentWeek.getDay() != 1) {
+        const days = currentWeek.getDay() == 0
+            ? 6
+            : currentWeek.getDay() - 1;
+
+        currentWeek.setTime(currentWeek.getTime() - days * 24 * 60 * 60 * 1000);
+    }
+
     var currentValues: number[] = [];
 
     series.forEach(value => {
-        if (value.timestamp.getDay() == 0) {
+        if (value.timestamp.getDay() == 1) {
             if (currentValues.length != 0){
                 outputSeries.push({
                     timestamp: currentWeek,
