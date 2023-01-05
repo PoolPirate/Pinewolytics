@@ -22,11 +22,12 @@ public class QueryScheduler : Singleton
 
         Logger.LogInformation("Scheduling {count} queries for automatic caching", scheduledQueries.Length);
 
-        foreach (var scheduledQuery in scheduledQueries)
+        await Parallel.ForEachAsync(scheduledQueries, async (scheduledQuery, cancellationToken) =>
         {
             ScheduleQuery(scheduledQuery);
             await QueryRunner.RunAndCacheQueryAsync(scheduledQuery);
-        }
+        });
+
 
         BackgroundProcessor = new BackgroundJobServer(new BackgroundJobServerOptions()
         {

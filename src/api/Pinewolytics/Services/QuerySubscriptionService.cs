@@ -59,9 +59,6 @@ public class QuerySubscriptionService : Singleton
                 .Select(x => x.Key);
         }
 
-        foreach (string client in targetClients)
-        {
-            await QueryHubContext.Clients.Client(client).SendQueryResult(queryName, value!);
-        }
+        await QueryHubContext.Clients.Clients(targetClients).SendQueryResult(queryName, value);
     }
 }
