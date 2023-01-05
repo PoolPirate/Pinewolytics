@@ -47,7 +47,9 @@
 			<slot name="nav" />
 		</div>
 
-		<main class="flex justify-center w-full h-full h-full overflow-x-hidden overflow-y-auto">
+		<main
+			class="relative flex justify-center w-full h-full h-full overflow-x-hidden overflow-y-auto"
+		>
 			<slot name="main" />
 		</main>
 	</div>

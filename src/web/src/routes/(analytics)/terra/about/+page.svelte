@@ -5,7 +5,7 @@
 	import coingeckologo from '$lib/static/logo/coingecko.webp';
 	import twitterlogo from '$lib/static/logo/twitter.png';
 	import discordlogo from '$lib/static/logo/discord.png';
-
+	import githubLogo from '$lib/static/logo/github.png';
 	const bday = new Date('2001-09-16T00:00:00+01:00');
 
 	const nextBDay =
@@ -107,6 +107,22 @@
 			href="https://www.coingecko.com/en/api/documentation"
 			target="_blank"
 			rel="noreferrer">Goto Docs</a
+		>
+	</div>
+
+	<h2>Source Code</h2>
+	<div class="datasource-area">
+		<img class="h-16" src={githubLogo} alt="" />
+		<div class="ml-6">
+			<h3 class="text-xl">Github</h3>
+			<p>Source Code Hosting</p>
+		</div>
+
+		<a
+			class="docsbutton ml-auto"
+			href="https://github.com/PoolPirate/Pinewolytics"
+			target="_blank"
+			rel="noreferrer">Goto Repo</a
 		>
 	</div>
 </div>

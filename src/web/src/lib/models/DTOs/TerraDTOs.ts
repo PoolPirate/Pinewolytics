@@ -41,3 +41,9 @@ export interface TerraTotalFeeDTO {
 
     feesSinceInception: number;
 }
+
+export interface TerraAddressBalanceDTO {
+    address: string;
+
+    balance: number;
+}
