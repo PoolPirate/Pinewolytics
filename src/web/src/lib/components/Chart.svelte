@@ -1,15 +1,11 @@
 <script lang="ts" context="module">
-	import type { EChartsOption } from 'echarts';
 	import * as echarts from 'echarts';
+	import { createEventDispatcher, onDestroy, onMount } from 'svelte';
 	export type EChartsTheme = string | object;
 	export type EChartsRenderer = 'canvas' | 'svg';
 	export type ChartOptions = {
 		theme?: EChartsTheme;
 		renderer?: EChartsRenderer;
-		options: EChartsOption;
-
-		isLoading: boolean;
-		loadingOptions?: EChartsLoadingOption;
 	};
 	export type EChartsLoadingOption = {
 		text?: string;
@@ -34,71 +30,52 @@
 		showSpinner: true,
 		spinnerRadius: 10
 	};
-
-	export function chartable(element: HTMLElement, echartOptions: ChartOptions) {
-		const { theme, renderer, options } = {
-			...DEFAULT_OPTIONS,
-			...echartOptions
-		};
-
-		const { isLoading, loadingOptions } = {
-			...DEFAULT_LOADING_OPTIONS,
-			...echartOptions
-		};
-
-		const echartsInstance = echarts.init(element, theme, { renderer });
-		echartsInstance.setOption(options);
-
-		if (isLoading) {
-			echartsInstance.showLoading('default', loadingOptions);
-		} else {
-			echartsInstance.hideLoading();
-		}
-
-		function handleResize() {
-			echartsInstance.resize();
-		}
-
-		new ResizeObserver(handleResize).observe(element);
-
-		return {
-			destroy() {
-				echartsInstance.dispose();
-				window.removeEventListener('resize', handleResize);
-			},
-			update(newOptions: ChartOptions) {
-				echartsInstance.setOption({
-					...echartOptions.options,
-					...newOptions.options
-				});
-
-				const { isLoading, loadingOptions } = {
-					...DEFAULT_LOADING_OPTIONS,
-					...echartOptions.options,
-					...newOptions
-				};
-
-				if (isLoading) {
-					echartsInstance.showLoading('default', loadingOptions);
-				} else {
-					echartsInstance.hideLoading();
-				}
-			}
-		};
-	}
 </script>
 
 <script lang="ts">
+	export let chartOptions: ChartOptions = DEFAULT_OPTIONS;
 	export let options: echarts.EChartsOption;
-	export let loadingOptions: EChartsLoadingOption = null!;
+
+	export let isLoading: boolean;
 
 	let clazz: string;
 	export { clazz as class };
-	export let isLoading: boolean;
-	export let { theme, renderer } = DEFAULT_OPTIONS;
+
+	const dispatch = createEventDispatcher<{ chartclick: {} }>();
+
+	var element: HTMLElement;
+	var instance: echarts.ECharts | null;
+	var observer: ResizeObserver | null;
+
+	$: instance?.setOption(options);
+	$: if (isLoading) {
+		instance?.showLoading('default', DEFAULT_LOADING_OPTIONS);
+	} else instance?.hideLoading();
+
+	onMount(() => {
+		const settings = {
+			...DEFAULT_OPTIONS,
+			...chartOptions
+		};
+		instance = echarts.init(element, settings.theme, settings);
+		instance.setOption(options);
+
+		if (isLoading) {
+			instance.showLoading('default', DEFAULT_LOADING_OPTIONS);
+		} else {
+			instance.hideLoading();
+		}
+
+		instance.on('click', (params) => dispatch('chartclick', { detail: params }));
+
+		observer = new ResizeObserver(() => instance?.resize());
+		observer.observe(element);
+	});
+
+	onDestroy(() => {
+		instance?.dispose();
+		observer?.disconnect();
+	});
 </script>
 
-<div
-	class="{clazz} w-full h-full"
-	use:chartable={{ renderer, theme, options, isLoading, loadingOptions }}
-/>
+<div class="{clazz} w-full h-full" bind:this={element} />

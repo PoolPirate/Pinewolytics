@@ -49,7 +49,7 @@
 
 				data: values.map((x) => {
 					return {
-						value: '#' + values.indexOf(x) + 1 + '\n' + x.balance.toLocaleString() + ' $LUNA',
+						value: [values.indexOf(x) + 1, x.balance],
 						name: x.address,
 						symbolSize: Math.log10(x.balance) ** 2.5,
 						itemStyle: {
@@ -64,9 +64,13 @@
 				links: [],
 				categories: [],
 				label: {
-					formatter: (x) => x.value.toString() + '\n' + x.name,
+					show: true,
+					formatter: (x) => '#' + (x.value as number[])[0].toString(),
 					fontSize: 12,
 					lineHeight: 16
+				},
+				tooltip: {
+					formatter: (x) => (x.value as number[])[1].toLocaleString() + ' $LUNA<br>' + x.name
 				}
 			}
 		]);
@@ -83,7 +87,12 @@
 	/>
 </div>
 
-<ZoomableChart class="h-full" series={$richlistChart[0]} />
+<ZoomableChart
+	on:chartclick={(params) => console.log(params)}
+	showToolTip={true}
+	class="h-full"
+	series={$richlistChart[0]}
+/>
 
 <style>
 	div {
