@@ -29,8 +29,7 @@
 		subscriptionBuilder.dispose();
 	});
 
-	const totalContractsChart = writable<SeriesOption[]>([]);
-	const newContractsChart = writable<SeriesOption[]>([]);
+	const contractsChart = writable<SeriesOption[]>([]);
 
 	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
@@ -48,27 +47,6 @@
 				};
 			})
 			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
-
-		if (isWeeklyMode) {
-			totalContractsSeries = DaySeriesToWeekSeriesByLast(totalContractsSeries);
-		}
-
-		totalContractsChart.set([
-			{
-				type: 'line',
-				areaStyle: {},
-				name: 'Total Contracts Deployed',
-				data: totalContractsSeries.map((x) => [x.timestamp, x.value])
-			}
-		]);
-	}
-
-	$: makeNewContractsSeries($contractMetricsHistoryQuery, $isWeeklyModeStore);
-	function makeNewContractsSeries(values: TerraContractMetricsDTO[], isWeeklyMode: boolean) {
-		if (values.length == 0) {
-			return;
-		}
-
 		var newContractsSeries = values
 			.map<TimeSeriesEntry>((x) => {
 				return {
@@ -79,21 +57,44 @@
 			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 
 		if (isWeeklyMode) {
+			totalContractsSeries = DaySeriesToWeekSeriesByLast(totalContractsSeries);
 			newContractsSeries = DaySeriesToWeekSeriesBySum(newContractsSeries);
 		}
 
-		newContractsChart.set([
+		contractsChart.set([
 			{
 				type: 'line',
+				yAxisIndex: 0,
 				areaStyle: {},
+				name: 'Total Contracts Deployed',
+				data: totalContractsSeries.map((x) => [x.timestamp, x.value])
+			},
+			{
+				type: 'bar',
+				z: 10,
+				yAxisIndex: 1,
 				name: 'New Contracts Deployed',
 				data: newContractsSeries.map((x) => [x.timestamp, x.value])
 			}
 		]);
 	}
+
+	//$: makeNewContractsSeries($contractMetricsHistoryQuery, $isWeeklyModeStore);
+	function makeNewContractsSeries(values: TerraContractMetricsDTO[], isWeeklyMode: boolean) {
+		if (values.length == 0) {
+			return;
+		}
+
+		if (isWeeklyMode) {
+		}
+	}
 </script>
 
 <div class="grid grid-cols-1">
-	<TimeSeriesChart class="h-128" series={$totalContractsChart} />
-	<TimeSeriesChart class="h-128" series={$newContractsChart} />
+	<TimeSeriesChart
+		yAxis={[{ type: 'log', min: 0.99 }, { type: 'value' }]}
+		title={{ text: 'Contracts Deployed' }}
+		class="h-128"
+		series={$contractsChart}
+	/>
 </div>

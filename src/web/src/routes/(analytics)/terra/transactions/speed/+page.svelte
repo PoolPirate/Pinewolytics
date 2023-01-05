@@ -226,5 +226,9 @@
 		/>
 	</div>
 
-	<TimeSeriesChart class="h-128" series={$newTxCountChart} />
+	<TimeSeriesChart
+		title={{ text: 'New Transactions Executed' }}
+		class="h-128"
+		series={$newTxCountChart}
+	/>
 </div>

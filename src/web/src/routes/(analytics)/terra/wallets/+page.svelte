@@ -149,8 +149,12 @@
 </div>
 
 <div class="xl:grid grid-cols-2 mt-2 p-2 w-full transparent-background rounded-lg">
-	<TimeSeriesChart class="h-128" series={$newWalletsChart} />
-	<TimeSeriesChart class="h-128" series={$totalWalletsChart} />
+	<TimeSeriesChart title={{ text: 'New Addresses' }} class="h-128" series={$newWalletsChart} />
+	<TimeSeriesChart
+		title={{ text: 'Total Unique Addresses' }}
+		class="h-128"
+		series={$totalWalletsChart}
+	/>
 </div>
 
 <style>

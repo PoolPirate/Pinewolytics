@@ -288,8 +288,18 @@
 </div>
 
 <div class="xl:grid grid-cols-1 mt-2 p-2 w-full transparent-background rounded-lg">
-	<SingleValueChart class="h-128" series={$totalFeeChart} />
-	<TimeSeriesChart class="h-128" {yAxis} {legend} series={$gasFeesChart} />
+	<SingleValueChart
+		title={{ text: 'Total Fees Paid In Last Months' }}
+		class="h-128"
+		series={$totalFeeChart}
+	/>
+	<TimeSeriesChart
+		title={{ text: 'Transaction Fee Per Transaction' }}
+		class="h-128"
+		{yAxis}
+		{legend}
+		series={$gasFeesChart}
+	/>
 </div>
 
 <style>

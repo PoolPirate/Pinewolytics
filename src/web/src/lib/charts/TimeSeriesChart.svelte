@@ -10,7 +10,7 @@
 	import jsonLogo from '$lib/static/logo/json.svg';
 
 	export let series: SeriesOption[];
-	export let yAxis: YAXisComponentOption = {
+	export let yAxis: YAXisComponentOption | YAXisComponentOption[] = {
 		type: 'value'
 	};
 	export let title: TitleComponentOption = {};
@@ -24,8 +24,14 @@
 
 	function makeOptions(series: SeriesOption[]) {
 		options = {
-			legend: legend,
-			title: title,
+			legend: {
+				right: '2%',
+				...legend
+			},
+			title: {
+				left: '2%',
+				...title
+			},
 			tooltip: {
 				trigger: 'axis',
 				axisPointer: {
@@ -41,7 +47,7 @@
 			yAxis: yAxis,
 			toolbox: {
 				itemSize: 40,
-				left: 'right',
+				top: 'bottom',
 				feature: {
 					saveAsImage: {
 						show: true
