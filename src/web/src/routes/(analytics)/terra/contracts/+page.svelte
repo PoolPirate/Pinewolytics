@@ -136,8 +136,6 @@
 		series={$contractsChart}
 	/>
 
-	<h2 class="text-xl" />
-
 	<TimeSeriesChart
 		yAxis={[{ type: 'log', min: 0.99 }, { type: 'value' }]}
 		title={{ text: 'Addresses Deploying A Contract' }}

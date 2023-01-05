@@ -75,6 +75,13 @@
 			}
 		]);
 	}
+
+	function handleChartClick(param: CustomEvent<echarts.ECElementEvent>) {
+		const name = (param.detail.data as { name: string }).name;
+		navigator.clipboard.writeText(name);
+
+		searchAddress = name;
+	}
 </script>
 
 <div class="absolute w-full flex justify-center z-100">
@@ -88,7 +95,7 @@
 </div>
 
 <ZoomableChart
-	on:chartclick={(params) => console.log(params)}
+	on:chartclick={handleChartClick}
 	showToolTip={true}
 	class="h-full"
 	series={$richlistChart[0]}

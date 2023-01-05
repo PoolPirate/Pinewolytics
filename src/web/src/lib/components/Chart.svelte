@@ -17,6 +17,7 @@
 		showSpinner?: boolean;
 		spinnerRadius?: number;
 	};
+
 	const DEFAULT_OPTIONS: Partial<ChartOptions> = {
 		theme: undefined,
 		renderer: 'canvas'
@@ -41,7 +42,7 @@
 	let clazz: string;
 	export { clazz as class };
 
-	const dispatch = createEventDispatcher<{ chartclick: {} }>();
+	const dispatch = createEventDispatcher<{ chartclick: echarts.ECElementEvent }>();
 
 	var element: HTMLElement;
 	var instance: echarts.ECharts | null;
@@ -66,7 +67,7 @@
 			instance.hideLoading();
 		}
 
-		instance.on('click', (params) => dispatch('chartclick', { detail: params }));
+		instance.on('click', (params) => dispatch('chartclick', params));
 
 		observer = new ResizeObserver(() => instance?.resize());
 		observer.observe(element);

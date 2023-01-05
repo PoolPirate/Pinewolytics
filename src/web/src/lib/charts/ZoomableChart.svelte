@@ -21,7 +21,7 @@
 
 	var options: EChartsOption;
 
-	const dispatch = createEventDispatcher<{ chartclick: {} }>();
+	const dispatch = createEventDispatcher<{ chartclick: echarts.ECElementEvent }>();
 
 	$: makeOptions(series);
 	function makeOptions(series: SeriesOption | null) {
