@@ -280,8 +280,7 @@
 	};
 
 	const yAxis: YAXisComponentOption = {
-		type: 'log',
-		min: 0.0001
+		type: 'log'
 	};
 </script>
 
