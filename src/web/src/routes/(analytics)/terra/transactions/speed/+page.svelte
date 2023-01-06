@@ -8,10 +8,10 @@
 		QuerySubscriptionBuilder
 	} from '$lib/service/querysubscription';
 	import { DaySeriesToWeekSeriesByLast, type TimeSeriesEntry } from '$lib/service/transform';
-	import type { LegendComponentOption, SeriesOption, TitleComponentOption } from 'echarts';
+	import { isWeeklyModeStoreName } from '$lib/utils/Utils';
+	import type { SeriesOption } from 'echarts';
 	import { getContext, onDestroy, onMount } from 'svelte';
 	import { writable, type Readable } from 'svelte/store';
-	import { isWeeklyModeStoreName } from '../../+layout.svelte';
 
 	const subscriptionBuilder = new QuerySubscriptionBuilder();
 

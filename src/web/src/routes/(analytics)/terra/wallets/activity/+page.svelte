@@ -15,7 +15,7 @@
 	import type { SeriesOption } from 'echarts';
 	import { getContext, onDestroy, onMount } from 'svelte';
 	import { writable, type Readable } from 'svelte/store';
-	import { isWeeklyModeStoreName } from '../+layout.svelte';
+	import { isWeeklyModeStoreName } from '$lib/utils/Utils';
 
 	const subscriptionBuilder = new QuerySubscriptionBuilder();
 

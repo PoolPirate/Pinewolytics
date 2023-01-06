@@ -1,7 +1,3 @@
-<script lang="ts" context="module">
-	export const isWeeklyModeStoreName = 'weeklyModeStore';
-</script>
-
 <script lang="ts">
 	import BackToMenuLink from '$lib/links/BackToMenuLink.svelte';
 	import AnalyticsLayout from '../AnalyticsLayout.svelte';
@@ -11,6 +7,8 @@
 	import LinkBumper from '$lib/links/LinkBumper.svelte';
 	import ToggleSwitch from '$lib/components/ToggleSwitch.svelte';
 	import { writable } from 'svelte/store';
+	import { isWeeklyModeStoreName } from '$lib/utils/Utils';
+	import NavLinkGroup from '$lib/links/NavLinkGroup.svelte';
 
 	beforeUpdate(() => {
 		const rootElement = document.querySelector(':root')! as any;
@@ -30,11 +28,19 @@
 <AnalyticsLayout>
 	<aside slot="sidebar">
 		<NavLink href="/terra">Overview</NavLink>
-		<NavLink href="/terra/supply/richlist">Richlist</NavLink>
-		<NavLink href="/terra/transactions/speed">Speed</NavLink>
-		<NavLink href="/terra/transactions/fees">Transaction Fees</NavLink>
-		<NavLink href="/terra/wallets">Wallets</NavLink>
-		<NavLink href="/terra/contracts">Contracts</NavLink>
+		<NavLinkGroup title="Wallets">
+			<NavLink href="/terra/wallets/activity">Activity</NavLink>
+			<NavLink href="/terra/wallets/richlist">#100 Richlist</NavLink>
+		</NavLinkGroup>
+
+		<NavLinkGroup title="Transactions">
+			<NavLink href="/terra/transactions/speed">Speed</NavLink>
+			<NavLink href="/terra/transactions/fees">Fees</NavLink>
+		</NavLinkGroup>
+
+		<NavLinkGroup title="Developer Activity">
+			<NavLink href="/terra/contracts">Contract Deployments</NavLink>
+		</NavLinkGroup>
 
 		<LinkBumper />
 		<NavLink href="/terra/about">About</NavLink>

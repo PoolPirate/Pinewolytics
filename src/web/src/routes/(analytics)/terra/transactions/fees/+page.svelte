@@ -11,14 +11,13 @@
 	import TimeSeriesChart from '$lib/charts/TimeSeriesChart.svelte';
 	import type { TerraTotalFeeDTO, TerraTransactionMetricsDTO } from '$lib/models/DTOs/TerraDTOs';
 	import SingleValueChart from '$lib/charts/SingleValueChart.svelte';
-	import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils';
 	import {
 		DaySeriesToWeekSeriesByAvg,
 		DaySeriesToWeekSeriesByMax,
 		DaySeriesToWeekSeriesByMin,
 		type TimeSeriesEntry
 	} from '$lib/service/transform';
-	import { isWeeklyModeStoreName } from '../../+layout.svelte';
+	import { isWeeklyModeStoreName } from '$lib/utils/Utils';
 
 	const subscriptionBuilder = new QuerySubscriptionBuilder();
 	const transactionMetricsHistoryQuery = createQueryListener(

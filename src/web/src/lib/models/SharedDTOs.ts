@@ -1,4 +1,4 @@
-export interface TimeSeriesEntryDTO1 {
+export interface TimeSeriesEntryDTO {
     timestamp: string;
     value: number;
 }

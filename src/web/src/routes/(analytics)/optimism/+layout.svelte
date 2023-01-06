@@ -2,8 +2,12 @@
 	import BackToMenuLink from '$lib/links/BackToMenuLink.svelte';
 	import AnalyticsLayout from '../AnalyticsLayout.svelte';
 	import optimismLogo from '$lib/static/logo/optimism.svg';
-	import { beforeUpdate } from 'svelte';
+	import { beforeUpdate, setContext } from 'svelte';
 	import NavLink from '$lib/links/NavLink.svelte';
+	import { writable } from 'svelte/store';
+	import { isWeeklyModeStoreName } from '$lib/utils/Utils';
+	import LinkBumper from '$lib/links/LinkBumper.svelte';
+	import NavLinkGroup from '$lib/links/NavLinkGroup.svelte';
 
 	beforeUpdate(() => {
 		const rootElement = document.querySelector(':root')! as any;
@@ -11,13 +15,25 @@
 		rootElement.style.setProperty('--color1', '#ffffff');
 		rootElement.style.setProperty('--color2', '#fe0420');
 	});
+
+	var isWeeklyMode: boolean = true;
+	const weeklyModeStore = writable(isWeeklyMode);
+
+	$: weeklyModeStore.set(isWeeklyMode);
+
+	setContext(isWeeklyModeStoreName, weeklyModeStore);
 </script>
 
 <AnalyticsLayout>
 	<aside slot="sidebar">
 		<NavLink href="/optimism">Overview</NavLink>
 		<NavLink href="/optimism/transactions">Transactions</NavLink>
-		<NavLink href="/optimism/op-token">$OP Token</NavLink>
+		<NavLinkGroup title={'OP Token'}>
+			<NavLink href="/optimism/op-token/overview">Overview</NavLink>
+			<NavLink href="/optimism/op-token/richlist">#100 Richlist</NavLink>
+		</NavLinkGroup>
+
+		<LinkBumper />
 		<BackToMenuLink />
 	</aside>
 
@@ -28,3 +44,6 @@
 	<nav />
 	<slot slot="main" />
 </AnalyticsLayout>
+
+<style>
+</style>

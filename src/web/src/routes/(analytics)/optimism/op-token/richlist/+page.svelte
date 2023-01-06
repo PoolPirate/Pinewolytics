@@ -1,18 +1,19 @@
 <script lang="ts">
 	import ZoomableChart from '$lib/charts/ZoomableChart.svelte';
+	import type { OptimismAddressBalanceDTO } from '$lib/models/DTOs/OptimismDTO';
 	import type { TerraAddressBalanceDTO } from '$lib/models/DTOs/TerraDTOs';
 	import {
 		createQueryListener,
 		QueryName,
 		QuerySubscriptionBuilder
 	} from '$lib/service/querysubscription';
+	import { isWeeklyModeStoreName } from '$lib/utils/Utils';
 	import type { XAXisComponentOption, SeriesOption } from 'echarts';
 	import { getContext, onDestroy, onMount } from 'svelte';
 	import { writable, type Readable } from 'svelte/store';
-	import { isWeeklyModeStoreName } from '../../+layout.svelte';
 
 	const subscriptionBuilder = new QuerySubscriptionBuilder();
-	const richlistQuery = createQueryListener(subscriptionBuilder, QueryName.TerraRichList);
+	const richlistQuery = createQueryListener(subscriptionBuilder, QueryName.OptimismRichList);
 
 	onMount(async () => {
 		await subscriptionBuilder.start();
@@ -29,12 +30,10 @@
 	var searchAddress: string = '';
 
 	$: makeRichlistChart($richlistQuery, searchAddress);
-	function makeRichlistChart(values: TerraAddressBalanceDTO[], searchAddress: string) {
+	function makeRichlistChart(values: OptimismAddressBalanceDTO[], searchAddress: string) {
 		if (values.length == 0) {
 			return;
 		}
-
-		values = values.sort((a, b) => b.balance - a.balance);
 
 		richlistChart.set([
 			{
@@ -43,7 +42,7 @@
 				layout: 'force',
 				roam: true,
 				force: {
-					repulsion: 700,
+					repulsion: 2000,
 					initLayout: 'circular'
 				},
 
@@ -51,7 +50,7 @@
 					return {
 						value: [values.indexOf(x) + 1, x.balance],
 						name: x.address,
-						symbolSize: Math.log10(x.balance) ** 2.5,
+						symbolSize: Math.log10(x.balance) ** 2.2,
 						itemStyle: {
 							color:
 								x.address?.toLowerCase().startsWith(searchAddress?.toLowerCase()) &&

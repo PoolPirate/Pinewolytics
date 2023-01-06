@@ -48,7 +48,7 @@
 	var instance: echarts.ECharts | null;
 	var observer: ResizeObserver | null;
 
-	$: instance?.setOption(options);
+	$: if (options != null) instance?.setOption(options);
 	$: if (isLoading) {
 		instance?.showLoading('default', DEFAULT_LOADING_OPTIONS);
 	} else instance?.hideLoading();
@@ -59,13 +59,6 @@
 			...chartOptions
 		};
 		instance = echarts.init(element, settings.theme, settings);
-		instance.setOption(options);
-
-		if (isLoading) {
-			instance.showLoading('default', DEFAULT_LOADING_OPTIONS);
-		} else {
-			instance.hideLoading();
-		}
 
 		instance.on('click', (params) => dispatch('chartclick', params));
 

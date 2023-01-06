@@ -36,7 +36,7 @@
 			class:animateSidebar
 			class="flex flex-col justify-between pointer-events-auto w-full h-full px-4 pt-16 pb-4
 			   sidebar transparent-background xl:bg-transparent bg-black
-		       [&>aside]:contents"
+			   [&>aside]:contents"
 		>
 			<slot name="sidebar" />
 		</div>

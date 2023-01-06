@@ -8,11 +8,8 @@
 	import type { SeriesOption } from 'echarts';
 	import { getContext, onDestroy, onMount } from 'svelte';
 	import type { Readable } from 'svelte/store';
-	import { isWeeklyModeStoreName } from '../../+layout.svelte';
 
 	const subscriptionBuilder = new QuerySubscriptionBuilder();
-
-	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
 	onMount(async () => {
 		await subscriptionBuilder.start();
