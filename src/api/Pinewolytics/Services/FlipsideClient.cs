@@ -18,7 +18,7 @@ public class FlipsideClient : Singleton
     [Inject]
     private readonly ApiKeyOptions ApiKeyOptions = null!;
     [Inject]
-    private readonly IDistributedCache Cache = null!;
+    private readonly QueryCache Cache = null!;
 
     public async Task RunQueryAndCacheAsync(string key, Type type, string sql,
         CancellationToken cancellationToken = default)
@@ -39,18 +39,14 @@ public class FlipsideClient : Singleton
         }
 
         object[] result = ParseFlipsideObjects(type, rows);
-        var resultJson = JsonSerializer.Serialize(result, new JsonSerializerOptions()
-        {
-            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
-        });
-        await Cache.SetStringAsync(key, resultJson, cancellationToken);
+        await Cache.AddToCacheAsync(key, result);
     }
 
     public async Task<T[]> GetOrRunAsync<T>(string sql,
         CancellationToken cancellationToken = default)
         where T : IFlipsideObject<T>
     {
-        var resultJson = await Cache.GetStringAsync(sql, cancellationToken);
+        var resultJson = await Cache.GetFromCacheRawAsync(sql);
 
         if (resultJson is null)
         {

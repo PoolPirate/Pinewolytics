@@ -37,7 +37,7 @@ public class QueryScheduler : Singleton
 
         BackgroundProcessor = new BackgroundJobServer(new BackgroundJobServerOptions()
         {
-            ServerName = "Processor",
+            ServerName = InstanceOptions.Name,
         });
     }
 

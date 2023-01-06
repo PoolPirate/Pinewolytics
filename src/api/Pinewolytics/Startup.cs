@@ -10,6 +10,7 @@ using Pinewolytics.Hubs;
 using Pinewolytics.Hubs.Luna;
 using Pinewolytics.Hubs.Optimism;
 using Pinewolytics.Utils;
+using StackExchange.Redis;
 
 namespace Pinewolytics;
 
@@ -37,9 +38,11 @@ public class Startup
 
         services.AddSingleton<HttpClient>();
 
-        services.ConfigureOptions<RedisCacheOptionsConfigurator>();
-
-        services.AddStackExchangeRedisCache(options => { });
+        services.AddSingleton<IConnectionMultiplexer>(provider =>
+        {
+            var databaseOptions = provider.GetRequiredService<DatabaseOptions>();
+            return ConnectionMultiplexer.Connect(databaseOptions.RedisConnectionString);
+        });
 
         services.AddResponseCaching();
 

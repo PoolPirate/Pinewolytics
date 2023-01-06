@@ -1,10 +1,8 @@
 ﻿using Common.Services;
 using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.Caching.Distributed;
-using Microsoft.Extensions.Caching.Memory;
 using Pinewolytics.Hubs;
 using System.Text.Json;
-using System.Threading;
 
 namespace Pinewolytics.Services;
 
@@ -14,9 +12,10 @@ public class QuerySubscriptionService : Singleton
     private readonly Dictionary<string, List<string>> Subscriptions = new Dictionary<string, List<string>>();
 
     [Inject]
-    private readonly IDistributedCache Cache = null!;
-    [Inject]
     private readonly IHubContext<QueryHub, IQueryHubClient> QueryHubContext = null!;
+
+    [Inject]
+    private readonly QueryCache Cache = null!;
 
     public async Task GetAndSubscribeAsync(string connectionId, string queryName, CancellationToken cancellationToken)
     {
@@ -32,14 +31,13 @@ public class QuerySubscriptionService : Singleton
             }
         }
 
-        var resultJson = await Cache.GetStringAsync(queryName, cancellationToken);
+        var result = await Cache.GetFromCacheAsync(queryName);
 
-        if (resultJson is null)
+        if (result is null)
         {
             return;
         }
 
-        var result = JsonSerializer.Deserialize<object[]>(resultJson)!;
         await QueryHubContext.Clients.Client(connectionId).SendQueryResult(queryName, result);
     }
 
@@ -53,14 +51,12 @@ public class QuerySubscriptionService : Singleton
 
     public async Task BroadcastQueryUpdate(string queryName)
     {
-        var resultJson = await Cache.GetStringAsync(queryName);
+        var result = await Cache.GetFromCacheAsync(queryName);
 
-        if (resultJson is null)
+        if (result is null)
         {
             return;
         }
-
-        var result = JsonSerializer.Deserialize<object[]>(resultJson)!;
 
         IEnumerable<string> targetClients;
 
