@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
+using Newtonsoft.Json.Serialization;
 using Pinewolytics.Configuration;
 using Pinewolytics.Models;
 using Pinewolytics.Models.FlipsideAPI;
@@ -38,7 +39,10 @@ public class FlipsideClient : Singleton
         }
 
         object[] result = ParseFlipsideObjects(type, rows);
-        var resultJson = JsonSerializer.Serialize(result);
+        var resultJson = JsonSerializer.Serialize(result, new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase
+        });
         await Cache.SetStringAsync(key, resultJson, cancellationToken);
     }
 

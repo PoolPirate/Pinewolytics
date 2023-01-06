@@ -71,6 +71,7 @@ public class QuerySubscriptionService : Singleton
                 .Select(x => x.Key);
         }
 
-        await QueryHubContext.Clients.Clients(targetClients).SendQueryResult(queryName, result);
+        await QueryHubContext.Clients.Clients(targetClients)
+            .SendQueryResult(queryName, result);
     }
 }
