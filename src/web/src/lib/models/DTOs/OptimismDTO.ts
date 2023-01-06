@@ -3,3 +3,10 @@ export interface OptimismAddressBalanceDTO {
 
     balance: number;
 }
+
+export interface OptimismTransactionMetricsDTO {
+    timestamp: string;
+
+    transactionCount: number;
+    blockCount: number;
+}

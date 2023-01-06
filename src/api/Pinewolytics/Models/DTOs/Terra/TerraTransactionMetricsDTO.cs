@@ -5,13 +5,13 @@ namespace Pinewolytics.Models.DTOs.Terra;
 public class TerraTransactionMetricsDTO : IFlipsideObject<TerraTransactionMetricsDTO>
 {
     public required DateTimeOffset Timestamp { get; init; }
-    
+
     public required double MinimumFee { get; init; }
     public required double AverageFee { get; init; }
     public required double MedianFee { get; init; }
     public required double MaximumFee { get; init; }
     public required double TotalFee { get; init; }
-    
+
     public required long TransactionCount { get; init; }
     public required long BlockCount { get; init; }
 

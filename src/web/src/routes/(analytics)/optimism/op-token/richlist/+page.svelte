@@ -69,7 +69,7 @@
 					lineHeight: 16
 				},
 				tooltip: {
-					formatter: (x) => (x.value as number[])[1].toLocaleString() + ' $LUNA<br>' + x.name
+					formatter: (x) => (x.value as number[])[1].toLocaleString() + ' $OP<br>' + x.name
 				}
 			}
 		]);

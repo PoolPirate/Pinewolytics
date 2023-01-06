@@ -27,10 +27,24 @@
 <AnalyticsLayout>
 	<aside slot="sidebar">
 		<NavLink href="/optimism">Overview</NavLink>
-		<NavLink href="/optimism/transactions">Transactions</NavLink>
+
+		<NavLinkGroup title="Transactions">
+			<NavLink href="/optimism/transactions/speed">Speed</NavLink>
+			<NavLink href="/optimism/transactions/fees">Fees</NavLink>
+		</NavLinkGroup>
+
+		<NavLinkGroup title="Wallets">
+			<NavLink href="/optimism/wallets/activity">Activity</NavLink>
+		</NavLinkGroup>
+
 		<NavLinkGroup title={'OP Token'}>
-			<NavLink href="/optimism/op-token/overview">Overview</NavLink>
+			<NavLink href="/optimism/op-token">Overview</NavLink>
 			<NavLink href="/optimism/op-token/richlist">#100 Richlist</NavLink>
+			<NavLink href="/optimism/op-token/delegates">Delegates</NavLink>
+		</NavLinkGroup>
+
+		<NavLinkGroup title={'Developer Activity'}>
+			<NavLink href="/optimism/developers/contracts">Contract Deployments</NavLink>
 		</NavLinkGroup>
 
 		<LinkBumper />

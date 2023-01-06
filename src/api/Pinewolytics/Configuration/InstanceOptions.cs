@@ -9,5 +9,8 @@ public class InstanceOptions : Option
     public string Name { get; set; } = null!;
 
     [Required]
-    public bool RequireFullSync { get; set; } = true;
+    public bool RequireFullSync { get; set; } = false;
+
+    [Required]
+    public bool RequirePartialSync { get; set; } = true;
 }

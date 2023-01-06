@@ -168,9 +168,8 @@
 		});
 	}
 
-	$: makeSeriesFee($transactionMetricsHistoryQuery, $isWeeklyModeStore);
-
-	function makeSeriesFee(values: TerraTransactionMetricsDTO[], isWeeklyMode: boolean) {
+	$: makeGasFeeChart($transactionMetricsHistoryQuery, $isWeeklyModeStore);
+	function makeGasFeeChart(values: TerraTransactionMetricsDTO[], isWeeklyMode: boolean) {
 		if (values.length == 0) {
 			return;
 		}

@@ -16,6 +16,9 @@ public class QueryScheduler : Singleton
     [Inject]
     private readonly InstanceOptions InstanceOptions = null!;
 
+    [Inject]
+    private readonly QueryCache Cache = null!;
+
     protected override async ValueTask InitializeAsync()
     {
         using var scope = Provider.CreateScope();
@@ -33,6 +36,20 @@ public class QueryScheduler : Singleton
             Logger.LogInformation("Refreshing all queries");
             await Parallel.ForEachAsync(scheduledQueries, 
                 async (scheduledQuery, cancellationToken) => await QueryRunner.RunAndCacheQueryAsync(scheduledQuery));
+        }
+        else if (InstanceOptions.RequirePartialSync) 
+        {
+            Logger.LogInformation("Refreshing necessary queries");
+            await Parallel.ForEachAsync(scheduledQueries,
+            async (scheduledQuery, cancellationToken) =>
+            {
+                if (await Cache.IsCachedAsync(scheduledQuery.Name))
+                {
+                    return;
+                }
+
+                await QueryRunner.RunAndCacheQueryAsync(scheduledQuery);
+            });
         }
 
         BackgroundProcessor = new BackgroundJobServer(new BackgroundJobServerOptions()

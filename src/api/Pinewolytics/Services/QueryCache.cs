@@ -11,6 +11,9 @@ public class QueryCache : Singleton
     [Inject]
     private readonly IConnectionMultiplexer RedisConnection = null!;
 
+    public async Task<bool> IsCachedAsync(string queryName)
+        => await RedisConnection.GetDatabase(CacheDatabase).KeyExistsAsync(queryName);
+
     public async Task AddToCacheAsync(string queryName, object[] results)
     {
         var resultJson = JsonSerializer.Serialize(results, new JsonSerializerOptions()
