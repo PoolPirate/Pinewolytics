@@ -58,13 +58,14 @@ public class QuerySubscriptionService : Singleton
             return;
         }
 
-        IEnumerable<string> targetClients;
+        string[] targetClients;
 
         lock (SubscriptionsLock)
         {
             targetClients = Subscriptions
                 .Where(x => x.Value.Contains(queryName))
-                .Select(x => x.Key);
+                .Select(x => x.Key)
+                .ToArray();
         }
 
         await QueryHubContext.Clients.Clients(targetClients)
