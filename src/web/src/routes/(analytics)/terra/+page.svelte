@@ -4,6 +4,10 @@
 	import { writable } from 'svelte/store';
 	import RefreshAnimation from './RefreshAnimation.svelte';
 
+	import blockIcon from '$lib/static/logo/block.svg';
+	import clockIcon from '$lib/static/logo/clock.svg';
+	import priceIcon from '$lib/static/logo/price.svg';
+
 	const blockHeight = writable<number>(0);
 	var blockHeightAnimation: RefreshAnimation;
 	const blockTimestamp = writable<Date>(new Date());
@@ -60,22 +64,26 @@
 	class="ml-auto mr-auto bg-gray-200 mx-8 rounded-b-3xl p-4 opacity-75 h-full border border-t-0 w-10/12 lg:w-8/12 2xl:w-1/2"
 >
 	<ul
-		class="text-center grid justify-items-center 2xl:grid-cols-3 gap-4
+		class="text-center grid justify-items-center gap-4
 			   [&>li]:bg-gray-400 [&>li]:p-3 [&>li]:rounded-xl [&>li]:w-full [&>li]:relative [&>li]
 			   [&>li>h2]:font-bold
-			   [&>li>svg]:absolute [&>li>svg]:w-12"
+			   [&>li>svg]:absolute [&>li>svg]:w-12 [&>li>svg]:right-1
+			   [&>li>img]:absolute [&>li>img]:h-12"
 	>
 		<li>
+			<img alt="icon" class="h-1/2" src={blockIcon} />
 			<RefreshAnimation bind:this={blockHeightAnimation} />
 			<h2>Block Height</h2>
 			<p>{$blockHeight}</p>
 		</li>
 		<li>
+			<img alt="icon" class="h-1/2" src={clockIcon} />
 			<RefreshAnimation bind:this={blockTimestampAnimation} />
 			<h2>Block Timestamp</h2>
 			<p>{$blockTimestamp.toLocaleString()}</p>
 		</li>
 		<li>
+			<img alt="icon" class="h-1/2" src={priceIcon} />
 			<RefreshAnimation bind:this={priceAnimation} />
 			<h2>Price</h2>
 			<p>{$price}$</p>

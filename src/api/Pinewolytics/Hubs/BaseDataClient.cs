@@ -1,6 +1,8 @@
 ﻿using Common.Services;
 using Microsoft.AspNetCore.SignalR;
+using System.Collections;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 
 namespace Pinewolytics.Hubs;
 
@@ -108,7 +110,7 @@ public abstract class BaseDataClient<THub, TReceiver> : Singleton, IDataClient
                     continue;
                 }
 
-                await HubContext.Clients.All.SendAsync(property.Name, property.Value);
+                await SendPropertyToAsync(property, HubContext.Clients.All);
             }
             catch (Exception ex)
             {
@@ -117,13 +119,29 @@ public abstract class BaseDataClient<THub, TReceiver> : Singleton, IDataClient
         }
     }
 
-    public string[] GetPropertyNames()
+    public async Task SendWelcomeToAsync(string connectionId)
     {
-        return Properties.Select(x => x.Name).ToArray();
+        foreach(var property in Properties)
+        {
+            await SendPropertyToAsync(property, HubContext.Clients.Client(connectionId));
+        }
     }
 
-    public object GetPropertyValue(string propertyName)
+    private async Task SendPropertyToAsync(RealtimeProperty property, IClientProxy target)
     {
-        return Properties.Single(x => x.Name == propertyName).Value;
+        if (property.Value is ITuple t)
+        {
+            await (t.Length switch
+            {
+                1 => target.SendAsync(property.Name, t[0]),
+                2 => target.SendAsync(property.Name, t[0], t[1]),
+                3 => target.SendAsync(property.Name, t[0], t[1], t[2]),
+                _ => throw new InvalidOperationException("Tuple length not supported")
+            });
+        }
+        else
+        {
+            await target.SendAsync(property.Name, property.Value);
+        }
     }
 }

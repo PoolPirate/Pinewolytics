@@ -12,14 +12,6 @@ public class DataHub<TDataClient, TReceiver> : Hub
         Client = client;
     }
 
-    public override async Task OnConnectedAsync()
-    {
-        string[] propertyNames = Client.GetPropertyNames();
-
-        foreach (string property in propertyNames)
-        {
-            object value = Client.GetPropertyValue(property);
-            await Clients.Caller.SendAsync(property, value, Context.ConnectionAborted);
-        }
-    }
+    public override async Task OnConnectedAsync() 
+        => await Client.SendWelcomeToAsync(Context.ConnectionId);
 }

@@ -22,4 +22,10 @@ public class OptimismDataClient : BaseDataClient<OptimismDataHub, IOptimismDataH
     {
         return await OptimismRpcClient.GetPeakBlockHeightAsync();
     }
+
+    [RealtimeValue(10 * SECONDS, nameof(IOptimismDataHubClient.GasPrice))]
+    private async Task<(ulong, ulong)> LoadGasPricesAsync()
+    {
+        return await OptimismRpcClient.GetGasPricesAsync();
+    }
 }

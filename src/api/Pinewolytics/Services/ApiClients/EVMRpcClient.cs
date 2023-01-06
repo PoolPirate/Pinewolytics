@@ -13,14 +13,13 @@ public abstract class EVMRpcClient : Singleton
 
     protected abstract Uri GetAPIUrl();
 
-    record PeakBlockHeightResult(string Result);
     public async Task<ulong> GetPeakBlockHeightAsync(CancellationToken cancellationToken = default)
     {
-        var result = await SendRpcCallAsync <PeakBlockHeightResult>("eth_blockNumber", Array.Empty<object>(), cancellationToken);
-        return ulong.Parse(result.Result[2..], NumberStyles.HexNumber);
+        var result = await SendRpcCallAsync <string>("eth_blockNumber", Array.Empty<object>(), cancellationToken);
+        return ulong.Parse(result[2..], NumberStyles.HexNumber);
     }
 
-    private async Task<T> SendRpcCallAsync<T>(string method, object[] parameters, CancellationToken cancellationToken)
+    protected async Task<T> SendRpcCallAsync<T>(string method, object[] parameters, CancellationToken cancellationToken)
     {
         var response = await Client.PostAsJsonAsync<EVMRpcParameters>(GetAPIUrl(), new EVMRpcParameters()
         {
@@ -30,8 +29,21 @@ public abstract class EVMRpcClient : Singleton
 
         response.EnsureSuccessStatusCode();
 
-        return (await response.Content.ReadFromJsonAsync<T>(cancellationToken: cancellationToken)) 
-            ?? throw new InvalidOperationException("RPC returned null");
+        try
+        {
+            var evmResult = await response.Content.ReadFromJsonAsync<EVMResult<T>>(cancellationToken: cancellationToken);
+
+            return evmResult is null || evmResult.Result is null
+    ? throw new InvalidOperationException("RPC returned null")
+    : evmResult.Result;
+        }
+        catch (Exception ex)
+        {
+            Logger.LogCritical(ex, await response.Content.ReadAsStringAsync());
+            throw;
+        }
+
+
     }
 
     class EVMRpcParameters
@@ -41,5 +53,10 @@ public abstract class EVMRpcClient : Singleton
 
         public required string Method { get; init; }
         public required object[] Params { get; init; }
+    }
+
+    class EVMResult<T>
+    {
+        public required T? Result { get; init; }
     }
 }

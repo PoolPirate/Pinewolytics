@@ -2,6 +2,5 @@
 
 public interface IDataClient
 {
-    public string[] GetPropertyNames();
-    public object GetPropertyValue(string propertyName);
+    public Task SendWelcomeToAsync(string connectionId);
 }
