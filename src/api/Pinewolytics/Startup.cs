@@ -3,6 +3,7 @@ using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Pinewolytics.Configuration;
 using Pinewolytics.Database;
 using Pinewolytics.Hubs;
@@ -35,7 +36,11 @@ public class Startup
         services.AddControllers();
 
         services.AddSingleton<HttpClient>();
-        services.AddMemoryCache();
+
+        services.ConfigureOptions<RedisCacheOptionsConfigurator>();
+
+        services.AddStackExchangeRedisCache(options => { });
+
         services.AddResponseCaching();
 
         services.AddDbContext<PinewolyticsContext>((provider, options) =>

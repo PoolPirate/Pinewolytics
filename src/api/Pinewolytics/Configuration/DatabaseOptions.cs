@@ -9,4 +9,7 @@ public class DatabaseOptions : Option
     public string AppConnectionString { get; set; } = null!;
     [Required]
     public string HangfireConnectionString { get; set; } = null!;
+
+    [Required]
+    public string RedisConnectionString { get; set; } = null!;
 }

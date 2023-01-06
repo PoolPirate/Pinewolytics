@@ -1,10 +1,12 @@
 ﻿using Common.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Caching.Distributed;
 using Microsoft.Extensions.Caching.Memory;
 using Pinewolytics.Configuration;
 using Pinewolytics.Models;
 using Pinewolytics.Models.FlipsideAPI;
 using System.Reflection;
+using System.Text.Json;
 
 namespace Pinewolytics.Services;
 
@@ -15,7 +17,7 @@ public class FlipsideClient : Singleton
     [Inject]
     private readonly ApiKeyOptions ApiKeyOptions = null!;
     [Inject]
-    private readonly IMemoryCache Cache = null!;
+    private readonly IDistributedCache Cache = null!;
 
     public async Task RunQueryAndCacheAsync(string key, Type type, string sql,
         CancellationToken cancellationToken = default)
@@ -36,16 +38,23 @@ public class FlipsideClient : Singleton
         }
 
         object[] result = ParseFlipsideObjects(type, rows);
-        Cache.Set(key, result.Length == 1 ? result[0] : result);
+        var resultJson = JsonSerializer.Serialize(result);
+        await Cache.SetStringAsync(key, resultJson, cancellationToken);
     }
 
     public async Task<T[]> GetOrRunAsync<T>(string sql,
         CancellationToken cancellationToken = default)
         where T : IFlipsideObject<T>
     {
-        return Cache.TryGetValue(sql, out T[]? results)
-            ? results!
-            : await RunQueryAsync<T>(sql, cancellationToken);
+        var resultJson = await Cache.GetStringAsync(sql, cancellationToken);
+
+        if (resultJson is null)
+        {
+            return await RunQueryAsync<T>(sql, cancellationToken);
+        }
+        //
+        return JsonSerializer.Deserialize<T[]>(resultJson) 
+            ?? throw new InvalidOperationException("Redis resonse json was invalid!");        
     }
 
     public async Task<T[]> RunQueryAsync<T>(string sql,

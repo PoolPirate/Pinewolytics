@@ -20,6 +20,6 @@ public class QueryHub : Hub<IQueryHubClient>
 
     public async Task GetAndSubscribe(string queryName)
     {
-        await QuerySubscriptionService.GetAndSubscribeAsync(Context.ConnectionId, queryName);
+        await QuerySubscriptionService.GetAndSubscribeAsync(Context.ConnectionId, queryName, Context.ConnectionAborted);
     }
 }

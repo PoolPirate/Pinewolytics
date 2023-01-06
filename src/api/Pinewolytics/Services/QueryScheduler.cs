@@ -1,5 +1,6 @@
 ﻿using Common.Services;
 using Hangfire;
+using Pinewolytics.Configuration;
 using Pinewolytics.Database;
 using Pinewolytics.Models.Entities;
 
@@ -12,6 +13,9 @@ public class QueryScheduler : Singleton
     [Inject]
     private readonly QueryRunner QueryRunner = null!;
 
+    [Inject]
+    private readonly InstanceOptions InstanceOptions = null!;
+
     protected override async ValueTask InitializeAsync()
     {
         using var scope = Provider.CreateScope();
@@ -21,13 +25,15 @@ public class QueryScheduler : Singleton
         var scheduledQueries = dbContext.ScheduledQueries.ToArray();
 
         Logger.LogInformation("Scheduling {count} queries for automatic caching", scheduledQueries.Length);
+        Parallel.ForEach(scheduledQueries, 
+            (scheduledQuery, cancellationToken) => ScheduleQuery(scheduledQuery));
 
-        await Parallel.ForEachAsync(scheduledQueries, async (scheduledQuery, cancellationToken) =>
+        if (InstanceOptions.RequireFullSync)
         {
-            ScheduleQuery(scheduledQuery);
-            await QueryRunner.RunAndCacheQueryAsync(scheduledQuery);
-        });
-
+            Logger.LogInformation("Refreshing all queries");
+            await Parallel.ForEachAsync(scheduledQueries, 
+                async (scheduledQuery, cancellationToken) => await QueryRunner.RunAndCacheQueryAsync(scheduledQuery));
+        }
 
         BackgroundProcessor = new BackgroundJobServer(new BackgroundJobServerOptions()
         {
