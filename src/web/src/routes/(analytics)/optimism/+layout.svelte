@@ -14,6 +14,9 @@
 
 		rootElement.style.setProperty('--color1', '#ffffff');
 		rootElement.style.setProperty('--color2', '#fe0420');
+
+		rootElement.style.setProperty('--linkgroupcolor', '#f3570f');
+		rootElement.style.setProperty('--linkcolor', '#D2573D');
 	});
 
 	var isWeeklyMode: boolean = true;

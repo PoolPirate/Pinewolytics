@@ -53,8 +53,10 @@
 	</div>
 
 	<div class="flex flex-col w-full h-screen">
-		<div class="relative flex flex-row justify-around items-center h-14 navbar px-4 text-white">
-			<div class="w-full xl:hidden" />
+		<div
+			class="relative flex flex-row justify-around items-center h-14 navbar px-4 text-white overflow-hidden"
+		>
+			<div class="w-1/3 sm:w-full xl:hidden" />
 			<div class="flex flex-row items-center">
 				<p class="ml-auto xl:ml-0 mr-3">Daily</p>
 				<ToggleSwitch bind:checked={isWeeklyMode} />

@@ -8,6 +8,7 @@ const config = {
 const devConfig = {
 	plugins: [sveltekit()],
 	server: {
+		host: '0.0.0.0',
 		proxy: {
 			'/Api': {
 				target: 'http://127.0.0.1:4565',

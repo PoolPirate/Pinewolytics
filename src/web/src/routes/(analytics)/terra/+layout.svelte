@@ -2,12 +2,9 @@
 	import BackToMenuLink from '$lib/links/BackToMenuLink.svelte';
 	import AnalyticsLayout from '../AnalyticsLayout.svelte';
 	import luna2logo from '$lib/static/logo/luna2.png';
-	import { beforeUpdate, setContext } from 'svelte';
+	import { beforeUpdate } from 'svelte';
 	import NavLink from '$lib/links/NavLink.svelte';
 	import LinkBumper from '$lib/links/LinkBumper.svelte';
-	import ToggleSwitch from '$lib/components/ToggleSwitch.svelte';
-	import { writable } from 'svelte/store';
-	import { isWeeklyModeStoreName } from '$lib/utils/Utils';
 	import NavLinkGroup from '$lib/links/NavLinkGroup.svelte';
 
 	beforeUpdate(() => {
@@ -15,6 +12,9 @@
 
 		rootElement.style.setProperty('--color1', '#f2e373');
 		rootElement.style.setProperty('--color2', '#de3633');
+
+		rootElement.style.setProperty('--linkgroupcolor', '#f3570f');
+		rootElement.style.setProperty('--linkcolor', '#D2573D');
 	});
 </script>
 

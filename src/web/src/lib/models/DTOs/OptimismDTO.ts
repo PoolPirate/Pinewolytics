@@ -10,3 +10,24 @@ export interface OptimismTransactionMetricsDTO {
     transactionCount: number;
     blockCount: number;
 }
+
+export interface OptimismContractMetricsDTO {
+    timestamp: string;
+
+    newContracts: number;
+    totalContracts: number;
+
+    activeDevelopers: number;
+    totalDevelopers: number;
+}
+
+export interface OptimismWalletMetricsDTO {
+    timestamp :string;
+
+    totalReceivers: number;
+    totalSenders: number;
+    totalSendersAndReceivers: number;
+
+    senders: number;
+    receivers: number;
+}

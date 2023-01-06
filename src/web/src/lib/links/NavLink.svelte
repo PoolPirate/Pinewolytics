@@ -18,7 +18,7 @@
 		top: 0;
 		bottom: 0;
 		z-index: -1;
-		background: linear-gradient(45deg, var(--color1), var(--color2));
+		background: var(--linkcolor);
 		opacity: 80%;
 		border-radius: inherit;
 	}

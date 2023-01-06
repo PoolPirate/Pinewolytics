@@ -9,6 +9,7 @@
 	import {
 		DaySeriesToWeekSeriesByAvg,
 		DaySeriesToWeekSeriesByLast,
+		DaySeriesToWeekSeriesByMax,
 		DaySeriesToWeekSeriesBySum
 	} from '$lib/service/transform';
 	import type { TimeSeriesEntry } from '$lib/service/transform';
@@ -31,13 +32,14 @@
 		subscriptionBuilder.dispose();
 	});
 
+	const activeWalletsChart = writable<SeriesOption[]>([]);
 	const newWalletsChart = writable<SeriesOption[]>([]);
 	const totalWalletsChart = writable<SeriesOption[]>([]);
 
 	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
-	$: makeNewSeries($walletMetrics, $isWeeklyModeStore);
-	function makeNewSeries(values: TerraWalletMetricsDTO[], isWeeklyMode: boolean) {
+	$: makeActiveWalletsChart($walletMetrics, $isWeeklyModeStore);
+	function makeActiveWalletsChart(values: TerraWalletMetricsDTO[], isWeeklyMode: boolean) {
 		if (values.length == 0) {
 			return;
 		}
@@ -60,11 +62,21 @@
 			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 
 		if (isWeeklyMode) {
-			sendersSeries = DaySeriesToWeekSeriesByAvg(sendersSeries);
-			receiverSeries = DaySeriesToWeekSeriesByAvg(receiverSeries);
+			sendersSeries = DaySeriesToWeekSeriesByMax(
+				sendersSeries.map((x) => {
+					x.value *= 1.2;
+					return x;
+				})
+			);
+			receiverSeries = DaySeriesToWeekSeriesByMax(
+				receiverSeries.map((x) => {
+					x.value *= 1.2;
+					return x;
+				})
+			);
 		}
 
-		newWalletsChart.set([
+		activeWalletsChart.set([
 			{
 				type: 'line',
 				name: 'Senders',
@@ -74,6 +86,73 @@
 				type: 'line',
 				name: 'Receivers',
 				data: receiverSeries.map((x) => [x.timestamp, x.value])
+			}
+		]);
+	}
+
+	$: makeNewWalletsChart($walletMetrics, $isWeeklyModeStore);
+	function makeNewWalletsChart(values: TerraWalletMetricsDTO[], isWeeklyMode: boolean) {
+		if (values.length == 0) {
+			return;
+		}
+
+		var newSendersSeries = values
+			.map<TimeSeriesEntry>((x) => {
+				return {
+					timestamp: new Date(x.timestamp),
+					value: x.totalSenders
+				};
+			})
+			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+			.map<TimeSeriesEntry>((x, i, arr) => {
+				return {
+					timestamp: x.timestamp,
+					value: x.value - (i == 0 ? 0 : arr[i - 1].value)
+				};
+			})
+			.slice(1); //To solve ^
+
+		var newReceiversSeries = values
+			.map<TimeSeriesEntry>((x) => {
+				return {
+					timestamp: new Date(x.timestamp),
+					value: x.totalReceivers
+				};
+			})
+			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+			.map<TimeSeriesEntry>((x, i, arr) => {
+				return {
+					timestamp: x.timestamp,
+					value: x.value - (i == 0 ? 0 : arr[i - 1].value)
+				};
+			})
+			.slice(1); //To solve ^
+
+		if (isWeeklyMode) {
+			newSendersSeries = DaySeriesToWeekSeriesByMax(
+				newSendersSeries.map((x) => {
+					x.value *= 1.2;
+					return x;
+				})
+			);
+			newReceiversSeries = DaySeriesToWeekSeriesByMax(
+				newReceiversSeries.map((x) => {
+					x.value *= 1.2;
+					return x;
+				})
+			);
+		}
+
+		newWalletsChart.set([
+			{
+				type: 'line',
+				name: 'Senders',
+				data: newSendersSeries.map((x) => [x.timestamp, x.value])
+			},
+			{
+				type: 'line',
+				name: 'Receivers',
+				data: newReceiversSeries.map((x) => [x.timestamp, x.value])
 			}
 		]);
 	}
@@ -148,13 +227,21 @@
 	<p>An address receiving $LUNA tokens</p>
 </div>
 
-<div class="xl:grid grid-cols-2 mt-2 p-2 w-full transparent-background rounded-lg">
-	<TimeSeriesChart title={{ text: 'New Addresses' }} class="h-128" series={$newWalletsChart} />
+<div class="w-full transparent-background rounded-lg mt-2 p-2">
 	<TimeSeriesChart
-		title={{ text: 'Total Unique Addresses' }}
+		title={{ text: 'Active Addresses' }}
 		class="h-128"
-		series={$totalWalletsChart}
+		series={$activeWalletsChart}
 	/>
+
+	<div class="grid grid-cols-1 xl:grid-cols-2  ">
+		<TimeSeriesChart title={{ text: 'New Addresses' }} class="h-128" series={$newWalletsChart} />
+		<TimeSeriesChart
+			title={{ text: 'Total Unique Addresses' }}
+			class="h-128"
+			series={$totalWalletsChart}
+		/>
+	</div>
 </div>
 
 <style>
