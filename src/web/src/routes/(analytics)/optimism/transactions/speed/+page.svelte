@@ -8,7 +8,11 @@
 		QueryName,
 		QuerySubscriptionBuilder
 	} from '$lib/service/querysubscription';
-	import { DaySeriesToWeekSeriesByLast, type TimeSeriesEntry } from '$lib/service/transform';
+	import {
+		DaySeriesToWeekSeriesByLast,
+		DaySeriesToWeekSeriesBySum,
+		type TimeSeriesEntry
+	} from '$lib/service/transform';
 	import { isWeeklyModeStoreName } from '$lib/utils/Utils';
 	import type { SeriesOption } from 'echarts';
 	import { getContext, onDestroy, onMount } from 'svelte';
@@ -49,7 +53,7 @@
 			});
 
 		if (isWeeklyMode) {
-			newTxCountSeries = DaySeriesToWeekSeriesByLast(newTxCountSeries);
+			newTxCountSeries = DaySeriesToWeekSeriesBySum(newTxCountSeries);
 		}
 
 		newTxCountChart.set([
