@@ -7,6 +7,9 @@
 	const price = writable<number>(0);
 	var priceAnimation: RefreshAnimation;
 
+	const peakBlockHeight = writable<number>(0);
+	var peakBlockHeightAnimation: RefreshAnimation;
+
 	onMount(async () => {
 		let connection = new HubConnectionBuilder()
 			.withUrl('/api/hub/optimism')
@@ -16,6 +19,10 @@
 		connection.on('Price', (newPrice) => {
 			price.set(newPrice);
 			priceAnimation.play();
+		});
+		connection.on('PeakBlockHeight', (newBlockHeight) => {
+			peakBlockHeight.set(newBlockHeight);
+			peakBlockHeightAnimation.play();
 		});
 
 		await connection.start();
@@ -35,6 +42,11 @@
 			<RefreshAnimation bind:this={priceAnimation} />
 			<h2>Price</h2>
 			<p>{$price}$</p>
+		</li>
+		<li>
+			<RefreshAnimation bind:this={peakBlockHeightAnimation} />
+			<h2>Peak Block Height</h2>
+			<p>#{$peakBlockHeight}</p>
 		</li>
 	</ul>
 </div>

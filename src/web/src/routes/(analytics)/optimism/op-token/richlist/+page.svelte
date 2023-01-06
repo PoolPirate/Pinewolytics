@@ -83,7 +83,7 @@
 	}
 </script>
 
-<div class="absolute w-full flex justify-center z-100">
+<div class="absolute w-full flex justify-center">
 	<input
 		class="px-2 py-1 rounded-md w-1/2"
 		bind:value={searchAddress}

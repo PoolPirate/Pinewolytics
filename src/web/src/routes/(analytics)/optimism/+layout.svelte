@@ -56,7 +56,9 @@
 		<img src={optimismLogo} alt="Optimism" class="ml-6 max-w-full max-h-full p-1" />
 	</nav>
 	<nav />
-	<slot slot="main" />
+	<div slot="main" class="flex flex-col p-3 w-full">
+		<slot />
+	</div>
 </AnalyticsLayout>
 
 <style>
