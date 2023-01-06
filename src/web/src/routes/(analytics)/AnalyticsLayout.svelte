@@ -1,6 +1,9 @@
 <script lang="ts">
 	import Hamburger from '$lib/components/Hamburger.svelte';
-	import { onMount } from 'svelte';
+	import ToggleSwitch from '$lib/components/ToggleSwitch.svelte';
+	import { isWeeklyModeStoreName } from '$lib/utils/Utils';
+	import { onMount, setContext } from 'svelte';
+	import { writable } from 'svelte/store';
 	import { screens } from 'tailwindcss/defaultTheme';
 
 	var animateSidebar = false;
@@ -23,6 +26,13 @@
 
 		setTimeout(() => (animateSidebar = true));
 	});
+
+	var isWeeklyMode: boolean = true;
+	const weeklyModeStore = writable(isWeeklyMode);
+
+	$: weeklyModeStore.set(isWeeklyMode);
+
+	setContext(isWeeklyModeStoreName, weeklyModeStore);
 </script>
 
 <div class="fixed m-4 xl:hidden z-10">
@@ -44,6 +54,13 @@
 
 	<div class="flex flex-col w-full h-screen">
 		<div class="relative flex flex-row justify-around items-center h-14 navbar px-4 text-white">
+			<div class="w-full xl:hidden" />
+			<div class="flex flex-row items-center">
+				<p class="ml-auto xl:ml-0 mr-3">Daily</p>
+				<ToggleSwitch bind:checked={isWeeklyMode} />
+				<p class="ml-3">Weekly</p>
+			</div>
+
 			<slot name="nav" />
 		</div>
 

@@ -16,13 +16,6 @@
 		rootElement.style.setProperty('--color1', '#f2e373');
 		rootElement.style.setProperty('--color2', '#de3633');
 	});
-
-	var isWeeklyMode: boolean = true;
-	const weeklyModeStore = writable(isWeeklyMode);
-
-	$: weeklyModeStore.set(isWeeklyMode);
-
-	setContext(isWeeklyModeStoreName, weeklyModeStore);
 </script>
 
 <AnalyticsLayout>
@@ -48,14 +41,10 @@
 	</aside>
 
 	<nav slot="nav" class="h-full w-full flex flex-row items-center">
-		<p class="ml-auto xl:ml-0 mr-3">Daily</p>
-		<ToggleSwitch bind:checked={isWeeklyMode} />
-		<p class="ml-3">Weekly</p>
-
 		<h2 class="ml-auto font-bold text-xl">Terra</h2>
 		<img src={luna2logo} alt="Luna 2.0" class="ml-6 max-w-full max-h-full p-1" />
 	</nav>
 	<div slot="main" class="flex flex-col p-3 w-full">
-		<slot {isWeeklyMode} />
+		<slot />
 	</div>
 </AnalyticsLayout>

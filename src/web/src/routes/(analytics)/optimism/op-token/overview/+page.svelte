@@ -53,10 +53,19 @@
 		priceHistoryChart.set([
 			{
 				type: 'line',
-				data: opPriceSeries.map((x) => [x.timestamp, x.value])
+				data: opPriceSeries.map((x) => [x.timestamp, x.value]),
+				sampling: 'lttb',
+				markLine: {
+					data: [
+						{ type: 'max', name: 'Max', lineStyle: { color: 'lime' } },
+						{ type: 'min', name: 'Min', lineStyle: { color: 'red' } }
+					]
+				}
 			}
 		]);
 	}
 </script>
 
-<TimeSeriesChart series={$priceHistoryChart} />
+<div class="w-full grid grid-cols-1">
+	<TimeSeriesChart class="h-128" series={$priceHistoryChart} />
+</div>
