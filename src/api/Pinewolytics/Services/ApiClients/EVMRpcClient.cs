@@ -1,7 +1,4 @@
 ﻿using Common.Services;
-using System.Net.Http.Json;
-using System.Text.Json.Serialization;
-using Pinewolytics.Utils.JsonConverters;
 using System.Globalization;
 
 namespace Pinewolytics.Services.ApiClients;
@@ -21,7 +18,7 @@ public abstract class EVMRpcClient : Singleton
 
     protected async Task<T> SendRpcCallAsync<T>(string method, object[] parameters, CancellationToken cancellationToken)
     {
-        var response = await Client.PostAsJsonAsync<EVMRpcParameters>(GetAPIUrl(), new EVMRpcParameters()
+        var response = await Client.PostAsJsonAsync(GetAPIUrl(), new EVMRpcParameters()
         {
             Method = method,
             Params = parameters
@@ -29,21 +26,11 @@ public abstract class EVMRpcClient : Singleton
 
         response.EnsureSuccessStatusCode();
 
-        try
-        {
-            var evmResult = await response.Content.ReadFromJsonAsync<EVMResult<T>>(cancellationToken: cancellationToken);
+        var evmResult = await response.Content.ReadFromJsonAsync<EVMResult<T>>(cancellationToken: cancellationToken);
 
-            return evmResult is null || evmResult.Result is null
-    ? throw new InvalidOperationException("RPC returned null")
-    : evmResult.Result;
-        }
-        catch (Exception ex)
-        {
-            Logger.LogCritical(ex, await response.Content.ReadAsStringAsync());
-            throw;
-        }
-
-
+        return evmResult is null || evmResult.Result is null
+        ? throw new InvalidOperationException("RPC returned null")
+        : evmResult.Result;
     }
 
     class EVMRpcParameters

@@ -216,7 +216,7 @@
 	}
 </script>
 
-<div class="grid grid-cols-1 mt-2 p-2 w-full transparent-background rounded-lg">
+<div class="grid grid-cols-1 mt-2 p-2 w-full">
 	<div class="grid grid-cols-1 sm:grid-cols-2">
 		<SingleValueChart
 			title={{ left: 'center', text: 'Transactions Per Second' }}

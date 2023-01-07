@@ -3,19 +3,17 @@
 	import type {
 		EChartsOption,
 		SeriesOption,
-		YAXisComponentOption,
 		LegendComponentOption,
 		TitleComponentOption
 	} from 'echarts';
 
 	export let series: SeriesOption | null;
 	export let title: TitleComponentOption | undefined = undefined;
-
-	export let showToolTip: boolean = false;
-	export let showLegend: boolean = false;
-
+	export let legend: LegendComponentOption | undefined = undefined;
 	let clazz: string = '';
 	export { clazz as class };
+
+	export let categories: string[];
 
 	var options: EChartsOption;
 
@@ -23,10 +21,13 @@
 
 	function makeOptions(series: SeriesOption | null) {
 		options = {
-			legend: showLegend ? { right: 'center', top: '8%' } : undefined,
+			legend: legend,
 			series: series == null ? {} : series,
 			title: title,
-			tooltip: showToolTip ? {} : undefined
+			xAxis: {
+				type: 'category',
+				data: categories
+			}
 		};
 	}
 </script>

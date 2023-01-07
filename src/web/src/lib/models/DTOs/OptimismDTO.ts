@@ -22,7 +22,7 @@ export interface OptimismContractMetricsDTO {
 }
 
 export interface OptimismWalletMetricsDTO {
-    timestamp :string;
+    timestamp: string;
 
     totalReceivers: number;
     totalSenders: number;
@@ -30,4 +30,17 @@ export interface OptimismWalletMetricsDTO {
 
     senders: number;
     receivers: number;
+}
+
+export interface OptimismL1SubmissionMetricsDTO {
+    timestamp: string;
+
+    totalSubmissions: number;
+}
+
+export interface OptimismGasMetricsDTO {
+    timestamp: string;
+
+    totalL2GasFee: number;
+    totalL1GasFee: number;
 }

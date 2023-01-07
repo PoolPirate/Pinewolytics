@@ -43,7 +43,6 @@
 		<NavLinkGroup title={'OP Token'}>
 			<NavLink href="/optimism/op-token">Overview</NavLink>
 			<NavLink href="/optimism/op-token/richlist">#100 Richlist</NavLink>
-			<NavLink href="/optimism/op-token/delegates">Delegates</NavLink>
 		</NavLinkGroup>
 
 		<NavLinkGroup title={'Developer Activity'}>
@@ -51,6 +50,7 @@
 		</NavLinkGroup>
 
 		<LinkBumper />
+		<NavLink href="/optimism/about">About</NavLink>
 		<BackToMenuLink />
 	</aside>
 

@@ -53,6 +53,7 @@
 		priceHistoryChart.set([
 			{
 				type: 'line',
+				name: 'Price',
 				data: opPriceSeries.map((x) => [x.timestamp, x.value]),
 				sampling: 'lttb',
 				markLine: {
@@ -67,5 +68,10 @@
 </script>
 
 <div class="w-full grid grid-cols-1">
-	<TimeSeriesChart class="h-128" series={$priceHistoryChart} />
+	<TimeSeriesChart
+		title={{ text: '$OP / USD' }}
+		legend={{}}
+		class="h-128"
+		series={$priceHistoryChart}
+	/>
 </div>
