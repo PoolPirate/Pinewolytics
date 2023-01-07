@@ -15,6 +15,20 @@ public class QueryController : ControllerBase
         QueryClient = queryClient;
     }
 
+    [HttpGet("Query/Src/{queryName}")]
+    [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "addresses" })]
+    public async Task<IActionResult> GetQuerySrcAsync([FromRoute]string queryName)
+    {
+        string? src = await QueryClient.GetQuerySrcAsync(queryName);
+
+        if (src is null)
+        {
+            return NotFound();
+        }
+
+        return Ok(src);
+    }
+
     [HttpGet("Osmosis/Swaps")]
     [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "addresses" })]
     public async Task<IActionResult> GetSwapsAsync(

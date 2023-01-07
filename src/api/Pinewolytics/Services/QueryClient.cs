@@ -1,4 +1,6 @@
 ﻿using Common.Services;
+using Microsoft.EntityFrameworkCore;
+using Pinewolytics.Database;
 using Pinewolytics.Models;
 using Pinewolytics.Models.DTOs.Osmosis;
 using Pinewolytics.Queries.Flipside;
@@ -10,6 +12,15 @@ public class QueryClient : Singleton
 {
     [Inject]
     private readonly FlipsideClient Flipside = null!;
+
+    public async Task<string?> GetQuerySrcAsync(string queryName)
+    {
+        using var scope = Provider.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<PinewolyticsContext>();
+
+        var query = await dbContext.ScheduledQueries.SingleOrDefaultAsync(x => x.Name == queryName);
+        return query?.Query;
+    }
 
     public async Task<OsmosisSwapDTO[]> GetOsmosisSwapsAsync(string[] addresses, CancellationToken cancellationToken)
     {
