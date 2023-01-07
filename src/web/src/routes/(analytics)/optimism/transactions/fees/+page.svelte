@@ -42,6 +42,7 @@
 	const l1SubmissionsChart = writable<SeriesOption[]>([]);
 	const monthlyTotalFeeChart = writable<SeriesOption>();
 	const totalL1vsL2FeeChart = writable<SeriesOption>();
+	const feeHistoryChart = writable<SeriesOption[]>([]);
 
 	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
@@ -267,6 +268,53 @@
 			]
 		});
 	}
+
+	$: makeFeeHistoryChart($gasMetricsHistoryQuery, $isWeeklyModeStore);
+	function makeFeeHistoryChart(values: OptimismGasMetricsDTO[], isWeeklyMode: boolean) {
+		if (values.length == 0) {
+			return;
+		}
+
+		var l1FeeSeries = values
+			.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+			.map<TimeSeriesEntry>((x, i, arr) => {
+				return {
+					timestamp: new Date(x.timestamp),
+					value: x.totalL1GasFee - (i == 0 ? 0 : arr[i - 1].totalL1GasFee)
+				};
+			})
+			.slice(1);
+
+		var l2FeeSeries = values
+			.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
+			.map<TimeSeriesEntry>((x, i, arr) => {
+				return {
+					timestamp: new Date(x.timestamp),
+					value: x.totalL2GasFee - (i == 0 ? 0 : arr[i - 1].totalL2GasFee)
+				};
+			})
+			.slice(1);
+
+		if (isWeeklyMode) {
+			l1FeeSeries = DaySeriesToWeekSeriesBySum(l1FeeSeries);
+			l2FeeSeries = DaySeriesToWeekSeriesBySum(l2FeeSeries);
+		}
+
+		feeHistoryChart.set([
+			{
+				type: 'bar',
+				name: 'L1 Fees',
+				stack: 'Fees',
+				data: l1FeeSeries.map((x) => [x.timestamp, x.value])
+			},
+			{
+				type: 'bar',
+				name: 'L2 Fees',
+				stack: 'Fees',
+				data: l2FeeSeries.map((x) => [x.timestamp, x.value])
+			}
+		]);
+	}
 </script>
 
 <div class="grid grid-cols-1 mt-2 p-2 w-full transparent-background rounded-lg">
@@ -313,6 +361,14 @@
 			series={$monthlyTotalFeeChart}
 		/>
 	</div>
+
+	<TimeSeriesChart
+		yAxis={[{}, {}]}
+		legend={{}}
+		title={{ text: 'Gas Fees Paid' }}
+		class="h-128"
+		series={$feeHistoryChart}
+	/>
 
 	<TimeSeriesChart
 		yAxis={[{}, {}]}
