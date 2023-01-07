@@ -222,11 +222,13 @@
 			title={{ left: 'center', text: 'Transactions Per Second' }}
 			class="h-64"
 			series={$AverageTPSChart}
+			queryName={QueryName.OptimismTransactionMetricsHistory}
 		/>
 		<SingleValueChart
 			title={{ left: 'center', text: 'Block Time' }}
 			class="h-64"
 			series={$averageBlockTimeChart}
+			queryName={QueryName.OptimismTransactionMetricsHistory}
 		/>
 	</div>
 
@@ -234,5 +236,6 @@
 		title={{ text: 'New Transactions Executed' }}
 		class="h-128"
 		series={$newTxCountChart}
+		queryName={QueryName.OptimismTransactionMetricsHistory}
 	/>
 </div>

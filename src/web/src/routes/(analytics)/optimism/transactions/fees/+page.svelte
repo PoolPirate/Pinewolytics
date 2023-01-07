@@ -353,11 +353,13 @@
 			class="h-128"
 			showToolTip={true}
 			showLegend={true}
+			queryName={QueryName.OptimismGasMetricsHistory}
 			series={$totalL1vsL2FeeChart}
 		/>
 		<SingleValueChart
 			title={{ text: 'Total Fees Paid In Last Months' }}
 			class="h-128"
+			queryName={QueryName.OptimismGasMetricsHistory}
 			series={$monthlyTotalFeeChart}
 		/>
 	</div>
@@ -368,6 +370,7 @@
 		title={{ text: 'Gas Fees Paid' }}
 		class="h-128"
 		series={$feeHistoryChart}
+		queryName={QueryName.OptimismGasMetricsHistory}
 	/>
 
 	<TimeSeriesChart
@@ -376,6 +379,7 @@
 		title={{ text: 'L1 Submissions' }}
 		class="h-128"
 		series={$l1SubmissionsChart}
+		queryName={QueryName.OptimismL1SubmissionsHistory}
 	/>
 </div>
 

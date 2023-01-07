@@ -304,6 +304,7 @@
 			title={{ text: 'Total Fees Paid In Last Months' }}
 			class="h-128"
 			series={$monthlyTotalFeeChart}
+			queryName={QueryName.TerraTotalFeesHistory}
 		/>
 	</div>
 
@@ -313,6 +314,7 @@
 		{yAxis}
 		{legend}
 		series={$gasFeesChart}
+		queryName={QueryName.TerraTransactionMetricsHistory}
 	/>
 </div>
 

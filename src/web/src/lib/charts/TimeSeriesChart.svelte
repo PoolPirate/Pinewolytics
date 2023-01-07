@@ -8,6 +8,10 @@
 		TitleComponentOption
 	} from 'echarts';
 	import jsonLogo from '$lib/static/logo/json.svg';
+	import queryIcon from '$lib/static/logo/query.png';
+
+	import { getQuerySrc } from '$lib/service/queries';
+	import type { QueryName } from '$lib/service/querysubscription';
 
 	export let series: SeriesOption[];
 	export let yAxis: YAXisComponentOption | YAXisComponentOption[] = {
@@ -17,6 +21,7 @@
 	export let legend: LegendComponentOption = {};
 	let clazz: string = '';
 	export { clazz as class };
+	export let queryName: QueryName | null;
 
 	var options: EChartsOption;
 
@@ -47,18 +52,27 @@
 			yAxis: yAxis,
 			toolbox: {
 				itemSize: 40,
-				top: 'bottom',
+				bottom: 0,
+				orient: 'vertical',
 				feature: {
 					saveAsImage: {
 						show: true
 					},
-					myFeature: {
-						show: false,
-						title: 'Export JSON',
-						icon: 'image://' + jsonLogo,
-						onclick: function () {
+					myOpenSql: {
+						show: queryName != null,
+						title: 'Show SQL Query',
+						icon: 'image://' + queryIcon,
+						onclick: async () => {
+							if (queryName == null) return;
+
+							const src = await getQuerySrc(queryName);
 							const tab = window.open();
-							tab?.document.write(JSON.stringify(''));
+
+							src.split('\n').forEach((x) => {
+								tab?.document.writeln(x);
+								tab?.document.write('<br />');
+							});
+
 							tab?.document.close();
 						}
 					}

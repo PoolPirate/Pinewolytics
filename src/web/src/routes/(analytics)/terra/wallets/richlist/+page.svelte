@@ -99,6 +99,7 @@
 	showToolTip={true}
 	class="h-full"
 	series={$richlistChart[0]}
+	queryName={QueryName.TerraRichList}
 />
 
 <style>

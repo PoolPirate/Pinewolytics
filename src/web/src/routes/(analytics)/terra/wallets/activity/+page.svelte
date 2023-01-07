@@ -232,14 +232,21 @@
 		title={{ text: 'Active Addresses' }}
 		class="h-128"
 		series={$activeWalletsChart}
+		queryName={QueryName.TerraWalletMetricsHistory}
 	/>
 
 	<div class="grid grid-cols-1 xl:grid-cols-2  ">
-		<TimeSeriesChart title={{ text: 'New Addresses' }} class="h-128" series={$newWalletsChart} />
+		<TimeSeriesChart
+			title={{ text: 'New Addresses' }}
+			class="h-128"
+			series={$newWalletsChart}
+			queryName={QueryName.TerraWalletMetricsHistory}
+		/>
 		<TimeSeriesChart
 			title={{ text: 'Total Unique Addresses' }}
 			class="h-128"
 			series={$totalWalletsChart}
+			queryName={QueryName.TerraWalletMetricsHistory}
 		/>
 	</div>
 </div>

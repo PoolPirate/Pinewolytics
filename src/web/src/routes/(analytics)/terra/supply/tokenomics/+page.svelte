@@ -54,4 +54,4 @@
 	];
 </script>
 
-<TimeSeriesChart series={tokenomicsChart} />
+<TimeSeriesChart queryName={null} series={tokenomicsChart} />

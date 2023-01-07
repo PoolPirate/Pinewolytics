@@ -134,6 +134,7 @@
 		title={{ text: 'Contracts Deployed' }}
 		class="h-128"
 		series={$contractsChart}
+		queryName={QueryName.OptimismContractMetricsHistory}
 	/>
 
 	<TimeSeriesChart
@@ -141,6 +142,7 @@
 		title={{ text: 'Addresses Deploying A Contract (Excluding Contracts)' }}
 		class="h-128"
 		series={$developersChart}
+		queryName={QueryName.OptimismContractMetricsHistory}
 	/>
 </div>
 

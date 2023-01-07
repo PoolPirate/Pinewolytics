@@ -1,5 +1,7 @@
 <script lang="ts">
 	import Chart from '$lib/components/Chart.svelte';
+	import { getQuerySrc } from '$lib/service/queries';
+	import type { QueryName } from '$lib/service/querysubscription';
 	import type {
 		EChartsOption,
 		SeriesOption,
@@ -9,12 +11,14 @@
 		TooltipComponentOption
 	} from 'echarts';
 	import { createEventDispatcher } from 'svelte';
+	import queryIcon from '$lib/static/logo/query.png';
 
 	export let series: SeriesOption | null;
 	export let title: TitleComponentOption | undefined = undefined;
 	export let legend: LegendComponentOption | undefined = undefined;
 
 	export let showToolTip: boolean = false;
+	export let queryName: QueryName;
 
 	let clazz: string = '';
 	export { clazz as class };
@@ -32,17 +36,25 @@
 			tooltip: showToolTip ? {} : undefined,
 			toolbox: {
 				itemSize: 40,
-				top: 'bottom',
+				bottom: 0,
+				orient: 'vertical',
 				feature: {
 					saveAsImage: {
 						show: true
 					},
-					myFeature: {
-						show: false,
-						title: 'Export JSON',
-						onclick: function () {
+					myOpenSql: {
+						show: true,
+						title: 'Show SQL Query',
+						icon: 'image://' + queryIcon,
+						onclick: async () => {
+							const src = await getQuerySrc(queryName);
 							const tab = window.open();
-							tab?.document.write(JSON.stringify(''));
+
+							src.split('\n').forEach((x) => {
+								tab?.document.writeln(x);
+								tab?.document.write('<br />');
+							});
+
 							tab?.document.close();
 						}
 					}

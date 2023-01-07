@@ -6,6 +6,12 @@ import type {
 	OsmosisSwapDTO,
 	OsmosisTransferDTO
 } from '$lib/models/DTOs/OsmosisDTOs';
+import type { QueryName } from './querysubscription';
+
+export async function getQuerySrc(queryName: QueryName): Promise<string> {
+	const response = await fetch('/Api/Query/Src/' + queryName);
+	return (await response.json()).src; 
+}
 
 export async function getOSMOSwaps(addresses: string[]): Promise<OsmosisSwapDTO[]> {
 	const response = await fetch('/Api/Osmosis/Swaps' + makeAddressParams(addresses));

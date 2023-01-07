@@ -26,7 +26,7 @@ public class QueryController : ControllerBase
             return NotFound();
         }
 
-        return Ok(src);
+        return Ok(new { src=src });
     }
 
     [HttpGet("Osmosis/Swaps")]

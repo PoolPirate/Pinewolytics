@@ -73,5 +73,6 @@
 		legend={{}}
 		class="h-128"
 		series={$priceHistoryChart}
+		queryName={QueryName.OptimismPriceHistory}
 	/>
 </div>

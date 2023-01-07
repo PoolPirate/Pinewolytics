@@ -134,6 +134,7 @@
 		title={{ text: 'Contracts Deployed' }}
 		class="h-128"
 		series={$contractsChart}
+		queryName={QueryName.TerraContractMetricsHistory}
 	/>
 
 	<TimeSeriesChart
@@ -141,6 +142,7 @@
 		title={{ text: 'Addresses Deploying A Contract' }}
 		class="h-128"
 		series={$developersChart}
+		queryName={QueryName.TerraContractMetricsHistory}
 	/>
 </div>
 
