@@ -106,7 +106,12 @@
 
 		if (isWeeklyMode) {
 			totalDevlopersSeries = DaySeriesToWeekSeriesByLast(totalDevlopersSeries);
-			activeDevelopersChart = DaySeriesToWeekSeriesByMax(activeDevelopersChart);
+			activeDevelopersChart = DaySeriesToWeekSeriesByMax(
+				activeDevelopersChart.map((x) => {
+					x.value = Math.ceil(x.value * 1.2);
+					return x;
+				})
+			);
 		}
 
 		developersChart.set([
