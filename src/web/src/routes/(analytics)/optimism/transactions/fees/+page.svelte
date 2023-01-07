@@ -219,7 +219,7 @@
 				borderColor: 'inherit',
 				borderRadius: 20,
 				borderWidth: 1,
-				formatter: (value) => Math.round(value).toLocaleString() + ' $LUNA'
+				formatter: (value) => Math.round(value).toLocaleString() + ' $ETH'
 			}
 		});
 	}
