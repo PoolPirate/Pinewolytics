@@ -21,12 +21,9 @@ public class QueryController : ControllerBase
     {
         string? src = await QueryClient.GetQuerySrcAsync(queryName);
 
-        if (src is null)
-        {
-            return NotFound();
-        }
-
-        return Ok(new { src=src });
+        return src is null 
+            ? NotFound() 
+            : Ok(new { src });
     }
 
     [HttpGet("Osmosis/Swaps")]
