@@ -4,6 +4,7 @@
 
 <script lang="ts">
 	import '../app.css';
+	import favicon from '$lib/static/favicon.ico';
 	import pattern from '$lib/static/pattern.png';
 	import { beforeUpdate, onMount } from 'svelte';
 
@@ -28,6 +29,10 @@
 		rootElement.style.setProperty('--color2', 'orange');
 	});
 </script>
+
+<svelte:head>
+	<link rel="icon" type="image/x-icon" href={favicon} />
+</svelte:head>
 
 <div class="background">
 	<div class="pattern">
