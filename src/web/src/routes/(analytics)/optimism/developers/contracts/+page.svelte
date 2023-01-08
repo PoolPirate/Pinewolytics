@@ -135,7 +135,7 @@
 
 <div class="grid grid-cols-1 mt-2 p-2 w-full transparent-background rounded-lg">
 	<TimeSeriesChart
-		yAxis={[{ type: 'log', min: 0.99 }, { type: 'value' }]}
+		yAxis={[{ type: 'log' }, { type: 'value' }]}
 		title={{ text: 'Contracts Deployed' }}
 		class="h-128"
 		series={$contractsChart}
@@ -143,7 +143,7 @@
 	/>
 
 	<TimeSeriesChart
-		yAxis={[{ type: 'log', min: 0.99 }, { type: 'value' }]}
+		yAxis={[{ type: 'log' }, { type: 'value' }]}
 		title={{ text: 'Addresses Deploying A Contract (Excluding Contracts)' }}
 		class="h-128"
 		series={$developersChart}

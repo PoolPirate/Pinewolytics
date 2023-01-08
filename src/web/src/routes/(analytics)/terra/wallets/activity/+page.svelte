@@ -227,7 +227,7 @@
 	<p>An address receiving $LUNA tokens</p>
 </div>
 
-<div class="w-full transparent-background rounded-lg mt-2 p-2">
+<div class="grid grid-cols-1 transparent-background rounded-lg mt-2 p-2">
 	<TimeSeriesChart
 		title={{ text: 'Active Addresses' }}
 		class="h-128"

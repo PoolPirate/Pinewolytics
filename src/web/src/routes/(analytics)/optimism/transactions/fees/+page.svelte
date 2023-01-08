@@ -331,7 +331,7 @@
 
 	<hr class="font-black" />
 
-	<div class="my-3">
+	<div class="grid grid-cols-1 sm:grid-cols-2 my-3">
 		<a
 			class="text-center p-2 border border-white rounded-md bg-blue-400"
 			href="https://help.optimism.io/hc/en-us/articles/4411895794715-How-do-transaction-fees-on-Optimism-work-"
@@ -339,14 +339,14 @@
 			rel="noreferrer">Gas on Optimism</a
 		>
 		<a
-			class="text-center p-2 mt-2 border border-white rounded-md bg-blue-400"
+			class="text-center p-2 border border-white rounded-md bg-blue-400"
 			href="https://ethereum.org/en/developers/docs/scaling/"
 			target="_blank"
 			rel="noreferrer">Optimistic Rollups</a
 		>
 	</div>
 </div>
-<div class="mt-3 p-3 transparent-background rounded-lg">
+<div class="grid grid-cols-1 mt-3 p-3 transparent-background rounded-lg">
 	<div class="grid grid-cols-1 lg:grid-cols-2">
 		<SingleValueChart
 			title={{ text: 'Total L1 vs L2 Fees' }}

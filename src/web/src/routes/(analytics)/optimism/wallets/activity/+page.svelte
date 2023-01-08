@@ -48,7 +48,7 @@
 			.map<TimeSeriesEntry>((x) => {
 				return {
 					timestamp: new Date(x.timestamp),
-					value: x.senders
+					value: isWeeklyMode ? x.weeklySenders : x.dailySenders
 				};
 			})
 			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
@@ -56,24 +56,14 @@
 			.map<TimeSeriesEntry>((x) => {
 				return {
 					timestamp: new Date(x.timestamp),
-					value: x.receivers
+					value: isWeeklyMode ? x.weeklyReceivers : x.dailyReceivers
 				};
 			})
 			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 
 		if (isWeeklyMode) {
-			sendersSeries = DaySeriesToWeekSeriesByMax(
-				sendersSeries.map((x) => {
-					x.value *= 1.2;
-					return x;
-				})
-			);
-			receiverSeries = DaySeriesToWeekSeriesByMax(
-				receiverSeries.map((x) => {
-					x.value *= 1.2;
-					return x;
-				})
-			);
+			sendersSeries = DaySeriesToWeekSeriesByMax(sendersSeries);
+			receiverSeries = DaySeriesToWeekSeriesByMax(receiverSeries);
 		}
 
 		activeWalletsChart.set([
@@ -129,18 +119,8 @@
 			.slice(1); //To solve ^
 
 		if (isWeeklyMode) {
-			newSendersSeries = DaySeriesToWeekSeriesByMax(
-				newSendersSeries.map((x) => {
-					x.value *= 1.2;
-					return x;
-				})
-			);
-			newReceiversSeries = DaySeriesToWeekSeriesByMax(
-				newReceiversSeries.map((x) => {
-					x.value *= 1.2;
-					return x;
-				})
-			);
+			newSendersSeries = DaySeriesToWeekSeriesBySum(newSendersSeries);
+			newReceiversSeries = DaySeriesToWeekSeriesBySum(newReceiversSeries);
 		}
 
 		newWalletsChart.set([
@@ -227,7 +207,7 @@
 	<p>An address receiving an ERC-20 token (Including contracts)</p>
 </div>
 
-<div class="w-full transparent-background rounded-lg mt-2 p-2">
+<div class="grid grid-cols-1 transparent-background rounded-lg mt-2 p-2">
 	<TimeSeriesChart
 		title={{ text: 'Active Addresses' }}
 		class="h-128"
@@ -235,7 +215,7 @@
 		queryName={QueryName.OptimismWalletMetricsHistory}
 	/>
 
-	<div class="grid grid-cols-1 xl:grid-cols-2  ">
+	<div class="grid grid-cols-1 2xl:grid-cols-2  ">
 		<TimeSeriesChart
 			title={{ text: 'New Addresses' }}
 			class="h-128"

@@ -84,7 +84,7 @@
 	}
 </script>
 
-<div class="absolute w-full flex justify-center z-100">
+<div class="ontop absolute w-full flex justify-center">
 	<input
 		class="px-2 py-1 rounded-md w-1/2"
 		bind:value={searchAddress}
@@ -94,16 +94,17 @@
 	/>
 </div>
 
-<ZoomableChart
-	on:chartclick={handleChartClick}
-	showToolTip={true}
-	class="h-full"
-	series={$richlistChart[0]}
-	queryName={QueryName.TerraRichList}
-/>
+<div class="grid grid-cols-1 h-full">
+	<ZoomableChart
+		on:chartclick={handleChartClick}
+		showToolTip={true}
+		series={$richlistChart[0]}
+		queryName={QueryName.OptimismRichList}
+	/>
+</div>
 
 <style>
-	div {
+	.ontop {
 		z-index: 100;
 	}
 </style>

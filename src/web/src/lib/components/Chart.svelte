@@ -53,6 +53,14 @@
 		instance?.showLoading('default', DEFAULT_LOADING_OPTIONS);
 	} else instance?.hideLoading();
 
+	function handleResize() {
+		if (instance == null) {
+			return;
+		}
+
+		instance.resize();
+	}
+
 	onMount(() => {
 		const settings = {
 			...DEFAULT_OPTIONS,
@@ -62,7 +70,7 @@
 
 		instance.on('click', (params) => dispatch('chartclick', params));
 
-		observer = new ResizeObserver(() => instance?.resize());
+		observer = new ResizeObserver(() => handleResize());
 		observer.observe(element);
 	});
 

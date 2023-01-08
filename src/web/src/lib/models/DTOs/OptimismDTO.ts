@@ -28,8 +28,11 @@ export interface OptimismWalletMetricsDTO {
     totalSenders: number;
     totalSendersAndReceivers: number;
 
-    senders: number;
-    receivers: number;
+    dailySenders: number;
+    dailyReceivers: number;
+
+    weeklySenders: number;
+    weeklyReceivers: number;
 }
 
 export interface OptimismL1SubmissionMetricsDTO {
