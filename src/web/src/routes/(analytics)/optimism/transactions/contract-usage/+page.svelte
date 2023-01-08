@@ -60,22 +60,41 @@
 				};
 			})
 			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+		var totalCallsSeries = values
+			.map<TimeSeriesEntry>((x) => {
+				return {
+					timestamp: new Date(x.timestamp),
+					value: isWeeklyMode ? x.weeklyUsedContracts : x.dailyUsedContracts
+				};
+			})
+			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 
 		if (isWeeklyMode) {
 			directlyCalledSeries = DaySeriesToWeekSeriesByMax(directlyCalledSeries);
 			indirectlyCalledSeries = DaySeriesToWeekSeriesByMax(indirectlyCalledSeries);
+			totalCallsSeries = DaySeriesToWeekSeriesByMax(totalCallsSeries);
 		}
 
 		calledContractsChart.set([
 			{
 				type: 'bar',
 				name: 'Contracts Called Directly',
+				stack: 'calls',
 				data: directlyCalledSeries.map((x) => [x.timestamp, x.value])
 			},
 			{
 				type: 'bar',
+				stack: 'calls',
 				name: 'Contracts Called Indirectly',
 				data: indirectlyCalledSeries.map((x) => [x.timestamp, x.value])
+			},
+			{
+				type: 'line',
+				name: 'Total Active Contracts',
+				data: totalCallsSeries.map((x) => [x.timestamp, x.value]),
+				itemStyle: {
+					color: 'orange'
+				}
 			}
 		]);
 	}
