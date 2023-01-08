@@ -13,6 +13,7 @@
 
 	onMount(() => {
 		open = window.innerWidth > Number.parseInt(screens.xl.split('px')[0]);
+		forcedOpen = !window.matchMedia('(max-width: ' + screens.xl + ')').matches;
 
 		window.matchMedia('(max-width: ' + screens.xl + ')').addEventListener('change', (result) => {
 			if (forcedOpen && result.matches) {
@@ -26,6 +27,12 @@
 
 		setTimeout(() => (animateSidebar = true));
 	});
+
+	function handleOuterClick() {
+		if (open && !forcedOpen) {
+			open = false;
+		}
+	}
 
 	var isWeeklyMode: boolean = true;
 	const weeklyModeStore = writable(isWeeklyMode);
@@ -52,8 +59,13 @@
 		</div>
 	</div>
 
-	<div class="flex flex-col w-full h-screen">
+	<div
+		class="flex flex-col w-full h-screen"
+		on:click={() => handleOuterClick()}
+		on:keydown={() => handleOuterClick()}
+	>
 		<div
+			class:blurred={open && !forcedOpen}
 			class="relative flex flex-row justify-around items-center h-14 navbar px-4 text-white overflow-hidden"
 		>
 			<div class="w-1/3 sm:w-full xl:hidden" />
@@ -67,6 +79,7 @@
 		</div>
 
 		<main
+			class:blurred={open && !forcedOpen}
 			class="relative flex justify-center w-full h-full h-full overflow-x-hidden overflow-y-auto"
 		>
 			<slot name="main" />
@@ -77,6 +90,11 @@
 <style>
 	.ontop {
 		z-index: 5;
+	}
+
+	.blurred {
+		filter: blur(4px);
+		pointer-events: none;
 	}
 
 	.limit-shrink {

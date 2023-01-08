@@ -23,7 +23,7 @@ public class FlipsideClient : Singleton
         Policy<QueryResultsResult>
             .HandleResult(x => x.Status == QueryResultStatus.Running)
             .WaitAndRetryForeverAsync(x => TimeSpan.FromMilliseconds(200) * x);
-
+            
     public async Task RunQueryAndCacheAsync(string key, Type type, string sql,
         CancellationToken cancellationToken = default)
     {
