@@ -1,7 +1,7 @@
 ﻿using Pinewolytics.Models;
 using System.Globalization;
 
-namespace Pinewolytics.Hubs.Optimism;
+namespace Pinewolytics.Models.DTOs.Optimism;
 
 public class OptimismGasMetricsDTO : IFlipsideObject<OptimismGasMetricsDTO>
 {

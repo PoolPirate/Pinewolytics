@@ -9,7 +9,10 @@ using Pinewolytics.Database;
 using Pinewolytics.Hubs;
 using Pinewolytics.Hubs.Luna;
 using Pinewolytics.Hubs.Optimism;
+using Pinewolytics.Services;
 using Pinewolytics.Utils;
+using Polly;
+using Polly.Contrib.WaitAndRetry;
 using StackExchange.Redis;
 
 namespace Pinewolytics;
@@ -26,6 +29,10 @@ public class Startup
     // This method gets called by the runtime. Use this method to add services to the container.
     public void ConfigureServices(IServiceCollection services)
     {
+        services.AddHttpClient<FlipsideClient>()
+            .AddTransientHttpErrorPolicy(policyBuilder =>
+                policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromMilliseconds(200), 5)));
+
         services.AddApplication(Configuration, options =>
         {
             options.UseServiceLevels = false;
@@ -35,8 +42,6 @@ public class Startup
         Program.Assembly);
 
         services.AddControllers();
-
-        services.AddSingleton<HttpClient>();
 
         services.AddSingleton<IConnectionMultiplexer>(provider =>
         {

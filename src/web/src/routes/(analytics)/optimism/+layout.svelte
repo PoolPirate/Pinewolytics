@@ -34,6 +34,7 @@
 		<NavLinkGroup title="Transactions">
 			<NavLink href="/optimism/transactions/speed">Speed</NavLink>
 			<NavLink href="/optimism/transactions/fees">Fees</NavLink>
+			<NavLink href="/optimism/transactions/contract-usage">Contract Usage</NavLink>
 		</NavLinkGroup>
 
 		<NavLinkGroup title="Wallets">

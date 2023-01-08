@@ -44,3 +44,13 @@ export interface OptimismGasMetricsDTO {
     totalL2GasFee: number;
     totalL1GasFee: number;
 }
+
+export interface OptimismContractActivityDTO {
+    timestamp: string;
+
+    dailyCalledContracts: number;
+    weeklyCalledContracts: number;
+
+    dailyUsedContracts: number;
+    weeklyUsedContracts: number;
+}
