@@ -1,7 +1,10 @@
 <script lang="ts">
 	import SingleValueChart from '$lib/charts/SingleValueChart.svelte';
 	import TimeSeriesChart from '$lib/charts/TimeSeriesChart.svelte';
-	import type { OptimismContractActivityDTO } from '$lib/models/DTOs/OptimismDTO';
+	import type {
+		OptimismContractActivityDTO,
+		OptimismDAppUsageDTO
+	} from '$lib/models/DTOs/OptimismDTO';
 	import type { TerraTransactionMetricsDTO } from '$lib/models/DTOs/TerraDTOs';
 	import {
 		createQueryListener,
@@ -32,7 +35,14 @@
 		subscriptionBuilder,
 		QueryName.OptimismContractActvityHistory
 	);
+	const dappLeaderboardQuery = createQueryListener(
+		subscriptionBuilder,
+		QueryName.OptimismDAppLeaderboard
+	);
+
 	const calledContractsChart = writable<SeriesOption[]>([]);
+	const dappTxCountLeaderboardChart = writable<SeriesOption>();
+	const dappAddressCountLeaderboardChart = writable<SeriesOption>();
 
 	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
@@ -98,6 +108,68 @@
 			}
 		]);
 	}
+
+	$: makeDAppTxCountLeaderboardChart($dappLeaderboardQuery);
+	function makeDAppTxCountLeaderboardChart(values: OptimismDAppUsageDTO[]) {
+		if (values.length == 0) {
+			return;
+		}
+
+		values = values.sort((a, b) => b.txCount - a.txCount);
+
+		dappTxCountLeaderboardChart.set({
+			name: 'Transaction Count',
+			type: 'pie',
+			data: values.map((x, i) => {
+				return {
+					name: x.projectName,
+					value: x.txCount,
+					itemStyle: {
+						color: i == 9 ? 'gray' : undefined
+					}
+				};
+			}),
+			selectedMode: 'series',
+			radius: [60, 170],
+			center: ['65%', '50%'],
+			roseType: 'area',
+			itemStyle: {
+				borderRadius: 8
+			},
+			label: { show: false }
+		});
+	}
+
+	$: makeDAppAddressCountLeaderboardChart($dappLeaderboardQuery);
+	function makeDAppAddressCountLeaderboardChart(values: OptimismDAppUsageDTO[]) {
+		if (values.length == 0) {
+			return;
+		}
+
+		values = values.sort((a, b) => b.addressCount - a.addressCount);
+
+		dappAddressCountLeaderboardChart.set({
+			name: 'Unique Address Count',
+			type: 'pie',
+			data: values.map((x, i) => {
+				return {
+					name: x.projectName,
+					value: x.addressCount,
+					itemStyle: {
+						color: i == 9 ? 'gray' : undefined
+					}
+				};
+			}),
+			selectedMode: 'series',
+			radius: [60, 170],
+			center: ['65%', '50%'],
+			roseType: 'area',
+			itemStyle: {
+				borderRadius: 8
+			},
+			label: { show: false }
+		});
+	}
 </script>
 
 <div class="grid grid-cols-1 mt-2 p-2 w-full transparent-background rounded-lg">
@@ -115,9 +187,29 @@
 	</p>
 </div>
 <div class="grid grid-cols-1 mt-2 p-2 w-full transparent-background rounded-lg">
+	<div class="grid grid-cols-1 md:grid-cols-2">
+		<SingleValueChart
+			title={{ text: 'Most used DApps by tx count' }}
+			class="h-100"
+			series={$dappTxCountLeaderboardChart}
+			queryName={QueryName.OptimismDAppLeaderboard}
+			showLegend={true}
+			sidebarLegend={true}
+			showToolTip={true}
+		/>
+		<SingleValueChart
+			title={{ text: 'Most used DApps by address count' }}
+			class="h-100"
+			series={$dappAddressCountLeaderboardChart}
+			queryName={QueryName.OptimismDAppLeaderboard}
+			showLegend={true}
+			sidebarLegend={true}
+			showToolTip={true}
+		/>
+	</div>
 	<TimeSeriesChart
 		title={{ text: 'Contracts Called' }}
-		class="h-128 mb-2"
+		class="h-128"
 		series={$calledContractsChart}
 		queryName={QueryName.OptimismContractActvityHistory}
 	/>

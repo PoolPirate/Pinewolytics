@@ -16,6 +16,7 @@
 
 	export let showToolTip: boolean = false;
 	export let showLegend: boolean = false;
+	export let sidebarLegend: boolean = false;
 
 	export let queryName: QueryName;
 
@@ -28,10 +29,14 @@
 
 	function makeOptions(series: SeriesOption | null) {
 		options = {
-			legend: showLegend ? { right: 'center', top: '8%' } : undefined,
+			legend: showLegend
+				? sidebarLegend
+					? { orient: 'vertical', top: 'center', left: '2%' }
+					: { right: 'center', top: '8%' }
+				: undefined,
 			series: series == null ? {} : series,
 			title: title,
-			tooltip: showToolTip ? {} : undefined,
+			tooltip: showToolTip ? { confine: true } : undefined,
 			toolbox: {
 				itemSize: 40,
 				bottom: 0,

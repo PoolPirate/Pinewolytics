@@ -33,7 +33,7 @@
 			legend: legend,
 			series: series == null ? {} : series,
 			title: title,
-			tooltip: showToolTip ? {} : undefined,
+			tooltip: showToolTip ? { confine: true } : undefined,
 			toolbox: {
 				itemSize: 40,
 				bottom: 0,

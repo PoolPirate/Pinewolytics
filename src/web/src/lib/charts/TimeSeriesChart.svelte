@@ -38,6 +38,7 @@
 				...title
 			},
 			tooltip: {
+				confine: true,
 				trigger: 'axis',
 				axisPointer: {
 					type: 'cross',
