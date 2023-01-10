@@ -57,3 +57,10 @@ export interface OptimismContractActivityDTO {
     dailyUsedContracts: number;
     weeklyUsedContracts: number;
 }
+
+export interface OptimismDAppUsageDTO {
+    projectName: string;
+    
+    txCount: number;
+    addressCount: number;
+}
