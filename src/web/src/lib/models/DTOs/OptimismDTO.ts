@@ -64,3 +64,9 @@ export interface OptimismDAppUsageDTO {
     txCount: number;
     addressCount: number;
 }
+
+export interface OptimismOPHolderMetricsDTO {
+    timestamp: string;
+
+    holderCount: number;
+}

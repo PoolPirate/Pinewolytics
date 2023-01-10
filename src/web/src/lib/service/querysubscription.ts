@@ -10,7 +10,7 @@ import type {
 import type { TimeSeriesEntryDTO, TimeSeriesEntryDTO2 } from '$lib/models/SharedDTOs';
 import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
-import type { OptimismAddressBalanceDTO, OptimismContractActivityDTO, OptimismContractMetricsDTO, OptimismDAppUsageDTO, OptimismGasMetricsDTO, OptimismL1SubmissionMetricsDTO, OptimismTransactionMetricsDTO, OptimismWalletMetricsDTO } from '$lib/models/DTOs/OptimismDTO';
+import type { OptimismAddressBalanceDTO, OptimismContractActivityDTO, OptimismContractMetricsDTO, OptimismDAppUsageDTO, OptimismGasMetricsDTO, OptimismL1SubmissionMetricsDTO, OptimismOPHolderMetricsDTO, OptimismTransactionMetricsDTO, OptimismWalletMetricsDTO } from '$lib/models/DTOs/OptimismDTO';
 
 export enum QueryName {
 	TerraValidatorCountHistory = 'terra-validator-count-history',
@@ -28,7 +28,8 @@ export enum QueryName {
 	OptimismL1SubmissionsHistory = "optimism-l1-submissions-history",
 	OptimismGasMetricsHistory = "optimism-gas-metrics-history",
 	OptimismContractActvityHistory = "optimism-contract-activity-history",
-	OptimismDAppLeaderboard = "optimism-dapp-leaderboard"
+	OptimismDAppLeaderboard = "optimism-dapp-leaderboard",
+	OptimismOPHolderMetricsHistory = "optimism-op-holder-metrics-history"
 }
 
 const queryTypes = {
@@ -47,7 +48,8 @@ const queryTypes = {
 	[QueryName.OptimismL1SubmissionsHistory]: [] as OptimismL1SubmissionMetricsDTO[],
 	[QueryName.OptimismGasMetricsHistory]: [] as OptimismGasMetricsDTO[],
 	[QueryName.OptimismContractActvityHistory]: [] as OptimismContractActivityDTO[],
-	[QueryName.OptimismDAppLeaderboard]: [] as OptimismDAppUsageDTO[]
+	[QueryName.OptimismDAppLeaderboard]: [] as OptimismDAppUsageDTO[],
+	[QueryName.OptimismOPHolderMetricsHistory]: [] as OptimismOPHolderMetricsDTO[]
 };
 
 interface QuerySubscription {
