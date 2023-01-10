@@ -29,7 +29,7 @@ export enum QueryName {
 	OptimismGasMetricsHistory = "optimism-gas-metrics-history",
 	OptimismContractActvityHistory = "optimism-contract-activity-history",
 	OptimismDAppLeaderboard = "optimism-dapp-leaderboard",
-	OptimismOPHolderMetricsHistory = "optimism-op-holder-metrics-history"
+	OptimismOPHolderMetricsHistory = "optimism-op-holder-metrics-history",
 }
 
 const queryTypes = {
