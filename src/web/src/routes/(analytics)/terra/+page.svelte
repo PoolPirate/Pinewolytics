@@ -2,11 +2,13 @@
 	import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 	import { onDestroy, onMount } from 'svelte';
 	import { writable } from 'svelte/store';
-	import RefreshAnimation from './RefreshAnimation.svelte';
+	import RefreshAnimation from '../../../lib/components/RefreshAnimation.svelte';
 
 	import blockIcon from '$lib/static/logo/block.svg';
 	import clockIcon from '$lib/static/logo/clock.svg';
 	import priceIcon from '$lib/static/logo/price.svg';
+	import pileIcon from '$lib/static/logo/pile.svg';
+	import smallPileIcon from '$lib/static/logo/small_pile.webp';
 
 	const blockHeight = writable<number>(0);
 	var blockHeightAnimation: RefreshAnimation;
@@ -89,11 +91,13 @@
 			<p>{$price}$</p>
 		</li>
 		<li>
+			<img alt="icon" class="h-1/2" src={pileIcon} />
 			<RefreshAnimation bind:this={totalSupplyAnimation} />
 			<h2>Total Supply</h2>
 			<p>{Math.round($totalSupply / 1000000).toLocaleString()} $LUNA</p>
 		</li>
 		<li>
+			<img alt="icon" class="h-1/2" src={smallPileIcon} />
 			<RefreshAnimation bind:this={circulatingSupplyAnimation} />
 			<h2>Circulating Supply</h2>
 			<p>{Math.round($circulatingSupply / 1000000).toLocaleString()} $LUNA</p>

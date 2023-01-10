@@ -2,11 +2,12 @@
 	import { HubConnectionBuilder } from '@microsoft/signalr';
 	import { onMount } from 'svelte';
 	import { writable } from 'svelte/store';
-	import RefreshAnimation from '../terra/RefreshAnimation.svelte';
+	import RefreshAnimation from '../../../lib/components/RefreshAnimation.svelte';
 
 	import blockIcon from '$lib/static/logo/block.svg';
 	import gasStationIcon from '$lib/static/logo/gas-station.svg';
 	import fireIcon from '$lib/static/logo/fire.svg';
+	import type { MarketDataDTO } from '$lib/models/SharedDTOs';
 	const price = writable<number>(0);
 	var priceAnimation: RefreshAnimation;
 
@@ -24,10 +25,6 @@
 			.withAutomaticReconnect()
 			.build();
 
-		connection.on('Price', (newPrice) => {
-			price.set(newPrice);
-			priceAnimation.play();
-		});
 		connection.on('PeakBlockHeight', (newBlockHeight) => {
 			peakBlockHeight.set(newBlockHeight);
 			peakBlockHeightAnimation.play();
