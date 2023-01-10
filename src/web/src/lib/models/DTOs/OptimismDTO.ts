@@ -69,4 +69,11 @@ export interface OptimismOPHolderMetricsDTO {
     timestamp: string;
 
     holderCount: number;
+
+    medianBalance: number;
+    averageBalance: number;
+    minimumBalance: number;
+    maximumBalance: number;
+    percentile20thBalance: number;
+    percentile80thBalance: number;
 }
