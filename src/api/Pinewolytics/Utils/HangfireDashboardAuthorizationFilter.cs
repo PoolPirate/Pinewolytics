@@ -7,10 +7,14 @@ public class HangfireDashboardAuthorizationFilter : IDashboardAuthorizationFilte
 {
     private const string HangfireCookieName = "Hangfire";
 
-    public static bool AllowWriteAccess(DashboardContext context, AuthorizationOptions options, bool isProduction)
+    public static bool IsReadOnlyAccess(DashboardContext context, AuthorizationOptions options, bool isProduction)
     {
-        var hangfireCookie = context.GetHttpContext().Request.Cookies.SingleOrDefault(x => x.Key == HangfireCookieName);
-        return !isProduction || hangfireCookie.Value == options.HangfireCookieSecret;
+        if (!context.GetHttpContext().Request.Cookies.ContainsKey(HangfireCookieName)) {
+            return true;
+        }
+
+        var hangfireCookie = context.GetHttpContext().Request.Cookies.Single(x => x.Key == HangfireCookieName);
+        return hangfireCookie.Value != options.HangfireCookieSecret;
     }
 
     public bool Authorize(DashboardContext context)

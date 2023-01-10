@@ -102,8 +102,8 @@ public class Startup
         {
             Authorization = new[] { new HangfireDashboardAuthorizationFilter() },
             IsReadOnlyFunc =
-        ctx => HangfireDashboardAuthorizationFilter.AllowWriteAccess(
-            ctx, app.ApplicationServices.GetRequiredService<AuthorizationOptions>(), env.IsProduction())
+                ctx => HangfireDashboardAuthorizationFilter.IsReadOnlyAccess(
+                    ctx, app.ApplicationServices.GetRequiredService<AuthorizationOptions>(), env.IsProduction())
         });
 
         app.UseResponseCaching();
