@@ -7,7 +7,6 @@
 		LegendComponentOption,
 		TitleComponentOption
 	} from 'echarts';
-	import jsonLogo from '$lib/static/logo/json.svg';
 	import queryIcon from '$lib/static/logo/query.png';
 
 	import { getQuerySrc } from '$lib/service/queries';

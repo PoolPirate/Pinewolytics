@@ -1,23 +1,20 @@
 <script lang="ts">
 	import TimeSeriesChart from '$lib/charts/TimeSeriesChart.svelte';
-	import ZoomableChart from '$lib/charts/ZoomableChart.svelte';
-	import type {
-		OptimismAddressBalanceDTO,
-		OptimismOPHolderMetricsDTO
-	} from '$lib/models/DTOs/OptimismDTO';
-	import type { TerraAddressBalanceDTO } from '$lib/models/DTOs/TerraDTOs';
+	import type { OptimismOPHolderMetricsDTO } from '$lib/models/DTOs/OptimismDTO';
 	import {
 		createQueryListener,
 		QueryName,
 		QuerySubscriptionBuilder
 	} from '$lib/service/querysubscription';
 	import {
+		DaySeriesToWeekSeriesByAvg,
 		DaySeriesToWeekSeriesByLast,
-		DaySeriesToWeekSeriesBySum,
+		DaySeriesToWeekSeriesByMax,
+		DaySeriesToWeekSeriesByMin,
 		type TimeSeriesEntry
 	} from '$lib/service/transform';
 	import { isWeeklyModeStoreName } from '$lib/utils/Utils';
-	import type { XAXisComponentOption, SeriesOption } from 'echarts';
+	import type { SeriesOption } from 'echarts';
 	import { getContext, onDestroy, onMount } from 'svelte';
 	import { writable, type Readable } from 'svelte/store';
 
@@ -37,6 +34,7 @@
 	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
 	const opHolderCountChart = writable<SeriesOption[]>([]);
+	const opHolderBalanceDistributionChart = writable<SeriesOption[]>([]);
 
 	$: makeOPHolderCountChart($opHolderMetricsHistoryQuery, $isWeeklyModeStore);
 	function makeOPHolderCountChart(values: OptimismOPHolderMetricsDTO[], isWeeklyMode: boolean) {
@@ -45,7 +43,7 @@
 		}
 
 		var opHolderCountSeries = values
-			.sort((a, b) => a.holderCount - b.holderCount)
+			.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
 			.map<TimeSeriesEntry>((x) => {
 				return {
 					timestamp: new Date(x.timestamp),
@@ -83,6 +81,92 @@
 			}
 		]);
 	}
+
+	$: makeOPHolderBalanceDistributionChart($opHolderMetricsHistoryQuery, $isWeeklyModeStore);
+	function makeOPHolderBalanceDistributionChart(
+		values: OptimismOPHolderMetricsDTO[],
+		isWeeklyMode: boolean
+	) {
+		if (values.length == 0) {
+			return;
+		}
+		const sortedValues = values.sort(
+			(a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
+		);
+
+		var opHolderBalanceMinimumSeries = sortedValues.map<TimeSeriesEntry>((x) => {
+			return {
+				timestamp: new Date(x.timestamp),
+				value: x.minimumBalance
+			};
+		});
+		var opHolderBalanceMaximumSeries = sortedValues.map<TimeSeriesEntry>((x) => {
+			return {
+				timestamp: new Date(x.timestamp),
+				value: x.maximumBalance
+			};
+		});
+		var opHolderBalanceAverageSeries = sortedValues.map<TimeSeriesEntry>((x) => {
+			return {
+				timestamp: new Date(x.timestamp),
+				value: x.averageBalance
+			};
+		});
+		var opHolderBalanceMedianSeries = sortedValues.map<TimeSeriesEntry>((x) => {
+			return {
+				timestamp: new Date(x.timestamp),
+				value: x.medianBalance
+			};
+		});
+		var opHolderBalancePercentile20eries = sortedValues.map<TimeSeriesEntry>((x) => {
+			return {
+				timestamp: new Date(x.timestamp),
+				value: x.percentile20thBalance
+			};
+		});
+		var opHolderBalancePercentile80Series = sortedValues.map<TimeSeriesEntry>((x) => {
+			return {
+				timestamp: new Date(x.timestamp),
+				value: x.percentile80thBalance
+			};
+		});
+
+		if (isWeeklyMode) {
+			opHolderBalanceMinimumSeries = DaySeriesToWeekSeriesByMin(opHolderBalanceMinimumSeries);
+			opHolderBalanceMaximumSeries = DaySeriesToWeekSeriesByMax(opHolderBalanceMaximumSeries);
+			opHolderBalanceAverageSeries = DaySeriesToWeekSeriesByAvg(opHolderBalanceAverageSeries);
+			opHolderBalanceMedianSeries = DaySeriesToWeekSeriesByAvg(opHolderBalanceMedianSeries);
+			opHolderBalancePercentile20eries = DaySeriesToWeekSeriesByAvg(
+				opHolderBalancePercentile20eries
+			);
+			opHolderBalancePercentile80Series = DaySeriesToWeekSeriesByAvg(
+				opHolderBalancePercentile80Series
+			);
+		}
+
+		opHolderBalanceDistributionChart.set([
+			{
+				type: 'line',
+				name: 'Average Balance',
+				data: opHolderBalanceAverageSeries.map((x) => [x.timestamp, x.value])
+			},
+			{
+				type: 'line',
+				name: 'Median Balance',
+				data: opHolderBalanceMedianSeries.map((x) => [x.timestamp, x.value])
+			},
+			{
+				type: 'line',
+				name: '20th Percentile Balance',
+				data: opHolderBalancePercentile20eries.map((x) => [x.timestamp, x.value])
+			},
+			{
+				type: 'line',
+				name: '80th Percentile Balance',
+				data: opHolderBalancePercentile80Series.map((x) => [x.timestamp, x.value])
+			}
+		]);
+	}
 </script>
 
 <div class="grid grid-cols-1 h-full transparent-background p-2 rounded-lg">
@@ -90,6 +174,12 @@
 		title={{ text: 'Holder Count' }}
 		queryName={QueryName.OptimismOPHolderMetricsHistory}
 		series={$opHolderCountChart}
+	/>
+	<TimeSeriesChart
+		title={{ text: 'Holder Balance Distribution' }}
+		yAxis={{ type: 'log', min: 0.01 }}
+		queryName={QueryName.OptimismOPHolderMetricsHistory}
+		series={$opHolderBalanceDistributionChart}
 	/>
 </div>
 
