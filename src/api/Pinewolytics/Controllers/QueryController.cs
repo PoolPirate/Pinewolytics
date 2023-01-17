@@ -111,6 +111,15 @@ public class QueryController : ControllerBase
         CancellationToken cancellationToken)
     {
         string[] wallets = await QueryClient.GetRelatedAddressesAsync(addresses, cancellationToken);
-        return base.Ok(wallets);
+        return Ok(wallets);
+    }
+
+    [HttpGet("Osmosis/WalletRankings/{address}")]
+    [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "address" })]
+    public async Task<IActionResult> GetWalletRankingAsync([FromRoute] string address,
+        CancellationToken cancellationToken)
+    {
+        var ranking = await QueryClient.GetOsmosisWalletRankingAsync(address, cancellationToken);
+        return Ok(ranking);
     }
 }

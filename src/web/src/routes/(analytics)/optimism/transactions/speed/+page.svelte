@@ -32,18 +32,21 @@
 		QueryName.OptimismTransactionMetricsHistory
 	);
 	const newTxCountChart = writable<SeriesOption[]>([]);
+	const totalTxCountChart = writable<SeriesOption[]>([]);
 	const AverageTPSChart = writable<SeriesOption>();
 	const averageBlockTimeChart = writable<SeriesOption>();
 
 	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
-	$: makeNewTxCountSeries($txMetricQuery, $isWeeklyModeStore);
-	function makeNewTxCountSeries(values: OptimismTransactionMetricsDTO[], isWeeklyMode: boolean) {
+	$: makeNewTxCountChart($txMetricQuery, $isWeeklyModeStore);
+	function makeNewTxCountChart(values: OptimismTransactionMetricsDTO[], isWeeklyMode: boolean) {
 		if (values.length == 0) {
 			return;
 		}
 
-		var newTxCountSeries = values
+		values = values.slice(0, values.length - 2);
+
+		var totalTxCountSeries = values
 			.sort((a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime())
 			.map<TimeSeriesEntry>((x) => {
 				return {
@@ -53,21 +56,34 @@
 			});
 
 		if (isWeeklyMode) {
-			newTxCountSeries = DaySeriesToWeekSeriesBySum(newTxCountSeries);
+			totalTxCountSeries = DaySeriesToWeekSeriesBySum(totalTxCountSeries);
 		}
 
-		newTxCountChart.set([
+		var tpsSeries = totalTxCountSeries.map<TimeSeriesEntry>((x) => {
+			return {
+				timestamp: x.timestamp,
+				value: isWeeklyMode ? x.value / (7 * 24 * 60 * 60) : x.value / (24 * 60 * 60)
+			};
+		});
+
+		totalTxCountChart.set([
 			{
 				type: 'line',
 				name: 'Transaction Count',
-				data: newTxCountSeries.map((x) => [x.timestamp, x.value]),
+				data: totalTxCountSeries.map((x) => [x.timestamp, x.value]),
+				areaStyle: {}
+			},
+			{
+				type: 'line',
+				name: 'TPS',
+				data: tpsSeries.map((x) => [x.timestamp, x.value]),
 				areaStyle: {}
 			}
 		]);
 	}
 
-	$: makeTPSSeries($txMetricQuery);
-	function makeTPSSeries(values: OptimismTransactionMetricsDTO[]) {
+	$: makeTPSChart($txMetricQuery);
+	function makeTPSChart(values: OptimismTransactionMetricsDTO[]) {
 		if (values.length == 0) {
 			return;
 		}
@@ -141,8 +157,8 @@
 		});
 	}
 
-	$: makeBPSSeries($txMetricQuery);
-	function makeBPSSeries(values: OptimismTransactionMetricsDTO[]) {
+	$: makeAverageBlockTimeChart($txMetricQuery);
+	function makeAverageBlockTimeChart(values: OptimismTransactionMetricsDTO[]) {
 		if (values.length == 0) {
 			return;
 		}
@@ -235,7 +251,7 @@
 	<TimeSeriesChart
 		title={{ text: 'New Transactions Executed' }}
 		class="h-128"
-		series={$newTxCountChart}
+		series={$totalTxCountChart}
 		queryName={QueryName.OptimismTransactionMetricsHistory}
 	/>
 </div>

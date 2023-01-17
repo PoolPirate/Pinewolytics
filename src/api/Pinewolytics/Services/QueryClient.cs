@@ -286,4 +286,11 @@ public class QueryClient : Singleton
         var results = await Flipside.GetOrRunAsync<FlipsidePrimitiveObject<string>>(sql, cancellationToken: cancellationToken);
         return results.Select(x => x.Value).ToArray();
     }
+
+    public async Task<OsmosisWalletRankingDTO> GetOsmosisWalletRankingAsync(string address, CancellationToken cancellationToken)
+    {
+        string sql = FlipsideQueries.OsmosisWalletRanking(address);
+        var results = await Flipside.GetOrRunAsync<OsmosisWalletRankingDTO>(sql, cancellationToken: cancellationToken);
+        return results.Single();
+    }
 }

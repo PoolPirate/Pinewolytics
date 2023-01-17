@@ -4,7 +4,8 @@ import type {
 	OsmosisLPJoinDTO,
 	OsmosisNetTransferDTO,
 	OsmosisSwapDTO,
-	OsmosisTransferDTO
+	OsmosisTransferDTO,
+	OsmosisWalletRankingDTO
 } from '$lib/models/DTOs/OsmosisDTOs';
 import type { QueryName } from './querysubscription';
 
@@ -65,6 +66,11 @@ export async function getOsmosisDeveloperWalletsRecursive(depth: number): Promis
 export async function getRelatedWallets(addresses: string[]): Promise<string[]> {
 	const response = await fetch('/Api/Osmosis/RelatedWallets' + makeAddressParams(addresses));
 	return (await response.json()) as string[];
+}
+
+export async function getOsmosisWalletRanking(address: string): Promise<OsmosisWalletRankingDTO> {
+	const response = await fetch("/Api/Osmosis/WalletRankings/" + address);
+	return (await response.json()) as OsmosisWalletRankingDTO;
 }
 
 function makeAddressParams(addresses: string[]) {

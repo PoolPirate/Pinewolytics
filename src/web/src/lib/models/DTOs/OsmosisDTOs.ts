@@ -62,3 +62,18 @@ export interface OsmosisFlowSankeyDTO {
 	netStaked: number;
 	netUnstaked: number;
 }
+
+export interface OsmosisWalletPoolRankingDTO {
+	poolId: number;
+	lpTokenBalance: number;
+	rank: number;
+}
+
+export interface OsmosisWalletRankingDTO {
+	address: string;
+	lastUpdatedAt: string;
+	stakedAmount: number;
+	stakedRank: number;
+
+	poolRankings: OsmosisWalletPoolRankingDTO[];
+}
