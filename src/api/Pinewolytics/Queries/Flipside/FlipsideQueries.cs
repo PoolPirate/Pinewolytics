@@ -111,4 +111,29 @@ public static class FlipsideQueries
             LEFT JOIN lpd lp ON sc.address = lp.address
             """;
     }
+
+    public static string OsmosisPoolInfos(uint[] poolIds)
+    {
+        return $"""
+            WITH scope AS (
+            {string.Join(" UNION\n", poolIds.Select(pid => $"SELECT '{pid}' AS pid"))}
+            ),  
+            poolassets AS (
+              SELECT p.pool_id, f1.value:asset_address AS asset
+              FROM osmosis.core.dim_liquidity_pools p,
+              LATERAL flatten(input => assets) f1
+            ),
+            pools AS (
+              SELECT pool_id, ARRAY_AGG(COALESCE(project_name, asset)) AS assets
+              FROM poolassets
+              LEFT JOIN osmosis.core.dim_tokens ON asset = address
+              GROUP BY pool_id
+            )
+
+            SELECT pid, assets
+            FROM scope
+            JOIN pools ON pid = pool_id
+            
+            """;
+    }
 }

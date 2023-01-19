@@ -3,6 +3,7 @@ import type {
 	OsmosisIBCTransferDTO,
 	OsmosisLPJoinDTO,
 	OsmosisNetTransferDTO,
+	OsmosisPoolInfoDTO,
 	OsmosisSwapDTO,
 	OsmosisTransferDTO,
 	OsmosisWalletRankingDTO
@@ -15,36 +16,36 @@ export async function getQuerySrc(queryName: QueryName): Promise<string> {
 }
 
 export async function getOSMOSwaps(addresses: string[]): Promise<OsmosisSwapDTO[]> {
-	const response = await fetch('/Api/Osmosis/Swaps' + makeAddressParams(addresses));
+	const response = await fetch('/Api/Osmosis/Swaps' + makeListParams("addresses", addresses));
 	return (await response.json()) as OsmosisSwapDTO[];
 }
 
 export async function getOSMOTransfers(addresses: string[]): Promise<OsmosisTransferDTO[]> {
-	const response = await fetch('/Api/Osmosis/Transfers' + makeAddressParams(addresses));
+	const response = await fetch('/Api/Osmosis/Transfers' + makeListParams("addresses", addresses));
 	return (await response.json()) as OsmosisTransferDTO[];
 }
 
 export async function getInternalNetOSMOTransfers(
 	addresses: string[]
 ): Promise<OsmosisNetTransferDTO[]> {
-	const response = await fetch('/Api/Osmosis/InternalNetTransfers' + makeAddressParams(addresses));
+	const response = await fetch('/Api/Osmosis/InternalNetTransfers' + makeListParams("addresses", addresses));
 	return (await response.json()) as OsmosisNetTransferDTO[];
 }
 
 export async function getExternalNetOSMOTransfers(
 	addresses: string[]
 ): Promise<OsmosisNetTransferDTO[]> {
-	const response = await fetch('/Api/Osmosis/ExternalNetTransfers' + makeAddressParams(addresses));
+	const response = await fetch('/Api/Osmosis/ExternalNetTransfers' + makeListParams("addresses", addresses));
 	return (await response.json()) as OsmosisNetTransferDTO[];
 }
 
 export async function getOSMOIBCTransfers(addresses: string[]): Promise<OsmosisIBCTransferDTO[]> {
-	const response = await fetch('/Api/Osmosis/IBCTransfers' + makeAddressParams(addresses));
+	const response = await fetch('/Api/Osmosis/IBCTransfers' + makeListParams("addresses", addresses));
 	return (await response.json()) as OsmosisIBCTransferDTO[];
 }
 
 export async function getOSMOLPJoins(addresses: string[]): Promise<OsmosisLPJoinDTO[]> {
-	const response = await fetch('/Api/Osmosis/LPJoins' + makeAddressParams(addresses));
+	const response = await fetch('/Api/Osmosis/LPJoins' + makeListParams("addresses", addresses));
 	return (await response.json()) as OsmosisLPJoinDTO[];
 }
 
@@ -64,7 +65,7 @@ export async function getOsmosisDeveloperWalletsRecursive(depth: number): Promis
 }
 
 export async function getRelatedWallets(addresses: string[]): Promise<string[]> {
-	const response = await fetch('/Api/Osmosis/RelatedWallets' + makeAddressParams(addresses));
+	const response = await fetch('/Api/Osmosis/RelatedWallets' + makeListParams("addresses", addresses));
 	return (await response.json()) as string[];
 }
 
@@ -73,11 +74,16 @@ export async function getOsmosisWalletRanking(address: string): Promise<OsmosisW
 	return (await response.json()) as OsmosisWalletRankingDTO;
 }
 
-function makeAddressParams(addresses: string[]) {
-	var params = '?addresses=';
+export async function getOsmosisPoolInfosAsync(poolIds: number[]): Promise<OsmosisPoolInfoDTO[]> {
+	const response = await fetch("/Api/Osmosis/PoolInfos/"  + makeListParams("poolIds", poolIds));
+	return (await response.json()) as OsmosisPoolInfoDTO[];
+}
 
-	addresses.forEach((address) => {
-		params += address;
+function makeListParams(paramName: string, values: any[]) {
+	var params = '?' + paramName + '=';
+
+	values.forEach((values) => {
+		params += values;
 		params += ',';
 	});
 

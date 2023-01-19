@@ -122,4 +122,13 @@ public class QueryController : ControllerBase
         var ranking = await QueryClient.GetOsmosisWalletRankingAsync(address, cancellationToken);
         return Ok(ranking);
     }
+
+    [HttpGet("Osmosis/PoolInfos")]
+    [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "poolIds" })]
+    public async Task<IActionResult> GetPoolInfosAsync([FromQuery][ModelBinder(typeof(CommaDelimitedArrayModelBinder))] uint[] poolIds,
+    CancellationToken cancellationToken)
+    {
+        var ranking = await QueryClient.GetOsmosisPoolInfosAsync(poolIds, cancellationToken);
+        return Ok(ranking);
+    }
 }

@@ -77,3 +77,8 @@ export interface OsmosisWalletRankingDTO {
 
 	poolRankings: OsmosisWalletPoolRankingDTO[];
 }
+
+export interface OsmosisPoolInfoDTO {
+	poolId: number;
+	assets: string[];
+}

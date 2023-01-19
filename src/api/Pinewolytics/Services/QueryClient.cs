@@ -293,4 +293,10 @@ public class QueryClient : Singleton
         var results = await Flipside.GetOrRunAsync<OsmosisWalletRankingDTO>(sql, cancellationToken: cancellationToken);
         return results.Single();
     }
+
+    public async Task<OsmosisPoolInfoDTO[]> GetOsmosisPoolInfosAsync(uint[] poolIds, CancellationToken cancellationToken)
+    {
+        string sql = FlipsideQueries.OsmosisPoolInfos(poolIds);
+        return await Flipside.GetOrRunAsync<OsmosisPoolInfoDTO>(sql, cancellationToken: cancellationToken);
+    }
 }
