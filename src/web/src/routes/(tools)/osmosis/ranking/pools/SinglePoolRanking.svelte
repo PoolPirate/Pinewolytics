@@ -10,7 +10,7 @@
 
 	var rankColor =
 		rank < 100
-			? 'goldenrod'
+			? 'gold'
 			: rank < 200
 			? 'silver'
 			: rank < 300
@@ -29,7 +29,7 @@
 </script>
 
 <div
-	class="border my-2 flex flex-col justify-between border-gray-400 p-2 rounded-md"
+	class="border my-2 flex flex-col justify-between border-gray-700 bg-gray-400 p-2 rounded-md"
 	on:click={() => expanded.update((x) => !x)}
 	on:keydown={() => {}}
 >
