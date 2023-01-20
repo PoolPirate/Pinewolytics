@@ -1,9 +1,18 @@
 <script lang="ts">
-	export let assets: string[];
+	export let assets: string[] | null;
+
+	let clazz: string = '';
+	export { clazz as class };
 </script>
 
-<ul>
-	{#each assets as asset}
-		<li>{asset}</li>
-	{/each}
-</ul>
+<div class={clazz}>
+	{#if assets != null}
+		<ul>
+			{#each assets as asset}
+				<li>{asset}</li>
+			{/each}
+		</ul>
+	{:else}
+		<p>Unknown</p>
+	{/if}
+</div>

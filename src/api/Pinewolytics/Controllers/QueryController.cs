@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Pinewolytics.Models.DTOs.Osmosis;
 using Pinewolytics.Services;
 using Pinewolytics.Utils;
 
@@ -128,6 +129,11 @@ public class QueryController : ControllerBase
     public async Task<IActionResult> GetPoolInfosAsync([FromQuery][ModelBinder(typeof(CommaDelimitedArrayModelBinder))] uint[] poolIds,
     CancellationToken cancellationToken)
     {
+        if (poolIds.Length == 0)
+        {
+            return Ok(Array.Empty<OsmosisPoolInfoDTO>());
+        } 
+
         var ranking = await QueryClient.GetOsmosisPoolInfosAsync(poolIds, cancellationToken);
         return Ok(ranking);
     }

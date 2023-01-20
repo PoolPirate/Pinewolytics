@@ -79,6 +79,16 @@ export async function getOsmosisPoolInfosAsync(poolIds: number[]): Promise<Osmos
 	return (await response.json()) as OsmosisPoolInfoDTO[];
 }
 
+export async function getICNSNameByAddress(address: string): Promise<string | null> {
+	const response = await fetch("/Api/ICNS/Reverse/" + address);
+	
+	if (!response.ok) {
+		return null;
+	}
+
+	return await response.text();
+}
+
 function makeListParams(paramName: string, values: any[]) {
 	var params = '?' + paramName + '=';
 

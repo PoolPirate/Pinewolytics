@@ -1,0 +1,109 @@
+<script lang="ts">
+	import { page } from '$app/stores';
+	import ICNSName from '../ICNSName.svelte';
+	import type {
+		OsmosisPoolInfoDTO,
+		OsmosisWalletPoolRankingDTO,
+		OsmosisWalletRankingDTO
+	} from '$lib/models/DTOs/OsmosisDTOs';
+	import { getOsmosisPoolInfosAsync, getOsmosisWalletRanking } from '$lib/service/queries';
+	import externalLinkLogo from '$lib/static/logo/external-link.svg';
+	import WalletGraph from '$lib/components/WalletGraph.svelte';
+
+	var loadingPromise: Promise<{
+		walletRanking: OsmosisWalletRankingDTO;
+		poolRankings: OsmosisWalletPoolRankingDTO[];
+		poolInfos: OsmosisPoolInfoDTO[];
+	}> = null!;
+
+	$: loadingPromise = load($page.params.address);
+	async function load(address: string) {
+		const walletRanking = await getOsmosisWalletRanking(address);
+		const poolInfos = await getOsmosisPoolInfosAsync(
+			walletRanking.poolRankings.map((x) => x.poolId)
+		);
+
+		return {
+			walletRanking: walletRanking,
+			poolRankings: walletRanking.poolRankings,
+			poolInfos: poolInfos
+		};
+	}
+
+	function getAgeString(timestamp: Date) {
+		var diff = new Date().getTime() - timestamp.getTime();
+
+		var hours = Math.floor(diff / (1000 * 60 * 60));
+		diff -= hours * (1000 * 60 * 60);
+
+		var mins = Math.floor(diff / (1000 * 60));
+		diff -= mins * (1000 * 60);
+
+		return hours + ' hours, ' + mins + ' minutes';
+	}
+</script>
+
+<div class="px-4 pt-4">
+	{#await loadingPromise}
+		<p>Loading</p>
+	{:then { walletRanking, poolRankings, poolInfos }}
+		<div
+			class="flex flex-row items-center gap-4 border border-gray-400 p-3 rounded-md bg-gray-200 mb-2"
+		>
+			<p class="font-bold">{walletRanking.address}</p>
+			<a
+				rel="noreferrer"
+				target="_blank"
+				href="https://www.mintscan.io/osmosis/account/{$page.params.address}"
+			>
+				<img class="h-4" src={externalLinkLogo} alt="Open in Mintscan" />
+			</a>
+		</div>
+
+		<ICNSName address={walletRanking.address} />
+
+		<hr class="my-4" />
+
+		<div class="flex flex-col gap-1">
+			<div
+				class="flex flex-row justify-between items-center gap-4 border border-gray-400 p-3 rounded-md bg-gray-200"
+			>
+				<h1 class="text-lg font-bold">$OSMO Balance</h1>
+				<p>Soon TM</p>
+			</div>
+
+			<div
+				class="flex flex-row justify-between items-center gap-4 border border-gray-400 p-3 rounded-md bg-gray-200"
+			>
+				<h1 class="text-lg font-bold">Staked $OSMO</h1>
+
+				{#if walletRanking.stakedAmount > 0}
+					<p>{walletRanking.stakedAmount}</p>
+					<p>{walletRanking.stakedRank}</p>
+				{:else}
+					<p>0 $OSMO</p>
+					<p>No Rank</p>
+				{/if}
+			</div>
+
+			<div
+				class="flex flex-row justify-between items-center gap-4 border border-gray-400 p-3 rounded-md bg-gray-200"
+			>
+				<h1 class="text-lg font-bold">Total LP Value</h1>
+				<p>Soon TM</p>
+			</div>
+		</div>
+
+		<hr class="mt-8 p-1" />
+
+		<p class="text-right font-thin">
+			Last Updated: {getAgeString(new Date(walletRanking.lastUpdatedAt))} ago
+		</p>
+	{/await}
+</div>
+
+<style>
+	.max-h-half {
+		max-height: 50vh;
+	}
+</style>

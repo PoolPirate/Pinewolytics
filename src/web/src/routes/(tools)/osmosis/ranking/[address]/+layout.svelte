@@ -1,29 +1,18 @@
 <script lang="ts">
-	import { beforeUpdate } from 'svelte';
-
-	beforeUpdate(() => {
-		const rootElement = document.querySelector(':root')! as any;
-
-		rootElement.style.setProperty('--color1', '#f200c9');
-		rootElement.style.setProperty('--color2', '#0602bf');
-	});
+	import { page } from '$app/stores';
+	import { getOsmosisWalletRanking } from '$lib/service/queries';
+	import { onMount, setContext } from 'svelte';
+	import RankingLayout from '../RankingLayout.svelte';
 </script>
 
-<div class="h-full flex flex-col justify-center items-center">
-	<div class="bg-white p-4 rounded-xl">
-		<nav>
-			<ul class="flex flex-row justify-around gap-4">
-				<li><a>Ranking</a></li>
-				<li><a>Checklist</a></li>
-			</ul>
-		</nav>
-		<hr class="h-kek mt-2 bg-black" />
-		<slot />
-	</div>
-</div>
+<RankingLayout>
+	<nav slot="nav" class="flex flex-row justify-around gap-4">
+		<a href="/osmosis/ranking">◀</a>
+		<a href="./overview">Overview</a>
+		<a href="./pools">Pools</a>
+	</nav>
 
-<style>
-	.h-kek {
-		height: 0.125rem;
-	}
-</style>
+	<main slot="main">
+		<slot />
+	</main>
+</RankingLayout>

@@ -7,7 +7,6 @@ public class LunaLCDClient : Singleton
 {
     private readonly Uri ApiEndpoint = new Uri("https://phoenix-lcd.terra.dev", UriKind.Absolute);
 
-
     [Inject]
     private readonly HttpClient Client = null!;
 
