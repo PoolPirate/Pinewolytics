@@ -29,13 +29,11 @@
 		</a>
 
 		<AddressList class="w-3/12" {assets} />
-		<p class="w-4/12">{Math.round(gammAmount / Math.pow(10, 18))}</p>
+		<p class="w-5/12">{Math.round(gammAmount / Math.pow(10, 16)) / 100} Shares</p>
 		<Rank {rank} class="text-lg font-bold w-4-12" />
 	</div>
 
 	<div class:hidden={true}>
-		<p>EXPANDED</p>
-		<p>EXPANDED</p>
-		<p>EXPANDED</p>
+		<p />
 	</div>
 </div>
