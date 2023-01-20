@@ -10,6 +10,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import Loading from '$lib/static/loading.svg';
+	import Rank from '../Rank.svelte';
 
 	var loadingPromise: Promise<{
 		walletRanking: OsmosisWalletRankingDTO;
@@ -88,8 +89,8 @@
 				<h1 class="text-lg font-bold">Staked $OSMO</h1>
 
 				{#if walletRanking.stakedAmount > 0}
-					<p>{walletRanking.stakedAmount}</p>
-					<p>{walletRanking.stakedRank}</p>
+					<p>{Math.round(100 * walletRanking.stakedAmount) / 100}</p>
+					<Rank rank={walletRanking.stakedRank} class="text-lg font-bold w-4-12" />
 				{:else}
 					<p>0 $OSMO</p>
 					<p>No Rank</p>

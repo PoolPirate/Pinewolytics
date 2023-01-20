@@ -2,28 +2,12 @@
 	import { writable } from 'svelte/store';
 	import AddressList from '../AddressList.svelte';
 	import externalLinkLogo from '$lib/static/logo/external-link.svg';
+	import Rank from '../Rank.svelte';
 
 	export let pool: number;
 	export let assets: string[] | null;
 	export let rank: number;
 	export let gammAmount: number;
-
-	var rankColor =
-		rank < 100
-			? 'gold'
-			: rank < 200
-			? 'silver'
-			: rank < 300
-			? 'orange'
-			: rank < 500
-			? 'green'
-			: rank < 1000
-			? 'skyblue'
-			: rank < 5000
-			? 'blue'
-			: rank < 10000
-			? 'purple'
-			: 'red';
 
 	const expanded = writable<boolean>(false);
 </script>
@@ -46,7 +30,7 @@
 
 		<AddressList class="w-3/12" {assets} />
 		<p class="w-4/12">{Math.round(gammAmount / Math.pow(10, 18))}</p>
-		<p class="text-lg font-bold w-4-12" style="color: {rankColor}">#{rank}</p>
+		<Rank {rank} class="text-lg font-bold w-4-12" />
 	</div>
 
 	<div class:hidden={true}>
