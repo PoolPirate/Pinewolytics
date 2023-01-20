@@ -4,9 +4,10 @@
 	import OsmosisLogo from '$lib/static/logo/osmosis.png';
 	import InfoLogo from '$lib/static/logo/info.svg';
 
-	var addressInput: string;
+	var addressInput: string = localStorage.getItem('address') ?? '';
 
 	function goToRanking() {
+		localStorage.setItem('address', addressInput);
 		goto('./ranking/' + addressInput + '/overview');
 	}
 </script>
