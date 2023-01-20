@@ -3,12 +3,17 @@
 	import RankingLayout from './RankingLayout.svelte';
 	import OsmosisLogo from '$lib/static/logo/osmosis.png';
 	import InfoLogo from '$lib/static/logo/info.svg';
+	import { onMount } from 'svelte';
 
-	var addressInput: string = localStorage.getItem('address') ?? '';
+	var addressInput: string;
+
+	onMount(() => {
+		addressInput = localStorage.getItem('address') ?? '';
+	});
 
 	function goToRanking() {
 		localStorage.setItem('address', addressInput);
-		goto('./ranking/' + addressInput + '/overview');
+		goto('./ranking/overview?address=' + addressInput);
 	}
 </script>
 

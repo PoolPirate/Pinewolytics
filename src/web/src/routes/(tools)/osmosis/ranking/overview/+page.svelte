@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { page } from '$app/stores';
 	import ICNSName from '../ICNSName.svelte';
 	import type {
 		OsmosisPoolInfoDTO,
@@ -7,16 +6,30 @@
 		OsmosisWalletRankingDTO
 	} from '$lib/models/DTOs/OsmosisDTOs';
 	import { getOsmosisPoolInfosAsync, getOsmosisWalletRanking } from '$lib/service/queries';
-	import SinglePoolRanking from './SinglePoolRanking.svelte';
 	import externalLinkLogo from '$lib/static/logo/external-link.svg';
+	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 
 	var loadingPromise: Promise<{
 		walletRanking: OsmosisWalletRankingDTO;
 		poolRankings: OsmosisWalletPoolRankingDTO[];
 		poolInfos: OsmosisPoolInfoDTO[];
-	}> = null!;
+	}> = Promise.resolve({ walletRanking: null!, poolInfos: [], poolRankings: [] });
 
-	$: loadingPromise = load($page.params.address);
+	onMount(() => {
+		const urlParams = new URLSearchParams(window.location.search);
+		const addr = urlParams.get('address');
+		if (addr == null) {
+			goto('/osmosis/ranking');
+			return;
+		}
+
+		address = addr;
+		loadingPromise = load(address);
+	});
+
+	var address = '';
+
 	async function load(address: string) {
 		const walletRanking = await getOsmosisWalletRanking(address);
 		const poolInfos = await getOsmosisPoolInfosAsync(
@@ -51,11 +64,7 @@
 			class="flex flex-row items-center gap-4 border border-gray-400 p-3 rounded-md bg-gray-200 mb-2"
 		>
 			<p class="font-bold">{walletRanking.address}</p>
-			<a
-				rel="noreferrer"
-				target="_blank"
-				href="https://www.mintscan.io/osmosis/account/{$page.params.address}"
-			>
+			<a rel="noreferrer" target="_blank" href="https://www.mintscan.io/osmosis/account/{address}">
 				<img class="h-4" src={externalLinkLogo} alt="Open in Mintscan" />
 			</a>
 		</div>
@@ -64,21 +73,34 @@
 
 		<hr class="my-4" />
 
-		<h1 class="text-xl font-bold">Pool Rankings</h1>
+		<div class="flex flex-col gap-1">
+			<div
+				class="flex flex-row justify-between items-center gap-4 border border-gray-400 p-3 rounded-md bg-gray-200"
+			>
+				<h1 class="text-lg font-bold">$OSMO Balance</h1>
+				<p>Soon TM</p>
+			</div>
 
-		<div class="overflow-y-auto max-h-half pr-4">
-			{#if poolRankings.length == 0}
-				<p>No LP Positions Found</p>
-			{/if}
+			<div
+				class="flex flex-row justify-between items-center gap-4 border border-gray-400 p-3 rounded-md bg-gray-200"
+			>
+				<h1 class="text-lg font-bold">Staked $OSMO</h1>
 
-			{#each poolRankings.sort((a, b) => a.rank - b.rank) as poolRanking}
-				<SinglePoolRanking
-					pool={poolRanking.poolId}
-					rank={poolRanking.rank}
-					gammAmount={poolRanking.lpTokenBalance}
-					assets={poolInfos.find((x) => x.poolId == poolRanking.poolId)?.assets ?? null}
-				/>
-			{/each}
+				{#if walletRanking.stakedAmount > 0}
+					<p>{walletRanking.stakedAmount}</p>
+					<p>{walletRanking.stakedRank}</p>
+				{:else}
+					<p>0 $OSMO</p>
+					<p>No Rank</p>
+				{/if}
+			</div>
+
+			<div
+				class="flex flex-row justify-between items-center gap-4 border border-gray-400 p-3 rounded-md bg-gray-200"
+			>
+				<h1 class="text-lg font-bold">Total LP Value</h1>
+				<p>Soon TM</p>
+			</div>
 		</div>
 
 		<hr class="mt-8 p-1" />
@@ -88,9 +110,3 @@
 		</p>
 	{/await}
 </div>
-
-<style>
-	.max-h-half {
-		max-height: 50vh;
-	}
-</style>
