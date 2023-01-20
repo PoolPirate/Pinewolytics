@@ -9,6 +9,7 @@
 	import externalLinkLogo from '$lib/static/logo/external-link.svg';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
+	import Loading from '$lib/static/loading.svg';
 
 	var loadingPromise: Promise<{
 		walletRanking: OsmosisWalletRankingDTO;
@@ -58,7 +59,7 @@
 
 <div class="px-4 pt-4">
 	{#await loadingPromise}
-		<p>Loading</p>
+		<img class="w-64 p-4 invert" src={Loading} alt="Loading" />
 	{:then { walletRanking, poolRankings, poolInfos }}
 		<div
 			class="flex flex-row items-center gap-4 border border-gray-400 p-3 rounded-md bg-gray-200 mb-2"
@@ -110,3 +111,9 @@
 		</p>
 	{/await}
 </div>
+
+<style>
+	.invert {
+		filter: invert(-1);
+	}
+</style>

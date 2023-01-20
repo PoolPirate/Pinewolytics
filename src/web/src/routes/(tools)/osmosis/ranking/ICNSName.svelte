@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getICNSNameByAddress } from '$lib/service/queries';
+	import Loading from '$lib/static/loading.svg';
 
 	export let address: string;
 
@@ -13,15 +14,23 @@
 
 <div class="flex flex-row items-center gap-4 border border-gray-400 p-3 rounded-md bg-gray-200">
 	<b>ICNS:</b>
-	<div class="w-full text-right">
+	<div class="w-full flex flex-row justify-end">
 		{#await loadingPromise}
-			<p>Looking for ICNS Name</p>
+			<img class="h-6 invert" src={Loading} alt="Loading" />
 		{:then name}
 			{#if name == null}
 				<p>No ICNS Name Found</p>
 			{:else}
 				<p>{name}.OSMO</p>
 			{/if}
+		{:catch}
+			<p class="text-red-500 font-bold">Error</p>
 		{/await}
 	</div>
 </div>
+
+<style>
+	.invert {
+		filter: invert(-1);
+	}
+</style>
