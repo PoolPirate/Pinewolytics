@@ -1,5 +1,4 @@
 <script lang="ts">
-	import LoadingSpinner from '$lib/LoadingSpinner.svelte';
 	import {
 		sumIBCTransferVolume,
 		sumSwapFromVolume,
@@ -54,7 +53,6 @@
 
 {#await devAddressesPromise}
 	<p>Tracing dev addresses...</p>
-	<LoadingSpinner />
 {:then devAddresses}
 	<p>Found a network of {devAddresses.length} addresses</p>
 {:catch error}
@@ -67,7 +65,6 @@
 
 {#await transfersPromise}
 	<p>Loading OSMO transfers</p>
-	<LoadingSpinner />
 {:then { addresses, transfers }}
 	<p>Found {transfers.length} transfers from and to it</p>
 	<p>{sumTransferVolume(transfers.filter((x) => addresses.includes(x.sender)))} Outwards</p>
@@ -82,7 +79,6 @@
 
 {#await ibcTransfersPromise}
 	<p>Loading IBC OSMO transfers</p>
-	<LoadingSpinner />
 {:then { addresses, ibcTransfers }}
 	<p>Found {ibcTransfers.length} IBC transfers from and to it</p>
 	<p>{sumIBCTransferVolume(ibcTransfers.filter((x) => addresses.includes(x.sender)))} Outwards</p>
@@ -97,7 +93,6 @@
 
 {#await swapsPromise}
 	<p>Loading Swaps</p>
-	<LoadingSpinner />
 {:then { addresses, swaps }}
 	<p>Found {swaps.length} swaps from and to OSMO</p>
 	<p>{sumSwapFromVolume(swaps.filter((x) => x.fromCurrency == 'uosmo'))} To other assets</p>
@@ -112,7 +107,6 @@
 
 {#await lpJoinsPromise}
 	<p>Loading LP Joins</p>
-	<LoadingSpinner />
 {:then { addresses, lpJoins }}
 	<p>Found {lpJoins.length} LP positions from and to it</p>
 {:catch error}
