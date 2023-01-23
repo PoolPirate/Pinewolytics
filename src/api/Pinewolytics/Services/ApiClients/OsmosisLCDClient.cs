@@ -47,6 +47,6 @@ public class OsmosisLCDClient : Singleton
         response.EnsureSuccessStatusCode();
     
         var result = await response.Content.ReadFromJsonAsync<BalanceResult>(cancellationToken: cancellationToken);
-        return result!.Balance!.Amount;
+        return result!.Balance!.Amount / Math.Pow(10, 6);
     }
 }
