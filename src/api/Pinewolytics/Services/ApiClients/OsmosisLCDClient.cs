@@ -20,7 +20,7 @@ public class OsmosisLCDClient : Singleton
         {
             primary_name = new
             {
-                address=address
+                address
             }
         };
         string payloadJson = JsonSerializer.Serialize(payloadObject);
@@ -35,5 +35,18 @@ public class OsmosisLCDClient : Singleton
         return string.IsNullOrWhiteSpace(name)
             ? null
             : name;
+    }
+
+    record BalanceResult(DenominatedBalance Balance);
+    record DenominatedBalance(string Denom, double Amount);
+    public async Task<double> GetCurrentOSMOBalanceAsync(string address, CancellationToken cancellationToken)
+    {
+        var route = new Uri(ApiEndpoint, $"cosmos/bank/v1beta1/balances/{address}/by_denom?denom=uosmo");
+        var response = await Client.GetAsync(route, cancellationToken); 
+        
+        response.EnsureSuccessStatusCode();
+    
+        var result = await response.Content.ReadFromJsonAsync<BalanceResult>(cancellationToken: cancellationToken);
+        return result!.Balance!.Amount;
     }
 }

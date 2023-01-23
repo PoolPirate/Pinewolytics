@@ -80,7 +80,13 @@
 				class="flex flex-row justify-between items-center gap-4 border border-gray-400 p-3 rounded-md bg-gray-200"
 			>
 				<h1 class="text-lg font-bold">$OSMO Balance</h1>
-				<p>Soon TM</p>
+				{#if walletRanking.balanceAmount > 0}
+					<p>{Math.round(1000 * walletRanking.balanceAmount) / 1000} $OSMO</p>
+					<Rank rank={walletRanking.balanceRank} class="text-lg font-bold w-4-12" />
+				{:else}
+					<p>0 $OSMO</p>
+					<p>No Rank</p>
+				{/if}
 			</div>
 
 			<div
@@ -89,7 +95,7 @@
 				<h1 class="text-lg font-bold">Staked $OSMO</h1>
 
 				{#if walletRanking.stakedAmount > 0}
-					<p>{Math.round(100 * walletRanking.stakedAmount) / 100}</p>
+					<p>{Math.round(100 * walletRanking.stakedAmount) / 100} $OSMO</p>
 					<Rank rank={walletRanking.stakedRank} class="text-lg font-bold w-4-12" />
 				{:else}
 					<p>0 $OSMO</p>

@@ -9,16 +9,20 @@ public class OsmosisWalletRankingDTO : IFlipsideObject<OsmosisWalletRankingDTO>
     public required DateTimeOffset LastUpdatedAt { get; init; }
     public required double StakedAmount { get; init; }
     public required long StakedRank { get; init; }
+        
+    public required double BalanceAmount { get; set; }
+    public required long BalanceRank { get; init; }
 
     public required OsmosisWalletPoolRankingDTO[] PoolRankings { get; init; }
 
     public static OsmosisWalletRankingDTO Parse(string[] rawValues)
     {
-        var pids = JsonSerializer.Deserialize<ulong[]>(rawValues[4]) ?? throw new JsonException("Unexpected format");
-        var lpTokenBalances = JsonSerializer.Deserialize<double[]>(rawValues[5]) ?? throw new JsonException("Unexpected format");
-        var rankings = JsonSerializer.Deserialize<long[]>(rawValues[6]) ?? throw new JsonException("Unexpected format");
+        var pids = JsonSerializer.Deserialize<ulong[]>(rawValues[6]) ?? throw new JsonException("Unexpected format");
+        var lpTokenBalances = JsonSerializer.Deserialize<double[]>(rawValues[7]) ?? throw new JsonException("Unexpected format");
+        var rankings = JsonSerializer.Deserialize<long[]>(rawValues[8]) ?? throw new JsonException("Unexpected format");
 
-        double stakedAmount = double.Parse(rawValues[2], NumberStyles.Number);
+        double stakedAmount = double.Parse(rawValues[2], NumberStyles.Float);
+        double balanceAmount = double.Parse(rawValues[4], NumberStyles.Float);
 
         return new OsmosisWalletRankingDTO()
         {
@@ -26,6 +30,8 @@ public class OsmosisWalletRankingDTO : IFlipsideObject<OsmosisWalletRankingDTO>
             LastUpdatedAt = DateTimeOffset.Parse(rawValues[1]),
             StakedAmount = Math.Max(0 ,stakedAmount),
             StakedRank = stakedAmount > 0 ? long.Parse(rawValues[3]) : -1,
+            BalanceAmount = Math.Max(0, balanceAmount),
+            BalanceRank = balanceAmount > 0 ? long.Parse(rawValues[5]) : -1,
             PoolRankings = pids.Zip(lpTokenBalances, rankings).Select(x => new OsmosisWalletPoolRankingDTO()
             {
                 PoolId = Math.Max(0, x.First),

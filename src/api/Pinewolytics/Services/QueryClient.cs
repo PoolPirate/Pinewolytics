@@ -4,6 +4,7 @@ using Pinewolytics.Database;
 using Pinewolytics.Models;
 using Pinewolytics.Models.DTOs.Osmosis;
 using Pinewolytics.Queries.Flipside;
+using Pinewolytics.Services.ApiClients;
 using System.Text;
 
 namespace Pinewolytics.Services;
@@ -12,6 +13,9 @@ public class QueryClient : Singleton
 {
     [Inject]
     private readonly FlipsideClient Flipside = null!;
+
+    [Inject]
+    private readonly OsmosisLCDClient OsmosisLCD = null!;
 
     public async Task<string?> GetQuerySrcAsync(string queryName)
     {
@@ -291,7 +295,12 @@ public class QueryClient : Singleton
     {
         string sql = FlipsideQueries.OsmosisWalletRanking(address);
         var results = await Flipside.GetOrRunAsync<OsmosisWalletRankingDTO>(sql, cancellationToken: cancellationToken);
-        return results.Single();
+        var result = results.Single();
+
+        // Workaround for inaccurate Balances
+        result.BalanceAmount = await OsmosisLCD.GetCurrentOSMOBalanceAsync(address, cancellationToken);
+
+        return result;
     }
 
     public async Task<OsmosisPoolInfoDTO[]> GetOsmosisPoolInfosAsync(uint[] poolIds, CancellationToken cancellationToken)

@@ -100,14 +100,25 @@ public static class FlipsideQueries
             ),
             scope AS (
               SELECT '{address}' AS address
+            ),
+            latestbalances AS (
+              SELECT address, max(balance) / POW(10, 6) AS net_balance,
+                ROW_NUMBER() OVER (ORDER BY net_balance DESC) AS rank
+              FROM osmosis.core.fact_daily_balances
+              WHERE currency = 'uosmo' 
+                AND balance_type = 'liquid' 
+                AND date = (SELECT max(date) FROM osmosis.core.fact_daily_balances)
+              GROUP BY address
             )
 
             SELECT sc.address,   
               (SELECT max(block_timestamp) FROM osmosis.core.fact_blocks) AS last_updated_at,
               COALESCE(st.net_staked, 0) AS staked, COALESCE(st.rank, -1) AS staked_rank,
+              COALESCE(bl.net_balance, 0) AS balance, COALESCE(bl.rank, -1) AS balance_rank,
               COALESCE(lp.pids, []), COALESCE(lp.net_deposits, []), COALESCE(lp.ranks, [])
             FROM scope sc
             LEFT JOIN staked st ON sc.address = st.address
+            LEFT JOIN latestbalances bl ON sc.address = bl.address
             LEFT JOIN lpd lp ON sc.address = lp.address
             """;
     }

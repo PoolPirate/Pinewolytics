@@ -74,6 +74,8 @@ export interface OsmosisWalletRankingDTO {
 	lastUpdatedAt: string;
 	stakedAmount: number;
 	stakedRank: number;
+	balanceAmount: number;
+	balanceRank: number;
 
 	poolRankings: OsmosisWalletPoolRankingDTO[];
 }
