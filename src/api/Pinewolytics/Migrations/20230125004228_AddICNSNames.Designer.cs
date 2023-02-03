@@ -2,6 +2,7 @@
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pinewolytics.Database;
@@ -11,9 +12,11 @@ using Pinewolytics.Database;
 namespace Pinewolytics.Migrations
 {
     [DbContext(typeof(PinewolyticsContext))]
-    partial class PinewolyticsContextModelSnapshot : ModelSnapshot
+    [Migration("20230125004228_AddICNSNames")]
+    partial class AddICNSNames
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -33,7 +36,8 @@ namespace Pinewolytics.Migrations
 
                     b.HasKey("Name");
 
-                    b.HasIndex("OSMOAddress");
+                    b.HasIndex("OSMOAddress")
+                        .IsUnique();
 
                     b.ToTable("ICNSNames", (string)null);
                 });

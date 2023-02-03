@@ -147,4 +147,14 @@ public static class FlipsideQueries
             
             """;
     }
+
+    public static string ListICNSNames()
+    {
+        return $"""
+            SELECT tag_name, address
+            FROM crosschain.core.address_tags
+            WHERE tag_name ILIKE '%.osmo' AND tag_type = 'ICNS'
+            QUALIFY 1 = ROW_NUMBER() OVER (PARTITION BY tag_name ORDER BY tag_created_at DESC)
+            """;
+    }
 }

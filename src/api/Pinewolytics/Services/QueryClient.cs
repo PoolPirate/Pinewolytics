@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Pinewolytics.Database;
 using Pinewolytics.Models;
+using Pinewolytics.Models.DTOs.ICNS;
 using Pinewolytics.Models.DTOs.Osmosis;
 using Pinewolytics.Queries.Flipside;
 using Pinewolytics.Services.ApiClients;
@@ -307,5 +308,11 @@ public class QueryClient : Singleton
     {
         string sql = FlipsideQueries.OsmosisPoolInfos(poolIds);
         return await Flipside.GetOrRunAsync<OsmosisPoolInfoDTO>(sql, cancellationToken: cancellationToken);
+    }
+
+    public async Task<ICNSName[]> ListICNSNamesAsync()
+    {
+        string sql = FlipsideQueries.ListICNSNames();
+        return await Flipside.GetOrRunAsync<ICNSNameDTO>(sql);
     }
 }
