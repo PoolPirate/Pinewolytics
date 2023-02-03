@@ -29,7 +29,6 @@
 		QuerySubscriptionBuilder
 	} from '$lib/service/querysubscription';
 	import type { StringPrimitiveObject } from '$lib/models/SharedDTOs';
-	import { text } from 'svelte/internal';
 
 	const subscriptionBuilder = new QuerySubscriptionBuilder();
 	var connection: HubConnection;
