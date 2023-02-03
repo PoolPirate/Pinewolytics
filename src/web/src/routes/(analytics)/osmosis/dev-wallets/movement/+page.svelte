@@ -82,6 +82,16 @@
 		QueryName.OsmosisL5DevUndelegates
 	);
 
+	const osmosisDevL0WalletsQuery = createQueryListener(
+		subscriptionBuilder,
+		QueryName.OsmosisL0DevWallets
+	);
+
+	const osmosisDevL0TransfersQuery = createQueryListener(
+		subscriptionBuilder,
+		QueryName.OsmosisL0DevTransfers
+	);
+
 	const epochInfo = writable<OsmosisEpochInfoDTO | null>(null);
 
 	const usageDistributionChart = writable<SeriesOption | null>(null);
@@ -111,7 +121,8 @@
 		TRANSFER: 'Transferred out further',
 		SWAP: 'Swapped to other assets',
 		STAKE: 'Staked',
-		LIQUID: 'Liquid Balance'
+		LIQUID: 'Moved and Held',
+		UNTOUCHED: 'Untouched'
 	};
 
 	$: makeUsageDistributionChart(
@@ -123,7 +134,9 @@
 		$osmosisDevSwapsQuery,
 		$osmosisDevDelegatesQuery,
 		$osmosisDevUndelegatesQuery,
-		$epochInfo
+		$epochInfo,
+		$osmosisDevL0WalletsQuery.map((x) => x.value),
+		$osmosisDevL0TransfersQuery
 	);
 	function makeUsageDistributionChart(
 		wallets: string[],
@@ -134,7 +147,9 @@
 		swaps: OsmosisSwapDTO[],
 		delegates: OsmosisDelegateDTO[],
 		undelegates: OsmosisUndelegateDTO[],
-		epochInfo: OsmosisEpochInfoDTO | null
+		epochInfo: OsmosisEpochInfoDTO | null,
+		l0wallets: string[],
+		l0Transfers: OsmosisTransferDTO[]
 	) {
 		if (
 			wallets.length == 0 ||
@@ -145,7 +160,8 @@
 			swaps.length == 0 ||
 			delegates.length == 0 ||
 			undelegates.length == 0 ||
-			epochInfo == null
+			epochInfo == null ||
+			l0Transfers.length == 0
 		) {
 			return;
 		}
@@ -182,6 +198,20 @@
 					developerMintShare *
 					Math.pow(reductionFactor, Math.floor(epoch / reductionPeriodInEpochs))
 			);
+		}, 0);
+
+		const totalTransferredOut = l0Transfers.reduce((total, transfer) => {
+			if (l0wallets.includes(transfer.receiver) && l0wallets.includes(transfer.sender)) {
+				return total;
+			}
+			if (l0wallets.includes(transfer.receiver)) {
+				return total - transfer.amount;
+			}
+			if (l0wallets.includes(transfer.sender)) {
+				return total + transfer.amount;
+			}
+
+			throw new Error('Unreachable');
 		}, 0);
 
 		const totalUsed = netLP + netIBCTransfers + netTransfers + netSwapVolume + netStaked;
@@ -226,7 +256,14 @@
 				},
 				{
 					name: categories.LIQUID,
-					value: Math.round(totalDeveloperMint - totalUsed),
+					value: Math.round(totalTransferredOut - totalUsed),
+					itemStyle: {
+						color: 'lightblue'
+					}
+				},
+				{
+					name: categories.UNTOUCHED,
+					value: Math.round(totalDeveloperMint - totalTransferredOut),
 					itemStyle: {
 						color: 'lightblue'
 					}
