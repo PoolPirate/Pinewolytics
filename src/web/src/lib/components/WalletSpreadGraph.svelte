@@ -8,11 +8,14 @@
 <script lang="ts">
 	import { getInternalNetOSMOTransfers, getRelatedWallets } from '$lib/service/queries';
 	import { writable } from 'svelte/store';
-	import type { OsmosisNetTransferDTO } from '$lib/models/OsmosisDTOs';
 	import WalletGraph, { type DeveloperWallet } from './WalletGraph.svelte';
 	import { browser } from '$app/environment';
+	import type { OsmosisNetTransferDTO } from '$lib/models/DTOs/OsmosisDTOs';
 	export let maxDepth: number;
 	export let initialWallets: InitialWallet[] | null;
+
+	export { clazz as class };
+	let clazz: string;
 
 	const depth = writable<number>(0);
 	const wallets = writable<DeveloperWallet[]>([]);
@@ -69,7 +72,10 @@
 	}
 </script>
 
-<WalletGraph wallets={$wallets} transfers={$transfers} depth={$depth + 1} isLoading={$isLoading} />
-
-<style>
-</style>
+<WalletGraph
+	class={clazz}
+	wallets={$wallets}
+	transfers={$transfers}
+	depth={$depth + 1}
+	isLoading={$isLoading}
+/>

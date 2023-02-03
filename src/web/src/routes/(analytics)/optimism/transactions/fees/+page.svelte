@@ -382,23 +382,3 @@
 		queryName={QueryName.OptimismL1SubmissionsHistory}
 	/>
 </div>
-
-<style>
-	.transparent-background {
-		position: relative;
-	}
-
-	.transparent-background::before {
-		content: ' ';
-		position: absolute;
-		left: 0;
-		right: 0;
-		top: 0;
-		bottom: 0;
-		background: white;
-		opacity: 50%;
-		border-radius: inherit;
-		pointer-events: none;
-		z-index: -1;
-	}
-</style>

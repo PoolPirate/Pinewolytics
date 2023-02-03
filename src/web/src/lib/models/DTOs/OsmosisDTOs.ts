@@ -84,3 +84,13 @@ export interface OsmosisPoolInfoDTO {
 	poolId: number;
 	assets: string[];
 }
+
+export interface OsmosisEpochInfoDTO {
+	identifier: string;
+	startTime: Date;
+	duration: string;
+	currentEpoch: number;
+	currentEpochStartTime: Date;
+	epochCountingStarted: boolean;
+	currentEpochStartHeight: number;
+}

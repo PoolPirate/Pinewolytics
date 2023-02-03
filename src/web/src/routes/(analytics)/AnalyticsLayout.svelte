@@ -51,11 +51,16 @@
 		<div
 			class:open
 			class:animateSidebar
-			class="flex flex-col justify-between pointer-events-auto w-full h-full px-4 pt-16 pb-4
-			   sidebar transparent-background xl:bg-transparent bg-black
-			   [&>aside]:contents"
+			class="pointer-events-auto w-full h-full px-4 pb-4 relative flex flex-col border-r-4 border-white 
+			   sidebar transparent-background xl:bg-transparent bg-black pt-16 sm:pt-0
+			   before:opacity-75 before:bg-black "
 		>
-			<slot name="sidebar" />
+			<div class="top-0 h-14 pt-1">
+				<slot name="sidebar-head" />
+			</div>
+			<div class="top-6 [&>aside]:contents flex flex-col h-full">
+				<slot name="sidebar" />
+			</div>
 		</div>
 	</div>
 
@@ -126,24 +131,5 @@
 
 	.open {
 		left: 0;
-	}
-
-	.transparent-background {
-		position: relative;
-	}
-
-	.transparent-background::before {
-		content: ' ';
-		position: absolute;
-		left: 0;
-		right: 0;
-		top: 0;
-		bottom: 0;
-		background: black;
-		opacity: 75%;
-		border-radius: inherit;
-		pointer-events: none;
-		z-index: -1;
-		border-right: white 4px solid;
 	}
 </style>

@@ -20,9 +20,10 @@
 </script>
 
 <script lang="ts">
+	import type { OsmosisNetTransferDTO } from '$lib/models/DTOs/OsmosisDTOs';
+
 	import type { EChartsOption } from 'echarts';
 
-	import type { OsmosisNetTransferDTO } from '$lib/models/OsmosisDTOs';
 	import type { GraphSeriesOption, LegendComponentOption } from 'echarts';
 	import Chart, { type EChartsLoadingOption } from './Chart.svelte';
 
@@ -30,6 +31,9 @@
 	export let transfers: OsmosisNetTransferDTO[];
 	export let depth: number;
 	export let isLoading: boolean;
+
+	export { clazz as class };
+	let clazz: string;
 
 	$: createNodes(wallets);
 	$: createLinks(transfers);
@@ -100,9 +104,6 @@
 	}
 
 	const options: EChartsOption = {
-		title: {
-			text: 'Developer Wallet Graph'
-		},
 		tooltip: {
 			show: false
 		},
@@ -148,13 +149,6 @@
 		const mapped: number = ((current - in_min) * (out_max - out_min)) / (in_max - in_min) + out_min;
 		return clamp(mapped, out_min, out_max);
 	}
-
-	const loadingOptions: EChartsLoadingOption = {
-		text: 'Loading...'
-	};
 </script>
 
-<Chart {isLoading} {options} {loadingOptions} />
-
-<style>
-</style>
+<Chart {isLoading} {options} class={clazz} />
