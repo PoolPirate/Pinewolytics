@@ -1,8 +1,11 @@
 import type {
+	OsmosisDelegateDTO,
 	OsmosisIBCTransferDTO,
+	OsmosisLPExitDTO,
 	OsmosisLPJoinDTO,
 	OsmosisSwapDTO,
-	OsmosisTransferDTO
+	OsmosisTransferDTO,
+	OsmosisUndelegateDTO
 } from '$lib/models/DTOs/OsmosisDTOs';
 
 export function netSwapBalanceChange(addresses: string[], swaps: OsmosisSwapDTO[]) {
@@ -59,4 +62,16 @@ export function sumSwapToVolume(swaps: OsmosisSwapDTO[]) {
 
 export function sumLPJoinVolume(lpJoins: OsmosisLPJoinDTO[]) {
 	return lpJoins.reduce((last, curr, _) => last + curr.amount, 0);
+}
+
+export function sumLPExitVolume(lpJoins: OsmosisLPExitDTO[]) {
+	return lpJoins.reduce((last, curr, _) => last + curr.amount, 0);
+}
+
+export function sumDelegateVolume(deleagtes: OsmosisDelegateDTO[]) {
+	return deleagtes.reduce((last, curr, _) => last + curr.amount, 0);
+}
+
+export function sumUndelegateVolume(undelegates: OsmosisUndelegateDTO[]) {
+	return undelegates.reduce((last, curr, _) => last + curr.amount, 0);
 }

@@ -36,6 +36,12 @@ public class FlipsideClient : Singleton
 
         object[][] rows = await GetQueryResultsAsync(queueResult.Token, cancellationToken: cancellationToken);
         object[] result = ParseFlipsideObjects(type, rows);
+
+        if (result.Length > 99000)
+        {
+            Logger.LogWarning("Query too close to result size limit: {queryName}", key);
+        }
+
         await Cache.AddToCacheAsync(key, result);
     }
 

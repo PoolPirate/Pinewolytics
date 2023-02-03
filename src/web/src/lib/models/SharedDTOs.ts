@@ -16,3 +16,7 @@ export interface MarketDataDTO {
     totalSupply: number;
     circulatingSupply: number;    
 }
+
+export interface StringPrimitiveObject {
+    value: string;
+}

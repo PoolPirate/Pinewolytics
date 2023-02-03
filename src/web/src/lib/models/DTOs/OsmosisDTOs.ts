@@ -37,6 +37,24 @@ export interface OsmosisLPJoinDTO {
 	amount: number;
 }
 
+export interface OsmosisLPExitDTO {
+	blockTimestamp: string;
+	liquidityProviderAddress: string;
+	amount: number;
+}
+
+export interface OsmosisDelegateDTO {
+	blockTimestamp: string;
+	address: string;
+	amount: number;
+}
+
+export interface OsmosisUndelegateDTO {
+	blockTimestamp: string;
+	address: string;
+	amount: number;
+}
+
 export enum IBCDirection {
 	IBC_IN,
 	IBC_OUT
@@ -87,10 +105,10 @@ export interface OsmosisPoolInfoDTO {
 
 export interface OsmosisEpochInfoDTO {
 	identifier: string;
-	startTime: Date;
+	startTime: string;
 	duration: string;
 	currentEpoch: number;
-	currentEpochStartTime: Date;
+	currentEpochStartTime: string;
 	epochCountingStarted: boolean;
 	currentEpochStartHeight: number;
 }

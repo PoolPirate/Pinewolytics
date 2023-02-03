@@ -16,7 +16,8 @@
 		<h1 class="text-white font-bold text-lg">Developer Wallet Tracking</h1>
 	</div>
 	<aside slot="sidebar">
-		<NavLink href="/osmosis/dev-wallets">Overview</NavLink>
+		<NavLink href="/osmosis/dev-wallets/">Introduction</NavLink>
+		<NavLink href="/osmosis/dev-wallets/overview">Overview</NavLink>
 		<NavLink href="/osmosis/dev-wallets/wallets">Wallets</NavLink>
 		<NavLink href="/osmosis/dev-wallets/movement">Movements</NavLink>
 

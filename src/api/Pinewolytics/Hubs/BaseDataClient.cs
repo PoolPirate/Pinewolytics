@@ -114,7 +114,8 @@ public abstract class BaseDataClient<THub, TReceiver> : Singleton, IDataClient
             }
             catch (Exception ex)
             {
-                Logger.LogWarning(ex, "There was an exception trying to refresh data");
+                Logger.LogWarning("There was an exception trying to refresh data for {name}", property.Name);
+                Logger.LogDebug(ex, "Realtime Value Update Stacktrace");
             }
         }
     }

@@ -7,10 +7,11 @@ import type {
 	TerraValidatorCountDTO,
 	TerraWalletMetricsDTO
 } from '$lib/models/DTOs/TerraDTOs';
-import type { TimeSeriesEntryDTO, TimeSeriesEntryDTO2 } from '$lib/models/SharedDTOs';
+import type { StringPrimitiveObject, TimeSeriesEntryDTO, TimeSeriesEntryDTO2 } from '$lib/models/SharedDTOs';
 import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
 import type { OptimismAddressBalanceDTO, OptimismContractActivityDTO, OptimismContractMetricsDTO, OptimismDAppUsageDTO, OptimismGasMetricsDTO, OptimismL1SubmissionMetricsDTO, OptimismOPHolderMetricsDTO, OptimismTransactionMetricsDTO, OptimismWalletMetricsDTO } from '$lib/models/DTOs/OptimismDTO';
+import type { OsmosisDelegateDTO, OsmosisIBCTransferDTO, OsmosisLPExitDTO, OsmosisLPJoinDTO, OsmosisSwapDTO, OsmosisTransferDTO, OsmosisUndelegateDTO } from '$lib/models/DTOs/OsmosisDTOs';
 
 export enum QueryName {
 	TerraValidatorCountHistory = 'terra-validator-count-history',
@@ -30,6 +31,17 @@ export enum QueryName {
 	OptimismContractActvityHistory = "optimism-contract-activity-history",
 	OptimismDAppLeaderboard = "optimism-dapp-leaderboard",
 	OptimismOPHolderMetricsHistory = "optimism-op-holder-metrics-history",
+
+	OsmosisL0DevWallets = "osmosis-dev-wallet-0",
+	OsmosisL5DevWallets = "osmosis-dev-wallet-5",
+	OsmosisL5DevLPJoins = "osmosis-dev-wallet-5-lp-joins",
+	OsmosisL5DevLPExits = "osmosis-dev-wallet-5-lp-exits",
+	OsmosisL5DevIBCTransfers = "osmosis-dev-wallet-5-ibc-transfers",
+	OsmosisL5DevTransfers = "osmosis-dev-wallet-5-transfers",
+	OsmosisL5DevSwaps = "osmosis-dev-wallet-5-swaps",
+	OsmosisL0DevTransfers = "osmosis-dev-wallet-0-transfers",
+	OsmosisL5Delegates = "osmosis-dev-wallet-5-delegate",
+	OsmosisL5DevUndelegates = "osmosis-dev-wallet-5-undelegate"
 }
 
 const queryTypes = {
@@ -49,7 +61,18 @@ const queryTypes = {
 	[QueryName.OptimismGasMetricsHistory]: [] as OptimismGasMetricsDTO[],
 	[QueryName.OptimismContractActvityHistory]: [] as OptimismContractActivityDTO[],
 	[QueryName.OptimismDAppLeaderboard]: [] as OptimismDAppUsageDTO[],
-	[QueryName.OptimismOPHolderMetricsHistory]: [] as OptimismOPHolderMetricsDTO[]
+	[QueryName.OptimismOPHolderMetricsHistory]: [] as OptimismOPHolderMetricsDTO[],
+
+	[QueryName.OsmosisL0DevWallets]: [] as StringPrimitiveObject[],
+	[QueryName.OsmosisL5DevWallets]: [] as StringPrimitiveObject[],
+	[QueryName.OsmosisL5DevLPJoins]: [] as OsmosisLPJoinDTO[],
+	[QueryName.OsmosisL5DevLPExits]: [] as OsmosisLPExitDTO[],
+	[QueryName.OsmosisL5DevIBCTransfers]: [] as OsmosisIBCTransferDTO[],
+	[QueryName.OsmosisL5DevTransfers]: [] as OsmosisTransferDTO[],
+	[QueryName.OsmosisL5DevSwaps]: [] as OsmosisSwapDTO[],
+	[QueryName.OsmosisL0DevTransfers]: [] as OsmosisTransferDTO[],
+	[QueryName.OsmosisL5Delegates]: [] as OsmosisDelegateDTO[],
+	[QueryName.OsmosisL5DevUndelegates]: [] as OsmosisUndelegateDTO[],
 };
 
 interface QuerySubscription {

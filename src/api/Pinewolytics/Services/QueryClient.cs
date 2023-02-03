@@ -252,17 +252,33 @@ public class QueryClient : Singleton
             sqlBuilder.Append(
             $"""
             ,
-            l{i} AS (
-              SELECT receiver AS address
+            l{i}_rec AS (
+              SELECT receiver AS address, 
+                sum(amount) AS received
               FROM osmosis.core.fact_transfers
-              WHERE receiver NOT IN (SELECT address FROM l{i - 1})
-                AND currency = 'uosmo' 
+              WHERE receiver NOT IN (SELECT * FROM l{i - 1})
+                AND sender IN (SELECT * FROM l{i - 1})
+                AND currency = 'uosmo'
                 AND transfer_type = 'OSMOSIS'
-                AND amount >= POW(10, 5)
               GROUP BY receiver
-              HAVING sum(CASE WHEN sender IN (SELECT address FROM l{i - 1}) THEN amount ELSE 0 END) >
-                     sum(CASE WHEN sender NOT IN (SELECT address FROM l{i - 1}) THEN amount ELSE 0 END)
-              UNION 
+            ),
+            l{i}_rec1 AS (
+              SELECT receiver AS address, 
+                sum(amount) AS received
+              FROM osmosis.core.fact_transfers
+              WHERE receiver IN (SELECT address FROM l{i}_rec)
+                AND sender NOT IN (SELECT * FROM l{i - 1})
+                AND currency = 'uosmo'
+                AND transfer_type = 'OSMOSIS'
+              GROUP BY receiver
+            ),
+            l{i} AS (
+              SELECT r.address
+              FROM l{i}_rec r
+              LEFT JOIN l{i}_rec1 r1 ON r.address = r1.address
+              WHERE r.received > r1.received 
+                AND r.received > 50 * POW(10, 6)
+              UNION
               SELECT *
               FROM l{i - 1}
             )
@@ -271,10 +287,13 @@ public class QueryClient : Singleton
 
         sqlBuilder.Append(
         $"""
+        
         SELECT address FROM l{depth}
         """);
 
         string sql = sqlBuilder.ToString();
+
+        Console.WriteLine(sql);
 
         var results = await Flipside.GetOrRunAsync<FlipsidePrimitiveObject<string>>(sql, cancellationToken: cancellationToken);
         return results.Select(x => x.Value).ToArray();

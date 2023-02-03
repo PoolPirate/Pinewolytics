@@ -18,7 +18,7 @@
 	export let showLegend: boolean = false;
 	export let sidebarLegend: boolean = false;
 
-	export let queryName: QueryName;
+	export let queryName: QueryName | null;
 
 	let clazz: string = '';
 	export { clazz as class };
@@ -46,11 +46,11 @@
 						show: true
 					},
 					myOpenSql: {
-						show: true,
+						show: queryName != null,
 						title: 'Show SQL Query',
 						icon: 'image://' + queryIcon,
 						onclick: async () => {
-							const src = await getQuerySrc(queryName);
+							const src = await getQuerySrc(queryName!);
 							const tab = window.open();
 
 							src.split('\n').forEach((x) => {

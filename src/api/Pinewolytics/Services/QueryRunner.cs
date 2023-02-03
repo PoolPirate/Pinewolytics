@@ -57,10 +57,20 @@ public class QueryRunner : Singleton
             type = type.MakeGenericType(typeArgs.ToArray());
         }
 
-        await Flipside.RunQueryAndCacheAsync(
-            scheduledQuery.Name,
-            type,
-            scheduledQuery.Query);
+        try
+        {
+            await Flipside.RunQueryAndCacheAsync(
+    scheduledQuery.Name,
+    type,
+    scheduledQuery.Query);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine("FAIL " + scheduledQuery.Name);
+            throw;
+        }
+
+
 
         await QuerySusbcriptionService.BroadcastQueryUpdate(scheduledQuery.Name);
     }

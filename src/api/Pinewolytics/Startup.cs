@@ -9,6 +9,7 @@ using Pinewolytics.Database;
 using Pinewolytics.Hubs;
 using Pinewolytics.Hubs.Luna;
 using Pinewolytics.Hubs.Optimism;
+using Pinewolytics.Hubs.Osmosis;
 using Pinewolytics.Services;
 using Pinewolytics.Utils;
 using Polly;
@@ -118,6 +119,7 @@ public class Startup
     {
         routes.MapHub<LunaDataHub>("api/hub/luna");
         routes.MapHub<OptimismDataHub>("api/hub/optimism");
+        routes.MapHub<OsmosisDataHub>("api/hub/osmosis");
         routes.MapHub<QueryHub>("api/hub/query");
 
         routes.MapControllers();
