@@ -22,6 +22,7 @@
 		<NavLink href="/osmosis/dev-wallets/movement">Movements</NavLink>
 
 		<LinkBumper />
+		<NavLink href="/osmosis/dev-wallets/about">About</NavLink>
 		<BackToMenuLink />
 	</aside>
 	<div slot="main" class="flex flex-col p-3 w-full">
