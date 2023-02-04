@@ -1,5 +1,4 @@
 ﻿using Common.Services;
-using Pinewolytics.Hubs;
 using Pinewolytics.Models.DTOs.Osmosis;
 using Pinewolytics.Services.ApiClients;
 

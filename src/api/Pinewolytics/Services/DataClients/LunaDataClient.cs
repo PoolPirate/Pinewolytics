@@ -1,5 +1,4 @@
 ﻿using Common.Services;
-using Pinewolytics.Hubs;
 using Pinewolytics.Services.ApiClients;
 
 namespace Pinewolytics.Services.DataClients;

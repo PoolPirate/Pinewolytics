@@ -1,5 +1,4 @@
 ﻿using Common.Services;
-using Pinewolytics.Hubs;
 using Pinewolytics.Models.DTOs.All;
 using Pinewolytics.Models.DTOs.Optimism;
 using Pinewolytics.Services.ApiClients;

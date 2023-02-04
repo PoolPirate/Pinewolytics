@@ -1,10 +1,11 @@
 ﻿using Common.Services;
 using Microsoft.AspNetCore.SignalR;
+using Pinewolytics.Hubs;
 using Pinewolytics.Services;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace Pinewolytics.Hubs;
+namespace Pinewolytics.Services.DataClients;
 
 [InitializationPriority(-1)]
 public abstract class BaseDataClient : Singleton
