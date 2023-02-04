@@ -32,7 +32,8 @@ export enum QueryName {
 	OsmosisL0DevTransfers = "osmosis-dev-wallet-0-transfers",
 	OsmosisL5Delegations = "osmosis-dev-wallet-5-delegate",
 	OsmosisL5DevUndelegations = "osmosis-dev-wallet-5-undelegate",
-	OsmosisL5DevStakingRewards = "osmosis-dev-wallets-5-staking-rewards"
+	OsmosisL5DevStakingRewards = "osmosis-dev-wallets-5-staking-rewards",
+    OsmosisTotalDelegationsHistory = "osmosis-total-delegations-history"
 }
 
 export const queryTypes = {
@@ -64,5 +65,6 @@ export const queryTypes = {
 	[QueryName.OsmosisL0DevTransfers]: [] as OsmosisTransferDTO[],
 	[QueryName.OsmosisL5Delegations]: [] as OsmosisDelegateDTO[],
 	[QueryName.OsmosisL5DevUndelegations]: [] as OsmosisUndelegateDTO[],
-	[QueryName.OsmosisL5DevStakingRewards]: [] as OsmosisStakingRewardDTO[]
+	[QueryName.OsmosisL5DevStakingRewards]: [] as OsmosisStakingRewardDTO[],
+    [QueryName.OsmosisTotalDelegationsHistory]: [] as TimeSeriesEntryDTO[]
 };

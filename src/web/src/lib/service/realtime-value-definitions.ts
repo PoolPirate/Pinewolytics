@@ -3,10 +3,6 @@ import type { OsmosisEpochInfoDTO } from "$lib/models/DTOs/OsmosisDTOs";
 import type { MarketDataDTO } from "$lib/models/SharedDTOs";
 
 export enum RealtimeValueName {
-    OsmosisTotalSupply = "Osmosis-Total-Supply",
-    OsmosisCommunityPoolBalance = "Osmosis-Community-Pool-Balance",
-    OsmosisEpochInfo = "Osmosis-Epoch-Info",
-
     OptimismMarketData = "Optimism-MarketData",
     OptimismBlockHeight = "Optimism-Block-Height",
     OptimismGasPrices = "Optimism-Gas-Prices",
@@ -15,14 +11,15 @@ export enum RealtimeValueName {
     LunaBlockTimestamp = "Luna-Block-Timestamp",
     LunaPrice = "Luna-Price",
     LunaTotalSupply = "Luna-Total-Supply",
-    LunaCirculatingSupply = "Luna-Circulating-Supply"
+    LunaCirculatingSupply = "Luna-Circulating-Supply",
+
+    OsmosisTotalSupply = "Osmosis-Total-Supply",
+    OsmosisCommunityPoolBalance = "Osmosis-Community-Pool-Balance",
+    OsmosisEpochInfo = "Osmosis-Epoch-Info",
+    OsmosisTotalSuperfluidDelegations = "Osmosis-Total-Superfluid-Delegations"
 }
 
 export const realtimeValueTypes = {
-    [RealtimeValueName.OsmosisTotalSupply]: null! as number,
-    [RealtimeValueName.OsmosisCommunityPoolBalance]: null! as number,
-    [RealtimeValueName.OsmosisEpochInfo]: null! as OsmosisEpochInfoDTO,
-
     [RealtimeValueName.OptimismMarketData]: null! as MarketDataDTO,
     [RealtimeValueName.OptimismBlockHeight]: null! as number,
     [RealtimeValueName.OptimismGasPrices]: null! as OptimismGasPricesDTO,
@@ -32,4 +29,9 @@ export const realtimeValueTypes = {
     [RealtimeValueName.LunaPrice]: null! as number,
     [RealtimeValueName.LunaTotalSupply]: null! as number,
     [RealtimeValueName.LunaCirculatingSupply]: null! as number,
+
+    [RealtimeValueName.OsmosisTotalSupply]: null! as number,
+    [RealtimeValueName.OsmosisCommunityPoolBalance]: null! as number,
+    [RealtimeValueName.OsmosisEpochInfo]: null! as OsmosisEpochInfoDTO,
+    [RealtimeValueName.OsmosisTotalSuperfluidDelegations]: null! as number
 };

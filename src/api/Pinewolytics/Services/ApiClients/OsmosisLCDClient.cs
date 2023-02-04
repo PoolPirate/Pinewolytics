@@ -81,4 +81,20 @@ public class OsmosisLCDClient : Singleton
         }, cancellationToken: cancellationToken);
         return result!.Epochs;
     }
+
+    record TotalDelegationsResult(double TotalDelegations);
+    public async Task<double> GetTotalSuperfluidDelegationsAsync(CancellationToken cancellationToken)
+    {
+        var route = new Uri(ApiEndpoint, "osmosis/superfluid/v1beta1/all_superfluid_delegations");
+        var response = await Client.GetAsync(route, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadFromJsonAsync<TotalDelegationsResult>(new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString,
+        }, cancellationToken: cancellationToken);
+        return result!.TotalDelegations;
+    }
 }

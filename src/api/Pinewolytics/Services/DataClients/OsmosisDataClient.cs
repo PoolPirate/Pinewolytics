@@ -29,4 +29,10 @@ public class OsmosisDataClient : BaseDataClient
         var epochs = await OsmosisLCD.GetEpochInfosAsync(default);
         return epochs.Single(x => x.Identifier == "day");
     }
+
+    [RealtimeValue("Osmosis-Total-Superfluid-Delegations", 60 * SECONDS)]
+    private async Task<double> LoadTotalSuperfluidDelegations()
+    {
+        return await OsmosisLCD.GetTotalSuperfluidDelegationsAsync(default);
+    }
 }
