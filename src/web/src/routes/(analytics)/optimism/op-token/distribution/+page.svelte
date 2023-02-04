@@ -1,11 +1,8 @@
 <script lang="ts">
 	import TimeSeriesChart from '$lib/charts/TimeSeriesChart.svelte';
 	import type { OptimismOPHolderMetricsDTO } from '$lib/models/DTOs/OptimismDTO';
-	import {
-		createQueryListener,
-		QueryName,
-		QuerySubscriptionBuilder
-	} from '$lib/service/querysubscription';
+	import { QueryName } from '$lib/service/query-definitions';
+	import { createQueryListener, SocketSubscriptionBuilder } from '$lib/service/subscriptions';
 	import {
 		DaySeriesToWeekSeriesByAvg,
 		DaySeriesToWeekSeriesByLast,
@@ -18,7 +15,7 @@
 	import { getContext, onDestroy, onMount } from 'svelte';
 	import { writable, type Readable } from 'svelte/store';
 
-	const subscriptionBuilder = new QuerySubscriptionBuilder();
+	const subscriptionBuilder = new SocketSubscriptionBuilder();
 	const opHolderMetricsHistoryQuery = createQueryListener(
 		subscriptionBuilder,
 		QueryName.OptimismOPHolderMetricsHistory

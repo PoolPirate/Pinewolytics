@@ -3,13 +3,9 @@ using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.AspNetCore.Rewrite;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Caching.StackExchangeRedis;
 using Pinewolytics.Configuration;
 using Pinewolytics.Database;
 using Pinewolytics.Hubs;
-using Pinewolytics.Hubs.Luna;
-using Pinewolytics.Hubs.Optimism;
-using Pinewolytics.Hubs.Osmosis;
 using Pinewolytics.Services;
 using Pinewolytics.Utils;
 using Polly;
@@ -117,10 +113,7 @@ public class Startup
 
     public void ConfigureRoutes(IEndpointRouteBuilder routes)
     {
-        routes.MapHub<LunaDataHub>("api/hub/luna");
-        routes.MapHub<OptimismDataHub>("api/hub/optimism");
-        routes.MapHub<OsmosisDataHub>("api/hub/osmosis");
-        routes.MapHub<QueryHub>("api/hub/query");
+        routes.MapHub<SubscriptionHub>("api/hub/query");
 
         routes.MapControllers();
 

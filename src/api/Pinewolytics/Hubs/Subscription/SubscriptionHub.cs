@@ -3,11 +3,11 @@ using Pinewolytics.Services;
 
 namespace Pinewolytics.Hubs;
 
-public class QueryHub : Hub<IQueryHubClient>
+public class SubscriptionHub : Hub<ISubscriptionHubClient>
 {
-    private readonly QuerySubscriptionService QuerySubscriptionService;
+    private readonly SocketSubscriptionService QuerySubscriptionService;
 
-    public QueryHub(QuerySubscriptionService querySubscriptionService)
+    public SubscriptionHub(SocketSubscriptionService querySubscriptionService)
     {
         QuerySubscriptionService = querySubscriptionService;
     }

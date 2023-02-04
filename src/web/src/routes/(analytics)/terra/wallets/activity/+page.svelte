@@ -1,24 +1,16 @@
 <script lang="ts">
 	import TimeSeriesChart from '$lib/charts/TimeSeriesChart.svelte';
 	import type { TerraWalletMetricsDTO } from '$lib/models/DTOs/TerraDTOs';
-	import {
-		createQueryListener,
-		QueryName,
-		QuerySubscriptionBuilder
-	} from '$lib/service/querysubscription';
-	import {
-		DaySeriesToWeekSeriesByAvg,
-		DaySeriesToWeekSeriesByLast,
-		DaySeriesToWeekSeriesByMax,
-		DaySeriesToWeekSeriesBySum
-	} from '$lib/service/transform';
+	import { createQueryListener, SocketSubscriptionBuilder } from '$lib/service/subscriptions';
+	import { DaySeriesToWeekSeriesByLast, DaySeriesToWeekSeriesByMax } from '$lib/service/transform';
 	import type { TimeSeriesEntry } from '$lib/service/transform';
 	import type { SeriesOption } from 'echarts';
 	import { getContext, onDestroy, onMount } from 'svelte';
 	import { writable, type Readable } from 'svelte/store';
 	import { isWeeklyModeStoreName } from '$lib/utils/Utils';
+	import { QueryName } from '$lib/service/query-definitions';
 
-	const subscriptionBuilder = new QuerySubscriptionBuilder();
+	const subscriptionBuilder = new SocketSubscriptionBuilder();
 
 	const walletMetrics = createQueryListener(
 		subscriptionBuilder,

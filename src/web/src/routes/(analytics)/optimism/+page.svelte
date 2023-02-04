@@ -1,43 +1,40 @@
 <script lang="ts">
 	import { HubConnectionBuilder } from '@microsoft/signalr';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 	import RefreshAnimation from '../../../lib/components/RefreshAnimation.svelte';
 
 	import blockIcon from '$lib/static/logo/block.svg';
 	import gasStationIcon from '$lib/static/logo/gas-station.svg';
 	import fireIcon from '$lib/static/logo/fire.svg';
-	import type { MarketDataDTO } from '$lib/models/SharedDTOs';
-	const price = writable<number>(0);
-	var priceAnimation: RefreshAnimation;
+	import {
+		createRealtimeValueListener,
+		SocketSubscriptionBuilder
+	} from '$lib/service/subscriptions';
+	import { RealtimeValueName } from '$lib/service/realtime-value-definitions';
 
-	const peakBlockHeight = writable<number>(0);
+	const subscriptionBuilder = new SocketSubscriptionBuilder();
+
+	const peakBlockHeight = createRealtimeValueListener(
+		subscriptionBuilder,
+		RealtimeValueName.OptimismBlockHeight,
+		() => [peakBlockHeightAnimation]
+	);
 	var peakBlockHeightAnimation: RefreshAnimation;
 
-	const l1GasPrice = writable<number>(0);
+	const gasPrices = createRealtimeValueListener(
+		subscriptionBuilder,
+		RealtimeValueName.OptimismGasPrices,
+		() => [l1GasPriceAnimation, l2GasPriceAnimation]
+	);
 	var l1GasPriceAnimation: RefreshAnimation;
-	const l2GasPrice = writable<number>(0);
 	var l2GasPriceAnimation: RefreshAnimation;
 
 	onMount(async () => {
-		let connection = new HubConnectionBuilder()
-			.withUrl('/api/hub/optimism')
-			.withAutomaticReconnect()
-			.build();
-
-		connection.on('PeakBlockHeight', (newBlockHeight) => {
-			peakBlockHeight.set(newBlockHeight);
-			peakBlockHeightAnimation.play();
-		});
-		connection.on('GasPrice', (newL1GasPrice, newL2GasPrice) => {
-			l1GasPrice.set(newL1GasPrice);
-			l2GasPrice.set(newL2GasPrice);
-
-			l1GasPriceAnimation.play();
-			l2GasPriceAnimation.play();
-		});
-
-		await connection.start();
+		await subscriptionBuilder.start();
+	});
+	onDestroy(async () => {
+		subscriptionBuilder.dispose();
 	});
 </script>
 
@@ -61,13 +58,13 @@
 			<img alt="icon" class="h-1/2" src={fireIcon} />
 			<RefreshAnimation bind:this={l1GasPriceAnimation} />
 			<h2>L1 Gas Price</h2>
-			<p>{Math.round($l1GasPrice / Math.pow(10, 6)) / 1000} gwei</p>
+			<p>{Math.round($gasPrices?.l1GasPrice / Math.pow(10, 6)) / 1000} gwei</p>
 		</li>
 		<li>
 			<img alt="icon" class="h-1/2" src={gasStationIcon} />
 			<RefreshAnimation bind:this={l2GasPriceAnimation} />
 			<h2>L2 Gas Price</h2>
-			<p>{$l2GasPrice / Math.pow(10, 9)} gwei</p>
+			<p>{$gasPrices?.l2GasPrice / Math.pow(10, 9)} gwei</p>
 		</li>
 	</ul>
 </div>

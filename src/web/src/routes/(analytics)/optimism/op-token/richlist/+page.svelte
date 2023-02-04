@@ -1,18 +1,14 @@
 <script lang="ts">
 	import ZoomableChart from '$lib/charts/ZoomableChart.svelte';
 	import type { OptimismAddressBalanceDTO } from '$lib/models/DTOs/OptimismDTO';
-	import type { TerraAddressBalanceDTO } from '$lib/models/DTOs/TerraDTOs';
-	import {
-		createQueryListener,
-		QueryName,
-		QuerySubscriptionBuilder
-	} from '$lib/service/querysubscription';
+	import { QueryName } from '$lib/service/query-definitions';
+	import { createQueryListener, SocketSubscriptionBuilder } from '$lib/service/subscriptions';
 	import { isWeeklyModeStoreName } from '$lib/utils/Utils';
 	import type { XAXisComponentOption, SeriesOption } from 'echarts';
 	import { getContext, onDestroy, onMount } from 'svelte';
 	import { writable, type Readable } from 'svelte/store';
 
-	const subscriptionBuilder = new QuerySubscriptionBuilder();
+	const subscriptionBuilder = new SocketSubscriptionBuilder();
 	const richlistQuery = createQueryListener(subscriptionBuilder, QueryName.OptimismRichList);
 
 	onMount(async () => {

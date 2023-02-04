@@ -1,12 +1,7 @@
 <script lang="ts">
 	import TimeSeriesChart from '$lib/charts/TimeSeriesChart.svelte';
+	import { createQueryListener, SocketSubscriptionBuilder } from '$lib/service/subscriptions';
 	import {
-		createQueryListener,
-		QueryName,
-		QuerySubscriptionBuilder
-	} from '$lib/service/querysubscription';
-	import {
-		DaySeriesToWeekSeriesByAvg,
 		DaySeriesToWeekSeriesByLast,
 		DaySeriesToWeekSeriesByMax,
 		DaySeriesToWeekSeriesBySum
@@ -17,8 +12,9 @@
 	import { writable, type Readable } from 'svelte/store';
 	import { isWeeklyModeStoreName } from '$lib/utils/Utils';
 	import type { OptimismWalletMetricsDTO } from '$lib/models/DTOs/OptimismDTO';
+	import { QueryName } from '$lib/service/query-definitions';
 
-	const subscriptionBuilder = new QuerySubscriptionBuilder();
+	const subscriptionBuilder = new SocketSubscriptionBuilder();
 
 	const walletMetrics = createQueryListener(
 		subscriptionBuilder,

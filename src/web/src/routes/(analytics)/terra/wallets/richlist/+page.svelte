@@ -1,17 +1,13 @@
 <script lang="ts">
 	import ZoomableChart from '$lib/charts/ZoomableChart.svelte';
 	import type { TerraAddressBalanceDTO } from '$lib/models/DTOs/TerraDTOs';
-	import {
-		createQueryListener,
-		QueryName,
-		QuerySubscriptionBuilder
-	} from '$lib/service/querysubscription';
-	import { isWeeklyModeStoreName } from '$lib/utils/Utils';
-	import type { XAXisComponentOption, SeriesOption } from 'echarts';
-	import { getContext, onDestroy, onMount } from 'svelte';
+	import { QueryName } from '$lib/service/query-definitions';
+	import { createQueryListener, SocketSubscriptionBuilder } from '$lib/service/subscriptions';
+	import type { SeriesOption } from 'echarts';
+	import { onDestroy, onMount } from 'svelte';
 	import { writable, type Readable } from 'svelte/store';
 
-	const subscriptionBuilder = new QuerySubscriptionBuilder();
+	const subscriptionBuilder = new SocketSubscriptionBuilder();
 	const richlistQuery = createQueryListener(subscriptionBuilder, QueryName.TerraRichList);
 
 	onMount(async () => {
@@ -21,10 +17,7 @@
 		subscriptionBuilder.dispose();
 	});
 
-	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
-
 	const richlistChart = writable<SeriesOption[]>([]);
-	const richlistXAxis = writable<XAXisComponentOption>();
 
 	var searchAddress: string = '';
 

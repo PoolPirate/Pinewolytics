@@ -25,13 +25,14 @@
 	import smallPileIcon from '$lib/static/logo/small_pile.webp';
 	import {
 		createQueryListener,
-		QueryName,
-		QuerySubscriptionBuilder
-	} from '$lib/service/querysubscription';
+		createRealtimeValueListener,
+		SocketSubscriptionBuilder
+	} from '$lib/service/subscriptions';
 	import type { StringPrimitiveObject } from '$lib/models/SharedDTOs';
+	import { QueryName } from '$lib/service/query-definitions';
+	import { RealtimeValueName } from '$lib/service/realtime-value-definitions';
 
-	const subscriptionBuilder = new QuerySubscriptionBuilder();
-	var connection: HubConnection;
+	const subscriptionBuilder = new SocketSubscriptionBuilder();
 
 	const developerTotalShareChart = writable<SeriesOption | null>(null);
 	const developerMovedShareChart = writable<SeriesOption | null>(null);
@@ -41,11 +42,23 @@
 
 	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
-	const totalSupply = writable<number | null>(null);
+	const totalSupply = createRealtimeValueListener(
+		subscriptionBuilder,
+		RealtimeValueName.OsmosisTotalSupply,
+		() => [totalSupplyAnimation]
+	);
 	var totalSupplyAnimation: RefreshAnimation;
-	const communityPoolBalance = writable<number | null>(null);
+	const communityPoolBalance = createRealtimeValueListener(
+		subscriptionBuilder,
+		RealtimeValueName.OsmosisCommunityPoolBalance,
+		() => [communityPoolBalanceAnimation]
+	);
 	var communityPoolBalanceAnimation: RefreshAnimation;
-	const epochInfo = writable<OsmosisEpochInfoDTO | null>(null);
+	const epochInfo = createRealtimeValueListener(
+		subscriptionBuilder,
+		RealtimeValueName.OsmosisEpochInfo,
+		() => [epochInfoAnimation]
+	);
 	var epochInfoAnimation: RefreshAnimation;
 
 	const osmosisDevL0Wallets = createQueryListener(
@@ -59,33 +72,8 @@
 
 	onMount(async () => {
 		await subscriptionBuilder.start();
-
-		connection = new HubConnectionBuilder()
-			.withUrl('/api/hub/osmosis')
-			.withAutomaticReconnect()
-			.build();
-
-		connection.on('TotalSupply', (newTotalSupply) => {
-			totalSupply.set(newTotalSupply);
-			totalSupplyAnimation.play();
-		});
-		connection.on('CommunityPoolBalance', (newCommunityPoolBalance) => {
-			communityPoolBalance.set(newCommunityPoolBalance);
-			communityPoolBalanceAnimation.play();
-		});
-		connection.on('CurrentEpochInfo', (newEpochInfo) => {
-			epochInfo.set(newEpochInfo);
-			epochInfoAnimation.play();
-		});
-
-		await connection.start();
 	});
 	onDestroy(() => {
-		if (connection == null) {
-			return;
-		}
-
-		connection.stop();
 		subscriptionBuilder.dispose();
 	});
 

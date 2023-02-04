@@ -1,14 +1,11 @@
 <script lang="ts">
 	import TimeSeriesChart from '$lib/charts/TimeSeriesChart.svelte';
-	import ZoomableChart from '$lib/charts/ZoomableChart.svelte';
-	import type { OptimismAddressBalanceDTO } from '$lib/models/DTOs/OptimismDTO';
-	import type { TerraAddressBalanceDTO } from '$lib/models/DTOs/TerraDTOs';
 	import type { MarketDataDTO, TimeSeriesEntryDTO } from '$lib/models/SharedDTOs';
 	import {
 		createQueryListener,
-		QueryName,
-		QuerySubscriptionBuilder
-	} from '$lib/service/querysubscription';
+		createRealtimeValueListener,
+		SocketSubscriptionBuilder
+	} from '$lib/service/subscriptions';
 	import { DaySeriesToWeekSeriesByAvg, type TimeSeriesEntry } from '$lib/service/transform';
 	import { isWeeklyModeStoreName } from '$lib/utils/Utils';
 	import { HubConnectionBuilder } from '@microsoft/signalr';
@@ -21,30 +18,24 @@
 	import mcapIcon from '$lib/static/logo/market_cap.png';
 	import pileIcon from '$lib/static/logo/pile.svg';
 	import smallPileIcon from '$lib/static/logo/small_pile.webp';
+	import { QueryName } from '$lib/service/query-definitions';
+	import { RealtimeValueName } from '$lib/service/realtime-value-definitions';
 
-	const subscriptionBuilder = new QuerySubscriptionBuilder();
+	const subscriptionBuilder = new SocketSubscriptionBuilder();
 	const priceHistoryQuery = createQueryListener(
 		subscriptionBuilder,
 		QueryName.OptimismPriceHistory
 	);
 
-	const marketData = writable<MarketDataDTO>();
+	const marketData = createRealtimeValueListener(
+		subscriptionBuilder,
+		RealtimeValueName.OptimismMarketData,
+		() => marketDataAnimations
+	);
 	const marketDataAnimations: RefreshAnimation[] = [];
 
 	onMount(async () => {
 		await subscriptionBuilder.start();
-
-		let connection = new HubConnectionBuilder()
-			.withUrl('/api/hub/optimism')
-			.withAutomaticReconnect()
-			.build();
-
-		connection.on('MarketData', (newMarketData: MarketDataDTO) => {
-			marketData.set(newMarketData);
-			marketDataAnimations.forEach((x) => x.play());
-		});
-
-		await connection.start();
 	});
 	onDestroy(() => {
 		subscriptionBuilder.dispose();

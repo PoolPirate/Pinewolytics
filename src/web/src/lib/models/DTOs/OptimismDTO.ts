@@ -77,3 +77,8 @@ export interface OptimismOPHolderMetricsDTO {
     percentile20thBalance: number;
     percentile80thBalance: number;
 }
+
+export interface OptimismGasPricesDTO {
+    l1GasPrice: number;
+    l2GasPrice: number;
+}

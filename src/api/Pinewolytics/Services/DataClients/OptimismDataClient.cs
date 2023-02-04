@@ -1,10 +1,12 @@
 ﻿using Common.Services;
+using Pinewolytics.Hubs;
 using Pinewolytics.Models.DTOs.All;
+using Pinewolytics.Models.DTOs.Optimism;
 using Pinewolytics.Services.ApiClients;
 
-namespace Pinewolytics.Hubs.Optimism;
+namespace Pinewolytics.Services.DataClients;
 
-public class OptimismDataClient : BaseDataClient<OptimismDataHub, IOptimismDataHubClient>
+public class OptimismDataClient : BaseDataClient
 {
     [Inject]
     private readonly CoinGeckoClient CoinGeckoClient = null!;
@@ -12,20 +14,20 @@ public class OptimismDataClient : BaseDataClient<OptimismDataHub, IOptimismDataH
     [Inject]
     private readonly OptimismRpcClient OptimismRpcClient = null!;
 
-    [RealtimeValue(20 * SECONDS, nameof(IOptimismDataHubClient.MarketData))]
-    private async Task<MarketDataDTO> LoadPriceAsync()
+    [RealtimeValue("Optimism-MarketData", 20 * SECONDS)]
+    private async Task<MarketDataDTO> LoadMarketDataAsync()
     {
         return await CoinGeckoClient.GetOPMarketDataDTOAsync();
     }
 
-    [RealtimeValue(SECONDS, nameof(IOptimismDataHubClient.PeakBlockHeight))]
+    [RealtimeValue("Optimism-Block-Height", SECONDS)]
     private async Task<double> LoadPeakBlockHeightAsync()
     {
         return await OptimismRpcClient.GetPeakBlockHeightAsync();
     }
 
-    [RealtimeValue(10 * SECONDS, nameof(IOptimismDataHubClient.GasPrice))]
-    private async Task<(ulong, ulong)> LoadGasPricesAsync()
+    [RealtimeValue("Optimism-Gas-Prices", 10 * SECONDS)]
+    private async Task<OptimismGasPriceDTO> LoadGasPricesAsync()
     {
         return await OptimismRpcClient.GetGasPricesAsync();
     }

@@ -1,42 +1,43 @@
 ﻿using Common.Services;
+using Pinewolytics.Hubs;
 using Pinewolytics.Services.ApiClients;
 
-namespace Pinewolytics.Hubs.Luna;
+namespace Pinewolytics.Services.DataClients;
 
-public class LunaDataClient : BaseDataClient<LunaDataHub, ILunaDataHubClient>
+public class LunaDataClient : BaseDataClient
 {
     [Inject]
     private readonly LunaLCDClient LunaLCDClient = null!;
     [Inject]
     private readonly CoinGeckoClient CoinGeckoClient = null!;
 
-    [RealtimeValue(2 * SECONDS, nameof(ILunaDataHubClient.PeakBlockHeight))]
+    [RealtimeValue("Luna-Block-Height", 2 * SECONDS)]
     private async Task<ulong> LoadPeakBlockHeightAsync()
     {
         var (height, _) = await LunaLCDClient.GetLatestBlockInfoAsync();
         return height;
     }
 
-    [RealtimeValue(2 * SECONDS, nameof(ILunaDataHubClient.PeakBlockTimestamp))]
+    [RealtimeValue("Luna-Block-Timestamp", 2 * SECONDS)]
     private async Task<DateTimeOffset> LoadPeakBlockTimestampAsync()
     {
         var (_, timestamp) = await LunaLCDClient.GetLatestBlockInfoAsync();
         return timestamp;
     }
 
-    [RealtimeValue(10 * SECONDS, nameof(ILunaDataHubClient.Price))]
+    [RealtimeValue("Luna-Price", 10 * SECONDS)]
     private async Task<double> LoadPriceAsync()
     {
         return await CoinGeckoClient.GetLunaPriceAsync();
     }
 
-    [RealtimeValue(30 * SECONDS, nameof(ILunaDataHubClient.TotalSupply))]
+    [RealtimeValue("Luna-Total-Supply", 30 * SECONDS)]
     private async Task<double> LoadTotalSupplyAsync()
     {
         return await LunaLCDClient.GetTotalSupplyAsync();
     }
 
-    [RealtimeValue(30 * SECONDS, nameof(ILunaDataHubClient.CirculatingSupply))]
+    [RealtimeValue("Luna-Circulating-Supply", 30 * SECONDS)]
     private async Task<double> LoadCirculatingSupplyAsync()
     {
         return await LunaLCDClient.GetCirculatingSupplyAsync();

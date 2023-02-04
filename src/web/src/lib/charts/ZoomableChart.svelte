@@ -1,7 +1,7 @@
 <script lang="ts">
 	import Chart from '$lib/components/Chart.svelte';
 	import { getQuerySrc } from '$lib/service/queries';
-	import type { QueryName } from '$lib/service/querysubscription';
+	import type { QueryName } from '$lib/service/subscriptions';
 	import type {
 		EChartsOption,
 		SeriesOption,

@@ -1,13 +1,15 @@
-﻿namespace Pinewolytics.Hubs;
+﻿using System.Globalization;
+
+namespace Pinewolytics.Hubs;
 
 public class RealtimeValue : Attribute
 {
+	public string Key { get; }
 	public int MillisecondInterval { get; }
-	public string Name { get; }
 
-	public RealtimeValue(int millisecondInterval, string name)
+	public RealtimeValue(string key, int millisecondInterval)
 	{
-		Name = name;
+		Key = key;
 		MillisecondInterval = millisecondInterval;
 	}
 }

@@ -1,17 +1,7 @@
-import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
-import type {
-    TerraAddressBalanceDTO,
-	TerraContractMetricsDTO,
-	TerraTotalFeeDTO,
-	TerraTransactionMetricsDTO,
-	TerraValidatorCountDTO,
-	TerraWalletMetricsDTO
-} from '$lib/models/DTOs/TerraDTOs';
-import type { StringPrimitiveObject, TimeSeriesEntryDTO, TimeSeriesEntryDTO2 } from '$lib/models/SharedDTOs';
-import { writable } from 'svelte/store';
-import { browser } from '$app/environment';
-import type { OptimismAddressBalanceDTO, OptimismContractActivityDTO, OptimismContractMetricsDTO, OptimismDAppUsageDTO, OptimismGasMetricsDTO, OptimismL1SubmissionMetricsDTO, OptimismOPHolderMetricsDTO, OptimismTransactionMetricsDTO, OptimismWalletMetricsDTO } from '$lib/models/DTOs/OptimismDTO';
-import type { OsmosisDelegateDTO, OsmosisIBCTransferDTO, OsmosisLPExitDTO, OsmosisLPJoinDTO, OsmosisSwapDTO, OsmosisTransferDTO, OsmosisUndelegateDTO } from '$lib/models/DTOs/OsmosisDTOs';
+import type { OptimismAddressBalanceDTO, OptimismContractActivityDTO, OptimismContractMetricsDTO, OptimismDAppUsageDTO, OptimismGasMetricsDTO, OptimismL1SubmissionMetricsDTO, OptimismOPHolderMetricsDTO, OptimismTransactionMetricsDTO, OptimismWalletMetricsDTO } from "$lib/models/DTOs/OptimismDTO";
+import type { OsmosisLPJoinDTO, OsmosisLPExitDTO, OsmosisIBCTransferDTO, OsmosisTransferDTO, OsmosisSwapDTO, OsmosisDelegateDTO, OsmosisUndelegateDTO, OsmosisStakingRewardDTO } from "$lib/models/DTOs/OsmosisDTOs";
+import type { TerraAddressBalanceDTO, TerraContractMetricsDTO, TerraTotalFeeDTO, TerraTransactionMetricsDTO, TerraValidatorCountDTO, TerraWalletMetricsDTO } from "$lib/models/DTOs/TerraDTOs";
+import type { StringPrimitiveObject, TimeSeriesEntryDTO } from "$lib/models/SharedDTOs";
 
 export enum QueryName {
 	TerraValidatorCountHistory = 'terra-validator-count-history',
@@ -40,11 +30,12 @@ export enum QueryName {
 	OsmosisL5DevTransfers = "osmosis-dev-wallet-5-transfers",
 	OsmosisL5DevSwaps = "osmosis-dev-wallet-5-swaps",
 	OsmosisL0DevTransfers = "osmosis-dev-wallet-0-transfers",
-	OsmosisL5Delegates = "osmosis-dev-wallet-5-delegate",
-	OsmosisL5DevUndelegates = "osmosis-dev-wallet-5-undelegate"
+	OsmosisL5Delegations = "osmosis-dev-wallet-5-delegate",
+	OsmosisL5DevUndelegations = "osmosis-dev-wallet-5-undelegate",
+	OsmosisL5DevStakingRewards = "osmosis-dev-wallets-5-staking-rewards"
 }
 
-const queryTypes = {
+export const queryTypes = {
 	[QueryName.TerraValidatorCountHistory]: [] as TerraValidatorCountDTO[],
 	[QueryName.TerraTransactionMetricsHistory]: [] as TerraTransactionMetricsDTO[],
 	[QueryName.TerraWalletMetricsHistory]: [] as TerraWalletMetricsDTO[],
@@ -71,84 +62,7 @@ const queryTypes = {
 	[QueryName.OsmosisL5DevTransfers]: [] as OsmosisTransferDTO[],
 	[QueryName.OsmosisL5DevSwaps]: [] as OsmosisSwapDTO[],
 	[QueryName.OsmosisL0DevTransfers]: [] as OsmosisTransferDTO[],
-	[QueryName.OsmosisL5Delegates]: [] as OsmosisDelegateDTO[],
-	[QueryName.OsmosisL5DevUndelegates]: [] as OsmosisUndelegateDTO[],
+	[QueryName.OsmosisL5Delegations]: [] as OsmosisDelegateDTO[],
+	[QueryName.OsmosisL5DevUndelegations]: [] as OsmosisUndelegateDTO[],
+	[QueryName.OsmosisL5DevStakingRewards]: [] as OsmosisStakingRewardDTO[]
 };
-
-interface QuerySubscription {
-	queryName: QueryName;
-	handler: (arg0: any) => void;
-}
-
-export class QuerySubscriptionBuilder {
-	private connection: HubConnection | null;
-
-	private subscriptions: QuerySubscription[];
-
-	constructor() {
-		this.subscriptions = [];
-
-		if (!browser) {
-			this.connection = null!;
-			return;
-		}
-
-		this.connection = new HubConnectionBuilder()
-			.withUrl('/api/hub/query')
-			.withAutomaticReconnect()
-			.build();
-
-		this.connection.on('SendQueryResult', (queryName, result) => {
-			this.subscriptions
-				.filter((x) => x.queryName == queryName)
-				.forEach((x) => {
-					x.handler(result);
-				});
-		});
-	}
-
-	async start() {
-        if (this.connection == null) {
-            return;
-        }
-
-		await this.connection.start();
-
-		this.subscriptions.forEach(async (name) => {
-			await this.connection!.send('GetAndSubscribe', name.queryName);
-		});
-	}
-
-    dispose() {
-        if (this.connection == null) {
-            return;
-        }
-        this.connection.stop();
-    }
-
-	addQuery<T extends QueryName, R extends typeof queryTypes[T]>(
-		name: T,
-		handler: (data: R) => void
-	) {
-		this.subscriptions.push({
-			queryName: name,
-			handler: handler
-		});
-		return this;
-	}
-}
-
-export function createQueryListener<T extends QueryName, R extends typeof queryTypes[T]>(
-	builder: QuerySubscriptionBuilder,
-	queryName: T
-) {
-	const { subscribe, set } = writable<R>(queryTypes[queryName] as any);
-
-	builder.addQuery(queryName, (value) => {
-		set(value as any);
-	});
-
-	return {
-		subscribe
-	};
-}

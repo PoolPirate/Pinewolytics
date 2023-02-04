@@ -1,27 +1,25 @@
 ﻿using Common.Services;
 using Microsoft.AspNetCore.SignalR;
-using System.Collections;
+using Pinewolytics.Services;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace Pinewolytics.Hubs;
 
 [InitializationPriority(-1)]
-public abstract class BaseDataClient<THub, TReceiver> : Singleton, IDataClient
-    where THub : Hub
-    where TReceiver : class
+public abstract class BaseDataClient : Singleton
 {
     class RealtimeProperty
     {
-        public string Name { get; }
+        public string Key { get; }
         public TimeSpan Interval { get; }
 
         public object Value { get; set; } = null!; //null till InitializeAsync completes
         private Func<Task> RefreshInner { get; }
 
-        public RealtimeProperty(string name, TimeSpan interval, Func<Task> refreshInner)
+        public RealtimeProperty(string key, TimeSpan interval, Func<Task> refreshInner)
         {
-            Name = name;
+            Key = key;
             Interval = interval;
             RefreshInner = refreshInner;
         }
@@ -46,15 +44,12 @@ public abstract class BaseDataClient<THub, TReceiver> : Singleton, IDataClient
     protected const int MINUTES = 60 * SECONDS;
     protected const int HOURS = 60 * MINUTES;
 
-    [Inject]
-    private readonly IHubContext<THub> HubContext = null!;
+    private SocketSubscriptionService SocketSubscriptionService = null!;
 
     private readonly RealtimeProperty[] Properties;
 
     public BaseDataClient()
     {
-        string[] allowedNames = typeof(TReceiver).GetMethods().Select(x => x.Name).ToArray();
-
         Properties = GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
             .Where(x => x.GetCustomAttribute<RealtimeValue>() is not null)
             .Select(x =>
@@ -66,21 +61,18 @@ public abstract class BaseDataClient<THub, TReceiver> : Singleton, IDataClient
 
                 var attribute = x.GetCustomAttribute<RealtimeValue>()!;
 
-                if (!allowedNames.Contains(attribute.Name))
-                {
-                    throw new InvalidOperationException($"RealTimeProperty Name must be part of interface {typeof(TReceiver).Name}");
-                }
-                //
                 return new RealtimeProperty(
-                  attribute.Name,
-                  TimeSpan.FromMilliseconds(attribute.MillisecondInterval),
-                  () => (Task)x.Invoke(this, null)!);
+                        attribute.Key,
+                        TimeSpan.FromMilliseconds(attribute.MillisecondInterval),
+                        () => (Task)x.Invoke(this, null)!);
             })
             .ToArray();
     }
 
     protected override async ValueTask InitializeAsync()
     {
+        SocketSubscriptionService = Provider.GetRequiredService<SocketSubscriptionService>();
+
         Logger.LogInformation("Initializing RealtimeValue methods");
         await Parallel.ForEachAsync(Properties, async (property, cancellationToken) => await property.RefreshAsync());
     }
@@ -110,39 +102,26 @@ public abstract class BaseDataClient<THub, TReceiver> : Singleton, IDataClient
                     continue;
                 }
 
-                await SendPropertyToAsync(property, HubContext.Clients.All);
+                await SocketSubscriptionService.BroadcastRealtimeValueUpdate(property.Key, property.Value);
             }
             catch (Exception ex)
             {
-                Logger.LogWarning("There was an exception trying to refresh data for {name}", property.Name);
+                Logger.LogWarning("There was an exception trying to refresh data for {name}", property.Key);
                 Logger.LogDebug(ex, "Realtime Value Update Stacktrace");
             }
         }
     }
 
-    public async Task SendWelcomeToAsync(string connectionId)
+    public async Task<bool> SendPropertyToAsync(string key, ISubscriptionHubClient target)
     {
-        foreach(var property in Properties)
-        {
-            await SendPropertyToAsync(property, HubContext.Clients.Client(connectionId));
-        }
-    }
+        var property = Properties.SingleOrDefault(x => x.Key == key);
 
-    private async Task SendPropertyToAsync(RealtimeProperty property, IClientProxy target)
-    {
-        if (property.Value is ITuple t)
+        if (property is null)
         {
-            await (t.Length switch
-            {
-                1 => target.SendAsync(property.Name, t[0]),
-                2 => target.SendAsync(property.Name, t[0], t[1]),
-                3 => target.SendAsync(property.Name, t[0], t[1], t[2]),
-                _ => throw new InvalidOperationException("Tuple length not supported")
-            });
+            return false;
         }
-        else
-        {
-            await target.SendAsync(property.Name, property.Value);
-        }
+
+        await target.SendRealtimeValue(property.Key, property.Value);
+        return true;
     }
 }

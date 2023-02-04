@@ -1,30 +1,30 @@
 <script lang="ts">
-	import type { OsmosisEpochInfoDTO } from '$lib/models/DTOs/OsmosisDTOs';
+	import { RealtimeValueName } from '$lib/service/realtime-value-definitions';
+	import {
+		createRealtimeValueListener,
+		SocketSubscriptionBuilder
+	} from '$lib/service/subscriptions';
 	import OsmosisCore from '$lib/static/osmosis-core.webp';
 	import {
 		genesisEpochProvisions,
 		reductionFactor,
 		reductionPeriodInEpochs
 	} from '$lib/utils/OsmosisChainParams';
-	import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
-	import { onMount } from 'svelte';
-	import { writable } from 'svelte/store';
+	import { onDestroy, onMount } from 'svelte';
 
-	var connection: HubConnection;
+	const subscriptionBuilder = new SocketSubscriptionBuilder();
 
-	const epochInfo = writable<OsmosisEpochInfoDTO | null>(null);
+	const epochInfo = createRealtimeValueListener(
+		subscriptionBuilder,
+		RealtimeValueName.OsmosisEpochInfo,
+		() => []
+	);
 
 	onMount(async () => {
-		connection = new HubConnectionBuilder()
-			.withUrl('/api/hub/osmosis')
-			.withAutomaticReconnect()
-			.build();
-
-		connection.on('CurrentEpochInfo', (newEpochInfo) => {
-			epochInfo.set(newEpochInfo);
-		});
-
-		await connection.start();
+		await subscriptionBuilder.start();
+	});
+	onDestroy(() => {
+		subscriptionBuilder.dispose();
 	});
 </script>
 

@@ -22,25 +22,25 @@
 	} from '$lib/service/decode';
 	import {
 		createQueryListener,
-		QueryName,
-		QuerySubscriptionBuilder
-	} from '$lib/service/querysubscription';
+		createRealtimeValueListener,
+		SocketSubscriptionBuilder
+	} from '$lib/service/subscriptions';
 	import type { SeriesOption } from 'echarts';
 	import { onDestroy, onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
 	import WalletNetwork from '$lib/static/wallet-network.png';
 	import CategoryChart from '$lib/charts/CategoryChart.svelte';
-	import { HubConnectionBuilder, type HubConnection } from '@microsoft/signalr';
 	import {
 		developerMintShare,
 		genesisEpochProvisions,
 		reductionFactor,
 		reductionPeriodInEpochs
 	} from '$lib/utils/OsmosisChainParams';
+	import { RealtimeValueName } from '$lib/service/realtime-value-definitions';
+	import { QueryName } from '$lib/service/query-definitions';
 
-	const subscriptionBuilder = new QuerySubscriptionBuilder();
-	var connection: HubConnection;
+	const subscriptionBuilder = new SocketSubscriptionBuilder();
 
 	const osmosisDevWalletsQuery = createQueryListener(
 		subscriptionBuilder,
@@ -74,12 +74,12 @@
 
 	const osmosisDevDelegatesQuery = createQueryListener(
 		subscriptionBuilder,
-		QueryName.OsmosisL5Delegates
+		QueryName.OsmosisL5Delegations
 	);
 
 	const osmosisDevUndelegatesQuery = createQueryListener(
 		subscriptionBuilder,
-		QueryName.OsmosisL5DevUndelegates
+		QueryName.OsmosisL5DevUndelegations
 	);
 
 	const osmosisDevL0WalletsQuery = createQueryListener(
@@ -92,27 +92,19 @@
 		QueryName.OsmosisL0DevTransfers
 	);
 
-	const epochInfo = writable<OsmosisEpochInfoDTO | null>(null);
+	const epochInfo = createRealtimeValueListener(
+		subscriptionBuilder,
+		RealtimeValueName.OsmosisEpochInfo,
+		() => []
+	);
 
 	const usageDistributionChart = writable<SeriesOption | null>(null);
 
 	onMount(async () => {
 		await subscriptionBuilder.start();
-
-		connection = new HubConnectionBuilder()
-			.withUrl('/api/hub/osmosis')
-			.withAutomaticReconnect()
-			.build();
-
-		connection.on('CurrentEpochInfo', (newEpochInfo) => {
-			epochInfo.set(newEpochInfo);
-		});
-
-		await connection.start();
 	});
 	onDestroy(() => {
 		subscriptionBuilder.dispose();
-		connection?.stop();
 	});
 
 	const categories = {

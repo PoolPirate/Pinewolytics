@@ -1,9 +1,5 @@
 <script lang="ts">
-	import {
-		createQueryListener,
-		QueryName,
-		QuerySubscriptionBuilder
-	} from '$lib/service/querysubscription';
+	import { createQueryListener, SocketSubscriptionBuilder } from '$lib/service/subscriptions';
 	import type { LegendComponentOption, SeriesOption, YAXisComponentOption } from 'echarts';
 	import { getContext, onDestroy, onMount } from 'svelte';
 	import { writable, type Readable } from 'svelte/store';
@@ -18,8 +14,9 @@
 		type TimeSeriesEntry
 	} from '$lib/service/transform';
 	import { isWeeklyModeStoreName } from '$lib/utils/Utils';
+	import { QueryName } from '$lib/service/query-definitions';
 
-	const subscriptionBuilder = new QuerySubscriptionBuilder();
+	const subscriptionBuilder = new SocketSubscriptionBuilder();
 	const transactionMetricsHistoryQuery = createQueryListener(
 		subscriptionBuilder,
 		QueryName.TerraTransactionMetricsHistory

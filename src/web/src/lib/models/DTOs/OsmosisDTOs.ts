@@ -37,6 +37,12 @@ export interface OsmosisLPJoinDTO {
 	amount: number;
 }
 
+export interface OsmosisStakingRewardDTO {
+	date: string;
+	address: string;
+	amount: number;
+}
+
 export interface OsmosisLPExitDTO {
 	blockTimestamp: string;
 	liquidityProviderAddress: string;

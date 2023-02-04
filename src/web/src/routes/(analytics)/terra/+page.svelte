@@ -9,56 +9,54 @@
 	import priceIcon from '$lib/static/logo/price.svg';
 	import pileIcon from '$lib/static/logo/pile.svg';
 	import smallPileIcon from '$lib/static/logo/small_pile.webp';
+	import {
+		createRealtimeValueListener,
+		SocketSubscriptionBuilder
+	} from '$lib/service/subscriptions';
+	import { RealtimeValueName } from '$lib/service/realtime-value-definitions';
 
-	const blockHeight = writable<number>(0);
+	const subscriptionBuilder = new SocketSubscriptionBuilder();
+
+	const blockHeight = createRealtimeValueListener(
+		subscriptionBuilder,
+		RealtimeValueName.LunaBlockHeight,
+		() => [blockHeightAnimation]
+	);
 	var blockHeightAnimation: RefreshAnimation;
-	const blockTimestamp = writable<Date>(new Date());
+
+	const blockTimestamp = createRealtimeValueListener(
+		subscriptionBuilder,
+		RealtimeValueName.LunaBlockTimestamp,
+		() => [blockTimestampAnimation]
+	);
 	var blockTimestampAnimation: RefreshAnimation;
-	const price = writable<number>(0);
+
+	const price = createRealtimeValueListener(
+		subscriptionBuilder,
+		RealtimeValueName.LunaPrice,
+		() => [priceAnimation]
+	);
 	var priceAnimation: RefreshAnimation;
-	const totalSupply = writable<number>(0);
+
+	const totalSupply = createRealtimeValueListener(
+		subscriptionBuilder,
+		RealtimeValueName.LunaTotalSupply,
+		() => [totalSupplyAnimation]
+	);
 	var totalSupplyAnimation: RefreshAnimation;
-	const circulatingSupply = writable<number>(0);
+
+	const circulatingSupply = createRealtimeValueListener(
+		subscriptionBuilder,
+		RealtimeValueName.LunaCirculatingSupply,
+		() => [circulatingSupplyAnimation]
+	);
 	var circulatingSupplyAnimation: RefreshAnimation;
 
-	var connection: HubConnection;
-
 	onMount(async () => {
-		connection = new HubConnectionBuilder()
-			.withUrl('/api/hub/luna')
-			.withAutomaticReconnect()
-			.build();
-
-		connection.on('Price', (newPrice) => {
-			price.set(newPrice);
-			priceAnimation.play();
-		});
-		connection.on('PeakBlockHeight', (newBlockHeight) => {
-			blockHeight.set(newBlockHeight);
-
-			blockHeightAnimation.play();
-		});
-		connection.on('PeakBlockTimestamp', (newBlockTimestamp) => {
-			blockTimestamp.set(new Date(newBlockTimestamp));
-			blockTimestampAnimation.play();
-		});
-		connection.on('TotalSupply', (newTotalSupply) => {
-			totalSupply.set(newTotalSupply);
-			totalSupplyAnimation.play();
-		});
-		connection.on('CirculatingSupply', (newCirculatingSupply) => {
-			circulatingSupply.set(newCirculatingSupply);
-			circulatingSupplyAnimation.play();
-		});
-
-		await connection.start();
+		await subscriptionBuilder.start();
 	});
-	onDestroy(() => {
-		if (connection == null) {
-			return;
-		}
-
-		connection.stop();
+	onDestroy(async () => {
+		subscriptionBuilder.dispose();
 	});
 </script>
 
@@ -82,7 +80,7 @@
 			<img alt="icon" class="h-1/2" src={clockIcon} />
 			<RefreshAnimation bind:this={blockTimestampAnimation} />
 			<h2>Block Timestamp</h2>
-			<p>{$blockTimestamp.toLocaleString()}</p>
+			<p>{new Date($blockTimestamp).toLocaleString()}</p>
 		</li>
 		<li>
 			<img alt="icon" class="h-1/2" src={priceIcon} />

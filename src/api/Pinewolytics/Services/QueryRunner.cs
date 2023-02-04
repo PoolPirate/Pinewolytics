@@ -12,7 +12,7 @@ public class QueryRunner : Singleton
     [Inject]
     private readonly FlipsideClient Flipside = null!;
     [Inject]
-    private readonly QuerySubscriptionService QuerySusbcriptionService = null!;
+    private readonly SocketSubscriptionService QuerySusbcriptionService = null!;
 
     public async Task RunAndCacheQueryAsync(string name)
     {
@@ -57,20 +57,10 @@ public class QueryRunner : Singleton
             type = type.MakeGenericType(typeArgs.ToArray());
         }
 
-        try
-        {
-            await Flipside.RunQueryAndCacheAsync(
-    scheduledQuery.Name,
-    type,
-    scheduledQuery.Query);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine("FAIL " + scheduledQuery.Name);
-            throw;
-        }
-
-
+        await Flipside.RunQueryAndCacheAsync(
+            scheduledQuery.Name,
+            type,
+            scheduledQuery.Query);
 
         await QuerySusbcriptionService.BroadcastQueryUpdate(scheduledQuery.Name);
     }

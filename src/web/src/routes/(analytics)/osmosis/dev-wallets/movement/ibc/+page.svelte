@@ -1,12 +1,9 @@
 <script lang="ts">
-	import {
-		createQueryListener,
-		QueryName,
-		QuerySubscriptionBuilder
-	} from '$lib/service/querysubscription';
+	import { QueryName } from '$lib/service/query-definitions';
+	import { createQueryListener, SocketSubscriptionBuilder } from '$lib/service/subscriptions';
 	import { onDestroy, onMount } from 'svelte';
 
-	const subscriptionBuilder = new QuerySubscriptionBuilder();
+	const subscriptionBuilder = new SocketSubscriptionBuilder();
 
 	const osmosisDevIBCTransfersQuery = createQueryListener(
 		subscriptionBuilder,

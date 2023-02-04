@@ -19,7 +19,10 @@
 		<NavLink href="/osmosis/dev-wallets/">Introduction</NavLink>
 		<NavLink href="/osmosis/dev-wallets/overview">Overview</NavLink>
 		<NavLink href="/osmosis/dev-wallets/wallets">Wallets</NavLink>
-		<NavLink href="/osmosis/dev-wallets/movement">Movements</NavLink>
+		<NavLinkGroup title="Movements">
+			<NavLink href="/osmosis/dev-wallets/movement">Overview</NavLink>
+			<NavLink href="/osmosis/dev-wallets/movement/staking">Staking</NavLink>
+		</NavLinkGroup>
 
 		<LinkBumper />
 		<NavLink href="/osmosis/dev-wallets/about">About</NavLink>

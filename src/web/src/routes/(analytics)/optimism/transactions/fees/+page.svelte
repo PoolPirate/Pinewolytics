@@ -5,11 +5,8 @@
 		OptimismGasMetricsDTO,
 		OptimismL1SubmissionMetricsDTO
 	} from '$lib/models/DTOs/OptimismDTO';
-	import {
-		createQueryListener,
-		QueryName,
-		QuerySubscriptionBuilder
-	} from '$lib/service/querysubscription';
+	import { QueryName } from '$lib/service/query-definitions';
+	import { createQueryListener, SocketSubscriptionBuilder } from '$lib/service/subscriptions';
 	import {
 		DaySeriesToWeekSeriesByLast,
 		DaySeriesToWeekSeriesBySum,
@@ -20,7 +17,7 @@
 	import { getContext, onDestroy, onMount } from 'svelte';
 	import { writable, type Readable } from 'svelte/store';
 
-	const subscriptionBuilder = new QuerySubscriptionBuilder();
+	const subscriptionBuilder = new SocketSubscriptionBuilder();
 
 	onMount(async () => {
 		await subscriptionBuilder.start();

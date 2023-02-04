@@ -10,7 +10,7 @@
 	import queryIcon from '$lib/static/logo/query.png';
 
 	import { getQuerySrc } from '$lib/service/queries';
-	import type { QueryName } from '$lib/service/querysubscription';
+	import type { QueryName } from '$lib/service/subscriptions';
 
 	export let series: SeriesOption[];
 	export let yAxis: YAXisComponentOption | YAXisComponentOption[] = {
