@@ -61,6 +61,12 @@ export interface OsmosisUndelegateDTO {
 	amount: number;
 }
 
+export interface OsmosisTotalDelegationsDTO {
+	date: string;
+	totalDelegated: number;
+	totalUndelegated: number;
+}
+
 export enum IBCDirection {
 	IBC_IN,
 	IBC_OUT

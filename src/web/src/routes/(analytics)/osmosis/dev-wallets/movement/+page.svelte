@@ -74,7 +74,7 @@
 
 	const osmosisDevDelegatesQuery = createQueryListener(
 		subscriptionBuilder,
-		QueryName.OsmosisL5Delegations
+		QueryName.OsmosisL5DevDelegations
 	);
 
 	const osmosisDevUndelegatesQuery = createQueryListener(

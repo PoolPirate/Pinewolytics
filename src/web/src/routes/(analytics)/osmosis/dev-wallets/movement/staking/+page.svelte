@@ -5,6 +5,7 @@
 		OsmosisDelegateDTO,
 		OsmosisEpochInfoDTO,
 		OsmosisStakingRewardDTO,
+		OsmosisTotalDelegationsDTO,
 		OsmosisUndelegateDTO
 	} from '$lib/models/DTOs/OsmosisDTOs';
 	import type { TimeSeriesEntryDTO } from '$lib/models/SharedDTOs';
@@ -16,7 +17,11 @@
 		createRealtimeValueListener,
 		SocketSubscriptionBuilder
 	} from '$lib/service/subscriptions';
-	import { DaySeriesToWeekSeriesBySum, type TimeSeriesEntry } from '$lib/service/transform';
+	import {
+		DaySeriesToWeekSeriesByLast,
+		DaySeriesToWeekSeriesBySum,
+		type TimeSeriesEntry
+	} from '$lib/service/transform';
 	import {
 		genesisEpochProvisions,
 		reductionFactor,
@@ -33,19 +38,16 @@
 
 	const shareOfTotalDelegationsChart = writable<SeriesOption | null>(null);
 	const stakingAPRWithAndWithoutDevsChart = writable<SeriesOption | null>(null);
-	const cumulativeStakingRewardsChart = writable<SeriesOption[]>([]);
+	const devDelegationsChart = writable<SeriesOption[]>([]);
+	const devStakingRewardsChart = writable<SeriesOption[]>([]);
 
 	const osmosisDevStakingRewardsQuery = createQueryListener(
 		subscriptionBuilder,
 		QueryName.OsmosisL5DevStakingRewards
 	);
-	const osmosisDevDelegationsQuery = createQueryListener(
+	const osmosisDevTotalDelegationsHistoryQuery = createQueryListener(
 		subscriptionBuilder,
-		QueryName.OsmosisL5Delegations
-	);
-	const osmosisDevUndelegationsQuery = createQueryListener(
-		subscriptionBuilder,
-		QueryName.OsmosisL5DevUndelegations
+		QueryName.OsmosisL5DevTotalDelegationsHistory
 	);
 	const totalDelegationsHistoryQuery = createQueryListener(
 		subscriptionBuilder,
@@ -70,20 +72,17 @@
 	});
 
 	$: makeShareOfTotalDelegationsChart(
-		$osmosisDevDelegationsQuery,
-		$osmosisDevUndelegationsQuery,
+		$osmosisDevTotalDelegationsHistoryQuery,
 		$totalDelegationsHistoryQuery,
 		$totalSuperfluidStaked
 	);
 	function makeShareOfTotalDelegationsChart(
-		delegations: OsmosisDelegateDTO[],
-		undelegations: OsmosisUndelegateDTO[],
+		totalDevDelegations: OsmosisTotalDelegationsDTO[],
 		totalDelegations: TimeSeriesEntryDTO[],
 		currentTotalSuperfluidStaked: number | null
 	) {
 		if (
-			delegations.length == 0 ||
-			undelegations.length == 0 ||
+			totalDevDelegations.length == 0 ||
 			totalDelegations.length == 0 ||
 			currentTotalSuperfluidStaked == null
 		) {
@@ -93,9 +92,13 @@
 		const latestTotalDelegations = totalDelegations.sort(
 			(a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
 		)[0];
-
-		const devNetDelegated = sumDelegateVolume(delegations) - sumUndelegateVolume(undelegations);
-		const otherNetDelegated = latestTotalDelegations.value - devNetDelegated;
+		const latestTotalDevDelegationsEntry = totalDevDelegations.sort(
+			(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+		)[0];
+		const latestTotalDevDelegations =
+			latestTotalDevDelegationsEntry.totalDelegated -
+			latestTotalDevDelegationsEntry.totalUndelegated;
+		const otherNetDelegated = latestTotalDelegations.value - latestTotalDevDelegations;
 
 		shareOfTotalDelegationsChart.set({
 			type: 'pie',
@@ -107,7 +110,7 @@
 			data: [
 				{
 					name: 'Developer Delegations',
-					value: Math.round(devNetDelegated),
+					value: Math.round(latestTotalDevDelegations),
 					itemStyle: {
 						color: 'red'
 					}
@@ -125,22 +128,19 @@
 	}
 
 	$: makeStakingAPRWithAndWithoutDevsChart(
-		$osmosisDevDelegationsQuery,
-		$osmosisDevUndelegationsQuery,
+		$osmosisDevTotalDelegationsHistoryQuery,
 		$totalDelegationsHistoryQuery,
 		$totalSuperfluidStaked,
 		$epochInfo
 	);
 	function makeStakingAPRWithAndWithoutDevsChart(
-		delegations: OsmosisDelegateDTO[],
-		undelegations: OsmosisUndelegateDTO[],
+		totalDevDelegations: OsmosisTotalDelegationsDTO[],
 		totalDelegations: TimeSeriesEntryDTO[],
 		currentTotalSuperfluidStaked: number | null,
 		epochInfo: OsmosisEpochInfoDTO | null
 	) {
 		if (
-			delegations.length == 0 ||
-			undelegations.length == 0 ||
+			totalDevDelegations.length == 0 ||
 			totalDelegations.length == 0 ||
 			currentTotalSuperfluidStaked == null ||
 			epochInfo == null
@@ -151,9 +151,13 @@
 		const latestTotalDelegations = totalDelegations.sort(
 			(a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()
 		)[0].value;
-
-		const devNetDelegated = sumDelegateVolume(delegations) - sumUndelegateVolume(undelegations);
-		const otherNetDelegated = latestTotalDelegations - devNetDelegated;
+		const latestTotalDevDelegationsEntry = totalDevDelegations.sort(
+			(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+		)[0];
+		const latestTotalDevDelegations =
+			latestTotalDevDelegationsEntry.totalDelegated -
+			latestTotalDevDelegationsEntry.totalUndelegated;
+		const otherNetDelegated = latestTotalDelegations - latestTotalDevDelegations;
 
 		const currentInflation =
 			Math.pow(reductionFactor, Math.floor(epochInfo.currentEpoch / reductionPeriodInEpochs)) *
@@ -237,8 +241,8 @@
 		});
 	}
 
-	$: makeCumulativeStakingRewardsChart($osmosisDevStakingRewardsQuery, $isWeeklyModeStore);
-	function makeCumulativeStakingRewardsChart(
+	$: makeDevStakingRewardsChart($osmosisDevStakingRewardsQuery, $isWeeklyModeStore);
+	function makeDevStakingRewardsChart(
 		stakingRewards: OsmosisStakingRewardDTO[],
 		isWeeklyMode: boolean
 	) {
@@ -272,7 +276,7 @@
 			}
 		);
 
-		cumulativeStakingRewardsChart.set([
+		devStakingRewardsChart.set([
 			{
 				type: 'bar',
 				name: 'New Claimed Rewards',
@@ -284,6 +288,37 @@
 				areaStyle: {},
 				name: 'Total Cumulative Rewards',
 				data: cumulativeStakingRewardsSeries.map((x) => [x.timestamp, Math.round(x.value)])
+			}
+		]);
+	}
+
+	$: makeDevDelegationsChart($osmosisDevTotalDelegationsHistoryQuery, $isWeeklyModeStore);
+	function makeDevDelegationsChart(
+		totalDevDelegations: OsmosisTotalDelegationsDTO[],
+		isWeeklyMode: boolean
+	) {
+		if (totalDevDelegations.length == 0) {
+			return;
+		}
+
+		var totalDelegationsSeries = totalDevDelegations
+			.map<TimeSeriesEntry>((value) => {
+				return {
+					timestamp: new Date(value.date),
+					value: value.totalDelegated - value.totalUndelegated
+				};
+			})
+			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+		if (isWeeklyMode) {
+			totalDelegationsSeries = DaySeriesToWeekSeriesByLast(totalDelegationsSeries);
+		}
+
+		devDelegationsChart.set([
+			{
+				type: 'line',
+				areaStyle: {},
+				data: totalDelegationsSeries.map((x) => [x.timestamp, x.value])
 			}
 		]);
 	}
@@ -309,9 +344,17 @@
 
 	<TimeSeriesChart
 		class="h-128 transparent-background rounded-xl p-5"
+		title={{ text: 'Total Dev Delegations' }}
+		queryName={QueryName.OsmosisL5DevTotalDelegationsHistory}
+		series={$devDelegationsChart}
+		yAxis={[{}, {}]}
+	/>
+
+	<TimeSeriesChart
+		class="h-128 transparent-background rounded-xl p-5"
 		title={{ text: 'Staking Rewards Claimed' }}
 		queryName={QueryName.OsmosisL5DevStakingRewards}
-		series={$cumulativeStakingRewardsChart}
+		series={$devStakingRewardsChart}
 		yAxis={[{}, {}]}
 	/>
 </div>

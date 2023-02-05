@@ -25,6 +25,11 @@ public class SocketSubscriptionService : Singleton
 
     public async Task GetAndSubscribeAsync(string connectionId, string name, CancellationToken cancellationToken)
     {
+        if (string.IsNullOrWhiteSpace(name))
+        {
+            return;
+        }
+
         lock (SubscriptionsLock)
         {
             if (Subscriptions.TryGetValue(connectionId, out var subscriptionList))
