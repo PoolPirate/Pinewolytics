@@ -1,5 +1,6 @@
 <script lang="ts">
 	import SingleValueChart from '$lib/charts/SingleValueChart.svelte';
+	import TimeSeriesChart from '$lib/charts/TimeSeriesChart.svelte';
 	import type {
 		OsmosisDelegateDTO,
 		OsmosisEpochInfoDTO,
@@ -15,21 +16,29 @@
 		createRealtimeValueListener,
 		SocketSubscriptionBuilder
 	} from '$lib/service/subscriptions';
+	import { DaySeriesToWeekSeriesBySum, type TimeSeriesEntry } from '$lib/service/transform';
 	import {
 		genesisEpochProvisions,
 		reductionFactor,
 		reductionPeriodInEpochs,
 		stakingMintShare
 	} from '$lib/utils/OsmosisChainParams';
+	import { isWeeklyModeStoreName } from '$lib/utils/Utils';
 	import type { SeriesOption } from 'echarts';
-	import { onDestroy, onMount } from 'svelte';
-	import { writable } from 'svelte/store';
+	import { getContext, onDestroy, onMount } from 'svelte';
+	import { writable, type Readable } from 'svelte/store';
 
 	const subscriptionBuilder = new SocketSubscriptionBuilder();
+	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
 	const shareOfTotalDelegationsChart = writable<SeriesOption | null>(null);
 	const stakingAPRWithAndWithoutDevsChart = writable<SeriesOption | null>(null);
+	const cumulativeStakingRewardsChart = writable<SeriesOption[]>([]);
 
+	const osmosisDevStakingRewardsQuery = createQueryListener(
+		subscriptionBuilder,
+		QueryName.OsmosisL5DevStakingRewards
+	);
 	const osmosisDevDelegationsQuery = createQueryListener(
 		subscriptionBuilder,
 		QueryName.OsmosisL5Delegations
@@ -227,21 +236,82 @@
 			]
 		});
 	}
+
+	$: makeCumulativeStakingRewardsChart($osmosisDevStakingRewardsQuery, $isWeeklyModeStore);
+	function makeCumulativeStakingRewardsChart(
+		stakingRewards: OsmosisStakingRewardDTO[],
+		isWeeklyMode: boolean
+	) {
+		if (stakingRewards.length == 0) {
+			return;
+		}
+
+		const dailyStakingRewards = stakingRewards.reduce((dailyTotals, reward) => {
+			return dailyTotals.set(reward.date, reward.amount + (dailyTotals.get(reward.date) ?? 0));
+		}, new Map<string, number>());
+
+		var newStakingRewardsSeries = Array.from(dailyStakingRewards.entries())
+			.map<TimeSeriesEntry>(([date, value]) => {
+				return {
+					timestamp: new Date(date),
+					value: value
+				};
+			})
+			.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+
+		if (isWeeklyMode) {
+			newStakingRewardsSeries = DaySeriesToWeekSeriesBySum(newStakingRewardsSeries);
+		}
+
+		const cumulativeStakingRewardsSeries = newStakingRewardsSeries.map<TimeSeriesEntry>(
+			(value, i, arr) => {
+				return {
+					timestamp: value.timestamp,
+					value: arr.slice(0, i + 1).reduce((total, value) => total + value.value, 0)
+				};
+			}
+		);
+
+		cumulativeStakingRewardsChart.set([
+			{
+				type: 'bar',
+				name: 'New Claimed Rewards',
+				data: newStakingRewardsSeries.map((x) => [x.timestamp, Math.round(x.value)]),
+				yAxisIndex: 1
+			},
+			{
+				type: 'line',
+				areaStyle: {},
+				name: 'Total Cumulative Rewards',
+				data: cumulativeStakingRewardsSeries.map((x) => [x.timestamp, Math.round(x.value)])
+			}
+		]);
+	}
 </script>
 
-<div class="grid grid-cols-1 md:grid-cols-2 transparent-background rounded-xl p-5">
-	<SingleValueChart
-		showLegend={true}
-		showToolTip={true}
-		title={{ text: 'Total Delegations Breakdown' }}
-		class="h-128"
-		queryName={null}
-		series={$shareOfTotalDelegationsChart}
-	/>
-	<SingleValueChart
-		title={{ text: 'Staking APR %' }}
-		class="h-128"
-		queryName={null}
-		series={$stakingAPRWithAndWithoutDevsChart}
+<div class="grid grid-cols-1 gap-2">
+	<div class="grid grid-cols-1 md:grid-cols-2 transparent-background rounded-xl p-5">
+		<SingleValueChart
+			showLegend={true}
+			showToolTip={true}
+			title={{ text: 'Total Delegations Breakdown' }}
+			class="h-128"
+			queryName={null}
+			series={$shareOfTotalDelegationsChart}
+		/>
+		<SingleValueChart
+			title={{ text: 'Staking APR %' }}
+			class="h-128"
+			queryName={null}
+			series={$stakingAPRWithAndWithoutDevsChart}
+		/>
+	</div>
+
+	<TimeSeriesChart
+		class="h-128 transparent-background rounded-xl p-5"
+		title={{ text: 'Staking Rewards Claimed' }}
+		queryName={QueryName.OsmosisL5DevStakingRewards}
+		series={$cumulativeStakingRewardsChart}
+		yAxis={[{}, {}]}
 	/>
 </div>
