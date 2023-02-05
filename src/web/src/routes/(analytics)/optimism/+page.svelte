@@ -54,17 +54,26 @@
 			<h2>Peak Block Height</h2>
 			<p>#{$peakBlockHeight}</p>
 		</li>
+
 		<li>
 			<img alt="icon" class="h-1/2" src={fireIcon} />
 			<RefreshAnimation bind:this={l1GasPriceAnimation} />
 			<h2>L1 Gas Price</h2>
-			<p>{Math.round($gasPrices?.l1GasPrice / Math.pow(10, 6)) / 1000} gwei</p>
+			{#if $gasPrices != null}
+				<p>{Math.round($gasPrices?.l1GasPrice / Math.pow(10, 6)) / 1000} gwei</p>
+			{:else}
+				<p>Loading...</p>
+			{/if}
 		</li>
 		<li>
 			<img alt="icon" class="h-1/2" src={gasStationIcon} />
 			<RefreshAnimation bind:this={l2GasPriceAnimation} />
 			<h2>L2 Gas Price</h2>
-			<p>{$gasPrices?.l2GasPrice / Math.pow(10, 9)} gwei</p>
+			{#if $gasPrices != null}
+				<p>{$gasPrices?.l2GasPrice / Math.pow(10, 9)} gwei</p>
+			{:else}
+				<p>Loading...</p>
+			{/if}
 		</li>
 	</ul>
 </div>

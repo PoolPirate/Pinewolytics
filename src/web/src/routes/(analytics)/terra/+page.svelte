@@ -80,25 +80,42 @@
 			<img alt="icon" class="h-1/2" src={clockIcon} />
 			<RefreshAnimation bind:this={blockTimestampAnimation} />
 			<h2>Block Timestamp</h2>
-			<p>{new Date($blockTimestamp).toLocaleString()}</p>
+			{#if $blockTimestamp != null}
+				<p>{new Date($blockTimestamp).toLocaleString()}</p>
+			{:else}
+				<p>Loading...</p>
+			{/if}
 		</li>
 		<li>
 			<img alt="icon" class="h-1/2" src={priceIcon} />
 			<RefreshAnimation bind:this={priceAnimation} />
 			<h2>Price</h2>
-			<p>{$price}$</p>
+
+			{#if $price != null}
+				<p>{$price}$</p>
+			{:else}
+				<p>Loading...</p>
+			{/if}
 		</li>
 		<li>
 			<img alt="icon" class="h-1/2" src={pileIcon} />
 			<RefreshAnimation bind:this={totalSupplyAnimation} />
 			<h2>Total Supply</h2>
-			<p>{Math.round($totalSupply / 1000000).toLocaleString()} $LUNA</p>
+			{#if $totalSupply != null}
+				<p>{Math.round($totalSupply / 1000000).toLocaleString()} $LUNA</p>
+			{:else}
+				<p>Loading...</p>
+			{/if}
 		</li>
 		<li>
 			<img alt="icon" class="h-1/2" src={smallPileIcon} />
 			<RefreshAnimation bind:this={circulatingSupplyAnimation} />
 			<h2>Circulating Supply</h2>
-			<p>{Math.round($circulatingSupply / 1000000).toLocaleString()} $LUNA</p>
+			{#if $circulatingSupply != null}
+				<p>{Math.round($circulatingSupply / 1000000).toLocaleString()} $LUNA</p>
+			{:else}
+				<p>Loading...</p>
+			{/if}
 		</li>
 	</ul>
 </div>

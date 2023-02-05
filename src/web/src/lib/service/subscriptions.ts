@@ -2,8 +2,8 @@ import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
 import { type QueryName, queryTypes } from './query-definitions';
-import { realtimeValueTypes, type RealtimeValueName } from './realtime-value-definitions';
 import type RefreshAnimation from '$lib/components/RefreshAnimation.svelte';
+import type { RealtimeValueName, realtimeValueTypes } from './realtime-value-definitions';
 
 
 interface QuerySubscription {
@@ -107,7 +107,7 @@ export function createRealtimeValueListener<T extends RealtimeValueName, R exten
 	realtimeValueName: T,
 	animationGetter: (() => RefreshAnimation[])
 ) {
-	const { subscribe, set } = writable<R>(realtimeValueTypes[realtimeValueName] as any);
+	const { subscribe, set } = writable<R | null>(null);
 
 	builder.addRealtimeValue(realtimeValueName, (value) => {
 		set(value as any);

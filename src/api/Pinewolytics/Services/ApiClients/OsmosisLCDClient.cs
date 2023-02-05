@@ -95,6 +95,6 @@ public class OsmosisLCDClient : Singleton
             PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
             NumberHandling = JsonNumberHandling.AllowReadingFromString,
         }, cancellationToken: cancellationToken);
-        return result!.TotalDelegations;
+        return result!.TotalDelegations / Math.Pow(10, 6);
     }
 }
