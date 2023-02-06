@@ -11,6 +11,7 @@
 	import { onMount } from 'svelte';
 	import Loading from '$lib/static/loading.svg';
 	import Rank from '../Rank.svelte';
+	import Warning from '$lib/static/warning.svg';
 
 	var loadingPromise: Promise<{
 		walletRanking: OsmosisWalletRankingDTO;
@@ -116,6 +117,12 @@
 		<p class="text-right font-thin">
 			Last Updated: {getAgeString(new Date(walletRanking.lastUpdatedAt))} ago
 		</p>
+	{:catch err}
+		<div class="text-center">
+			<img class="w-64 p-8" src={Warning} alt="Loading" />
+			<h1 class="font-bold text-xl">FlipsideCrypto API Unavailable</h1>
+			<h2>Try again later :/</h2>
+		</div>
 	{/await}
 </div>
 
