@@ -9,6 +9,11 @@ public class HangfireDashboardAuthorizationFilter : IDashboardAuthorizationFilte
 
     public static bool IsReadOnlyAccess(DashboardContext context, AuthorizationOptions options, bool isProduction)
     {
+        if (!isProduction)
+        {
+            return false;
+        }
+
         if (!context.GetHttpContext().Request.Cookies.ContainsKey(HangfireCookieName)) {
             return true;
         }

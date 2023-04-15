@@ -2,4 +2,5 @@
 	<a href="osmosis/dev-wallets">Dev Wallets</a>
 	<a href="osmosis/wallet-tracker">Wallet Tracker</a>
 	<a href="osmosis/ranking">Wallet Ranking</a>
+	<a href="osmosis/protorev">Protorev Revenue</a>
 </div>

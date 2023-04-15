@@ -8,7 +8,7 @@ import type {
 	OsmosisTransferDTO,
 	OsmosisWalletRankingDTO
 } from '$lib/models/DTOs/OsmosisDTOs';
-import type { QueryName } from './querysubscription';
+import type { QueryName } from './query-definitions';
 
 export async function getQuerySrc(queryName: QueryName): Promise<string> {
 	const response = await fetch('/Api/Query/Src/' + queryName);

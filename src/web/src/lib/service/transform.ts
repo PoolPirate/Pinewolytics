@@ -71,3 +71,7 @@ export function DaySeriesToWeekSeriesByMax(series: TimeSeriesEntry[]) {
 export function DaySeriesToWeekSeriesByMin(series: TimeSeriesEntry[]) {
     return DaySeriesToWeekSeries(series, vals => Math.min(...vals));
 }
+
+export function onlyUnique<T>(value: T, index: number, array: T[]) {
+  return array.indexOf(value) === index;
+}

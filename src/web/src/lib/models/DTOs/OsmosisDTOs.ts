@@ -124,3 +124,11 @@ export interface OsmosisEpochInfoDTO {
 	epochCountingStarted: boolean;
 	currentEpochStartHeight: number;
 }
+
+export interface OsmosisProtoRevRevenueDTO {
+	date: string;
+	currency: string;
+	symbol: string;
+	totalAmount: number;
+	totalAmountUSD: number;
+}

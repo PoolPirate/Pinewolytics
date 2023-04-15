@@ -1,5 +1,5 @@
 import type { OptimismAddressBalanceDTO, OptimismContractActivityDTO, OptimismContractMetricsDTO, OptimismDAppUsageDTO, OptimismGasMetricsDTO, OptimismL1SubmissionMetricsDTO, OptimismOPHolderMetricsDTO, OptimismTransactionMetricsDTO, OptimismWalletMetricsDTO } from "$lib/models/DTOs/OptimismDTO";
-import type { OsmosisLPJoinDTO, OsmosisLPExitDTO, OsmosisIBCTransferDTO, OsmosisTransferDTO, OsmosisSwapDTO, OsmosisDelegateDTO, OsmosisUndelegateDTO, OsmosisStakingRewardDTO, OsmosisTotalDelegationsDTO } from "$lib/models/DTOs/OsmosisDTOs";
+import type { OsmosisLPJoinDTO, OsmosisLPExitDTO, OsmosisIBCTransferDTO, OsmosisTransferDTO, OsmosisSwapDTO, OsmosisDelegateDTO, OsmosisUndelegateDTO, OsmosisStakingRewardDTO, OsmosisTotalDelegationsDTO, OsmosisProtoRevRevenueDTO } from "$lib/models/DTOs/OsmosisDTOs";
 import type { TerraAddressBalanceDTO, TerraContractMetricsDTO, TerraTotalFeeDTO, TerraTransactionMetricsDTO, TerraValidatorCountDTO, TerraWalletMetricsDTO } from "$lib/models/DTOs/TerraDTOs";
 import type { StringPrimitiveObject, TimeSeriesEntryDTO } from "$lib/models/SharedDTOs";
 
@@ -34,7 +34,9 @@ export enum QueryName {
 	OsmosisL5DevUndelegations = "osmosis-dev-wallet-5-undelegate",
 	OsmosisL5DevStakingRewards = "osmosis-dev-wallets-5-staking-rewards",
     OsmosisTotalDelegationsHistory = "osmosis-total-delegations-history",
-	OsmosisL5DevTotalDelegationsHistory = "osmosis-dev-wallets-5-total-delegations-history"
+	OsmosisL5DevTotalDelegationsHistory = "osmosis-dev-wallets-5-total-delegations-history",
+
+	OsmosisProtoRevRevenueHistory = "osmosis-protorev-revenue-history"
 }
 
 export const queryTypes = {
@@ -68,5 +70,6 @@ export const queryTypes = {
 	[QueryName.OsmosisL5DevUndelegations]: [] as OsmosisUndelegateDTO[],
 	[QueryName.OsmosisL5DevStakingRewards]: [] as OsmosisStakingRewardDTO[],
     [QueryName.OsmosisTotalDelegationsHistory]: [] as TimeSeriesEntryDTO[],
-	[QueryName.OsmosisL5DevTotalDelegationsHistory]: [] as OsmosisTotalDelegationsDTO[]
+	[QueryName.OsmosisL5DevTotalDelegationsHistory]: [] as OsmosisTotalDelegationsDTO[],
+	[QueryName.OsmosisProtoRevRevenueHistory]: [] as OsmosisProtoRevRevenueDTO[]
 };
