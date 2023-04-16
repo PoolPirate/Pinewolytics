@@ -16,10 +16,7 @@ public class SocketSubscriptionService : Singleton
     [Inject]
     private readonly QueryCache Cache = null!;
 
-    [Inject]
-    private readonly DataClientManager DataClientManager = null!;
-
-    public async Task SubscribeAsync(string connectionId, string name, CancellationToken cancellationToken)
+    public void Subscribe(string connectionId, string name, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -83,6 +80,6 @@ public class SocketSubscriptionService : Singleton
         }
 
         await QueryHubContext.Clients.Clients(targetClients)
-            .SendQueryResult(key, value);
+            .SendRealtimeValue(key, value);
     }
 }

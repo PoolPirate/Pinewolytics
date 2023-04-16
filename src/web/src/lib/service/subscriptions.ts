@@ -58,12 +58,12 @@ export class SocketSubscriptionBuilder {
         }
 
 		this.querySubscriptions.forEach(async (subscription) => {
-			const value = await getQueryValue(subscription.name);
-			subscription.handler(value);
+			const result = await getQueryValue(subscription.name);
+			subscription.handler(result.value);
 		});
 		this.realtimeValueSubscriptions.forEach(async (subscription) => {
-			const value = await getRealtimeValueValue(subscription.name);
-			subscription.handler(value);
+			const result = await getRealtimeValueValue(subscription.name);
+			subscription.handler(result.value);
 		});
 
 		await this.connection.start();
@@ -130,6 +130,7 @@ export function createRealtimeValueListener<T extends RealtimeValueName, R exten
 
 	builder.addRealtimeValue(realtimeValueName, (value) => {
 		set(value as any);
+		console.log(value);
 		animationGetter().forEach(x => x.play());
 	});
 

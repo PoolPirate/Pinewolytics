@@ -20,3 +20,7 @@ export interface MarketDataDTO {
 export interface StringPrimitiveObject {
     value: string;
 }
+
+export interface SubscriptionValueDTO {
+    value: object;
+}
