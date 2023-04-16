@@ -15,6 +15,8 @@ public class OsmosisLCDClient : Singleton
     [Inject]
     private readonly HttpClient Client = null!;
 
+    public record DenominatedAmount(string Denom, double Amount);
+
     record ICNSResult(ICNSName  Data);
     record ICNSName(string Name);
     public async Task<string?> GetICNSNameFromAddressAsync(string address, CancellationToken cancellationToken)
@@ -40,8 +42,7 @@ public class OsmosisLCDClient : Singleton
             : name;
     }
 
-    record BalanceResult(DenominatedBalance Balance);
-    record DenominatedBalance(string Denom, double Amount);
+    record BalanceResult(DenominatedAmount Balance);
     public async Task<double> GetCurrentOSMOBalanceAsync(string address, CancellationToken cancellationToken)
     {
         var route = new Uri(ApiEndpoint, $"cosmos/bank/v1beta1/balances/{address}/by_denom?denom=uosmo");
@@ -54,7 +55,6 @@ public class OsmosisLCDClient : Singleton
     }
 
     record AmountResult(DenominatedAmount Amount);
-    record DenominatedAmount(string Denom, double Amount);
     public async Task<double> GetTotalOSMOSupplyAsync(CancellationToken cancellationToken)
     {
         var route = new Uri(ApiEndpoint, "cosmos/bank/v1beta1/supply/uosmo");
@@ -97,4 +97,73 @@ public class OsmosisLCDClient : Singleton
         }, cancellationToken: cancellationToken);
         return result!.TotalDelegations / Math.Pow(10, 6);
     }
+
+    record ProtoRevProfitsResult(DenominatedAmount[] Profits);
+    public async Task<DenominatedAmount[]> GetTotalProtoRevProfitsAsync(CancellationToken cancellationToken)
+    {
+        var route = new Uri(ApiEndpoint, "/osmosis/v14/protorev/all_profits");
+        var response = await Client.GetAsync(route, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadFromJsonAsync<ProtoRevProfitsResult>(new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString,
+        }, cancellationToken: cancellationToken);
+
+        return result!.Profits;
+    }
+
+    record ProtoRevDeveloperAccountResult(string DeveloperAccount);
+    public async Task<string> GetProtoRevDeveloperAddressAsync(CancellationToken cancellationToken = default)
+    {
+        var route = new Uri(ApiEndpoint, "/osmosis/v14/protorev/developer_account");
+        var response = await Client.GetAsync(route, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadFromJsonAsync<ProtoRevDeveloperAccountResult>(new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString,
+        }, cancellationToken: cancellationToken);
+
+        return result!.DeveloperAccount;
+    }
+
+    record ProtoRevAdminAccountResult(string AdminAccount);
+    public async Task<string> GetProtoRevAdminAddressAsync(CancellationToken cancellationToken = default)
+    {
+        var route = new Uri(ApiEndpoint, "/osmosis/v14/protorev/admin_account");
+        var response = await Client.GetAsync(route, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadFromJsonAsync<ProtoRevAdminAccountResult>(new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString,
+        }, cancellationToken: cancellationToken);
+
+        return result!.AdminAccount;
+    }
+
+    record ProtoRevEnabledResult(bool Enabled);
+    public async Task<bool> GetProtoRevIsEnabledAsync(CancellationToken cancellationToken = default)
+    {
+        var route = new Uri(ApiEndpoint, "/osmosis/v14/protorev/enabled");
+        var response = await Client.GetAsync(route, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadFromJsonAsync<ProtoRevEnabledResult>(new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString,
+        }, cancellationToken: cancellationToken);
+
+        return result!.Enabled;
+    }
 }
+

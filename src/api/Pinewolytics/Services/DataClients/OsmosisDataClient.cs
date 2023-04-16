@@ -1,6 +1,7 @@
 ﻿using Common.Services;
 using Pinewolytics.Models.DTOs.Osmosis;
 using Pinewolytics.Services.ApiClients;
+using static Pinewolytics.Services.ApiClients.OsmosisLCDClient;
 
 namespace Pinewolytics.Services.DataClients;
 
@@ -34,5 +35,29 @@ public class OsmosisDataClient : BaseDataClient
     private async Task<double> LoadTotalSuperfluidDelegations()
     {
         return await OsmosisLCD.GetTotalSuperfluidDelegationsAsync(default);
+    }
+
+    [RealtimeValue("Osmosis-Total-ProtoRev-Revenue", 40 * SECONDS)]
+    private async Task<DenominatedAmount[]> LoadTotalProtoRevRevenueAsync()
+    {
+        return await OsmosisLCD.GetTotalProtoRevProfitsAsync(default);
+    }
+
+    [RealtimeValue("Osmosis-ProtoRev-Enabled", 300 * SECONDS)]
+    private async Task<bool> LoadOsmosisProtoRevIsEnabledAsync()
+    {
+        return await OsmosisLCD.GetProtoRevIsEnabledAsync();
+    }
+
+    [RealtimeValue("Osmosis-ProtoRev-Admin-Address", 600 * SECONDS)]
+    private async Task<string> LoadOsmosisProtoRevAdminAddressAsync()
+    {
+        return await OsmosisLCD.GetProtoRevAdminAddressAsync();
+    }
+
+    [RealtimeValue("Osmosis-ProtoRev-Developer-Address", 300 * SECONDS)]
+    private async Task<string> LoadOsmosisProtoRevDeveloperAddressAsync()
+    {
+        return await OsmosisLCD.GetProtoRevDeveloperAddressAsync();
     }
 }

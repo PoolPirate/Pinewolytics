@@ -1,3 +1,8 @@
+export interface OsmosisDenominatedAmountDTO {
+	denom: string;
+	amount: number;
+}
+
 export interface OsmosisTransferDTO {
 	blockTimestamp: string;
 	amount: number;

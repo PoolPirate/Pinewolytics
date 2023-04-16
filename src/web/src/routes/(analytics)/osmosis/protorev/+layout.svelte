@@ -16,7 +16,12 @@
 		<h1 class="text-white font-bold text-lg">ProtoRev Tracking</h1>
 	</div>
 	<aside slot="sidebar">
-		<NavLink href="/osmosis/protorev/">Revenue</NavLink>
+		<NavLink href="/osmosis/protorev/">Introduction</NavLink>
+
+		<NavLink href="/osmosis/protorev/realtime">Realtime Stats</NavLink>
+		<NavLink href="/osmosis/protorev/revenue">Revenue</NavLink>
+		<NavLink href="/osmosis/protorev/routes">Routes</NavLink>
+		<NavLink href="/osmosis/protorev/parameters">Parameters</NavLink>
 
 		<LinkBumper />
 		<NavLink href="/osmosis/dev-wallets/about">About</NavLink>

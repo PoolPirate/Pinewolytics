@@ -1,7 +1,6 @@
 <script lang="ts">
 	import Chart from '$lib/components/Chart.svelte';
 	import { getQuerySrc } from '$lib/service/queries';
-	import type { QueryName } from '$lib/service/subscriptions';
 	import type {
 		EChartsOption,
 		SeriesOption,
@@ -12,6 +11,7 @@
 	} from 'echarts';
 	import { createEventDispatcher } from 'svelte';
 	import queryIcon from '$lib/static/logo/query.png';
+	import { QueryName } from '$lib/service/query-definitions';
 
 	export let series: SeriesOption | null;
 	export let title: TitleComponentOption | undefined = undefined;
