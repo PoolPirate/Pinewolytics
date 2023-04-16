@@ -130,7 +130,6 @@ export function createRealtimeValueListener<T extends RealtimeValueName, R exten
 
 	builder.addRealtimeValue(realtimeValueName, (value) => {
 		set(value as any);
-		console.log(value);
 		animationGetter().forEach(x => x.play());
 	});
 

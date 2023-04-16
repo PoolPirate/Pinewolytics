@@ -33,8 +33,6 @@
 			return;
 		}
 
-		console.log(totalProtoRevRevenue);
-
 		protoRevTotalRevenueChart.set({
 			type: 'pie',
 			data: totalProtoRevRevenue.map((x) => {
