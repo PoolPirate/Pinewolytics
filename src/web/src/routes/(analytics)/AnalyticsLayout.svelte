@@ -85,7 +85,7 @@
 
 		<main
 			class:blurred={open && !forcedOpen}
-			class="relative flex justify-center w-full h-full h-full overflow-x-hidden overflow-y-auto"
+			class="relative flex justify-center w-full h-full overflow-x-hidden overflow-y-auto"
 		>
 			<slot name="main" />
 		</main>
