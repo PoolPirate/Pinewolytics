@@ -4,20 +4,27 @@ import { browser } from '$app/environment';
 import { type QueryName, queryTypes } from './query-definitions';
 import type RefreshAnimation from '$lib/components/RefreshAnimation.svelte';
 import type { RealtimeValueName, realtimeValueTypes } from './realtime-value-definitions';
+import { getQueryValue, getRealtimeValueValue } from './queries';
 
 
 interface QuerySubscription {
-	name: QueryName | RealtimeValueName;
+	name: QueryName;
+	handler: (arg0: any) => void;
+}
+interface RealtimeValueSubscription {
+	name: RealtimeValueName;
 	handler: (arg0: any) => void;
 }
 
 export class SocketSubscriptionBuilder {
 	private connection: HubConnection | null;
 
-	private subscriptions: QuerySubscription[];
+	private querySubscriptions: QuerySubscription[];
+	private realtimeValueSubscriptions: RealtimeValueSubscription[];
 
 	constructor() {
-		this.subscriptions = [];
+		this.querySubscriptions = [];
+		this.realtimeValueSubscriptions = [];
 
 		if (!browser) {
 			this.connection = null!;
@@ -30,14 +37,14 @@ export class SocketSubscriptionBuilder {
 			.build();
 
 		this.connection.on('SendQueryResult', (queryName, result) => {
-			this.subscriptions
+			this.querySubscriptions
 				.filter((x) => x.name == queryName)
 				.forEach((x) => {
 					x.handler(result);
 				});
 		});
-			this.connection.on('SendRealtimeValue', (queryName, result) => {
-			this.subscriptions
+		this.connection.on('SendRealtimeValue', (queryName, result) => {
+			this.realtimeValueSubscriptions
 				.filter((x) => x.name == queryName)
 				.forEach((x) => {
 					x.handler(result);
@@ -50,10 +57,22 @@ export class SocketSubscriptionBuilder {
             return;
         }
 
+		this.querySubscriptions.forEach(async (subscription) => {
+			const value = await getQueryValue(subscription.name);
+			subscription.handler(value);
+		});
+		this.realtimeValueSubscriptions.forEach(async (subscription) => {
+			const value = await getRealtimeValueValue(subscription.name);
+			subscription.handler(value);
+		});
+
 		await this.connection.start();
 
-		this.subscriptions.forEach(async (subscription) => {
-			await this.connection!.send('GetAndSubscribe', subscription.name);
+		this.querySubscriptions.forEach(async (subscription) => {
+			await this.connection!.send('Subscribe', subscription.name);
+		});
+		this.realtimeValueSubscriptions.forEach(async (subscription) => {
+			await this.connection!.send('Subscribe', subscription.name);
 		});
 	}
 
@@ -68,7 +87,7 @@ export class SocketSubscriptionBuilder {
 		name: T,
 		handler: (data: R) => void
 	) {
-		this.subscriptions.push({
+		this.querySubscriptions.push({
 			name: name,
 			handler: handler
 		});
@@ -79,7 +98,7 @@ export class SocketSubscriptionBuilder {
 		name: T,
 		handler: (data: R) => void
 	) {
-		this.subscriptions.push({
+		this.realtimeValueSubscriptions.push({
 			name: name,
 			handler: handler
 		});

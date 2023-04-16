@@ -12,15 +12,21 @@
 
 	const subscriptionBuilder = new SocketSubscriptionBuilder();
 
-	const totalProtoRevRevenueChart = writable<SeriesOption | null>(null);
-	const totalProtoRevRevenue = createRealtimeValueListener(
+	const protoRevTotalRevenueChart = writable<SeriesOption | null>(null);
+	const protoRevTotalRevenue = createRealtimeValueListener(
 		subscriptionBuilder,
-		RealtimeValueName.OsmosisTotalProtoRevRevenue,
+		RealtimeValueName.OsmosisProtoRevTotalRevenue,
 		() => []
 	);
 
-	$: makeTotalProtoRevRevenueChart($totalProtoRevRevenue);
-	function makeTotalProtoRevRevenueChart(
+	const protoRevTotalTrades = createRealtimeValueListener(
+		subscriptionBuilder,
+		RealtimeValueName.OsmosisProtoRevTotalTradeCount,
+		() => []
+	);
+
+	$: makeProtoRevTotalRevenueChart($protoRevTotalRevenue);
+	function makeProtoRevTotalRevenueChart(
 		totalProtoRevRevenue: OsmosisDenominatedAmountDTO[] | null
 	) {
 		if (totalProtoRevRevenue == null) {
@@ -29,7 +35,7 @@
 
 		console.log(totalProtoRevRevenue);
 
-		totalProtoRevRevenueChart.set({
+		protoRevTotalRevenueChart.set({
 			type: 'pie',
 			data: totalProtoRevRevenue.map((x) => {
 				return {
@@ -48,4 +54,4 @@
 	});
 </script>
 
-<SingleValueChart series={$totalProtoRevRevenueChart} queryName={null} />
+<SingleValueChart series={$protoRevTotalRevenueChart} queryName={null} />

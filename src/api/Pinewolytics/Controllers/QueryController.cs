@@ -17,7 +17,7 @@ public class QueryController : ControllerBase
     }
 
     [HttpGet("Query/Src/{queryName}")]
-    [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "addresses" })]
+    [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any)]
     public async Task<IActionResult> GetQuerySrcAsync([FromRoute]string queryName)
     {
         string? src = await QueryClient.GetQuerySrcAsync(queryName);

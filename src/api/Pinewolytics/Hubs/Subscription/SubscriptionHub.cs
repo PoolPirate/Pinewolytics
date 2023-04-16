@@ -18,8 +18,8 @@ public class SubscriptionHub : Hub<ISubscriptionHubClient>
         return base.OnDisconnectedAsync(exception);
     }
 
-    public async Task GetAndSubscribe(string queryName)
+    public async Task Subscribe(string queryName)
     {
-        await QuerySubscriptionService.GetAndSubscribeAsync(Context.ConnectionId, queryName, Context.ConnectionAborted);
+        await QuerySubscriptionService.SubscribeAsync(Context.ConnectionId, queryName, Context.ConnectionAborted);
     }
 }

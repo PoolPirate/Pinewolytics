@@ -115,6 +115,23 @@ public class OsmosisLCDClient : Singleton
         return result!.Profits;
     }
 
+    record ProtoRevTradeCountResult(long NumberOfTrades);
+    public async Task<long> GetTotalProtoRevTradeCountAsync(CancellationToken cancellationToken = default)
+    {
+        var route = new Uri(ApiEndpoint, "/osmosis/v14/protorev/number_of_trades");
+        var response = await Client.GetAsync(route, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadFromJsonAsync<ProtoRevTradeCountResult>(new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString,
+        }, cancellationToken: cancellationToken);
+
+        return result!.NumberOfTrades;
+    }
+
     record ProtoRevDeveloperAccountResult(string DeveloperAccount);
     public async Task<string> GetProtoRevDeveloperAddressAsync(CancellationToken cancellationToken = default)
     {

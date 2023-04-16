@@ -113,16 +113,17 @@ public abstract class BaseDataClient : Singleton
         }
     }
 
-    public async Task<bool> SendPropertyToAsync(string key, ISubscriptionHubClient target)
+    public bool TryGetProperty(string key, out object? value)
     {
         var property = Properties.SingleOrDefault(x => x.Key == key);
 
         if (property is null)
         {
+            value = null;
             return false;
         }
 
-        await target.SendRealtimeValue(property.Key, property.Value);
+        value = property.Value; 
         return true;
     }
 }

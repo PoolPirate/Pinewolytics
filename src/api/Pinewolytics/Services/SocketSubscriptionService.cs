@@ -17,13 +17,9 @@ public class SocketSubscriptionService : Singleton
     private readonly QueryCache Cache = null!;
 
     [Inject]
-    private readonly OsmosisDataClient OsmosisDataClient = null!;
-    [Inject]
-    private readonly LunaDataClient LunaDataClient = null!;
-    [Inject]
-    private readonly OptimismDataClient OptimismDataClient = null!;
+    private readonly DataClientManager DataClientManager = null!;
 
-    public async Task GetAndSubscribeAsync(string connectionId, string name, CancellationToken cancellationToken)
+    public async Task SubscribeAsync(string connectionId, string name, CancellationToken cancellationToken)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
@@ -41,21 +37,6 @@ public class SocketSubscriptionService : Singleton
                 Subscriptions.Add(connectionId, new List<string>() { name });
             }
         }
-
-        var client = QueryHubContext.Clients.Client(connectionId);
-
-        await OsmosisDataClient.SendPropertyToAsync(name, client);
-        await LunaDataClient.SendPropertyToAsync(name, client);
-        await OptimismDataClient.SendPropertyToAsync(name, client);
-
-        var result = await Cache.GetFromCacheAsync(name);
-
-        if (result is null)
-        {
-            return;
-        }
-
-        await QueryHubContext.Clients.Client(connectionId).SendQueryResult(name, result);
     }
 
     public void ClearSubscriptions(string connectionId)

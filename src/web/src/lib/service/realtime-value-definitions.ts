@@ -17,7 +17,8 @@ export enum RealtimeValueName {
     OsmosisCommunityPoolBalance = "Osmosis-Community-Pool-Balance",
     OsmosisEpochInfo = "Osmosis-Epoch-Info",
     OsmosisTotalSuperfluidDelegations = "Osmosis-Total-Superfluid-Delegations",
-    OsmosisTotalProtoRevRevenue = "Osmosis-Total-ProtoRev-Revenue",
+    OsmosisProtoRevTotalRevenue = "Osmosis-ProtoRev-Total-Revenue",
+    OsmosisProtoRevTotalTradeCount = "Osmosis-ProtoRev-Total-Trade-Count",
     OsmosisProtoRevIsEnabled = "Osmosis-ProtoRev-Enabled",
     OsmosisProtoRevAdminAddress = "Osmosis-ProtoRev-Admin-Address",
     OsmosisProtoRevDeveloperAddress = "Osmosis-ProtoRev-Developer-Address"
@@ -38,7 +39,8 @@ export const realtimeValueTypes = {
     [RealtimeValueName.OsmosisCommunityPoolBalance]: null! as number,
     [RealtimeValueName.OsmosisEpochInfo]: null! as OsmosisEpochInfoDTO,
     [RealtimeValueName.OsmosisTotalSuperfluidDelegations]: null! as number,
-    [RealtimeValueName.OsmosisTotalProtoRevRevenue]: null! as OsmosisDenominatedAmountDTO[],
+    [RealtimeValueName.OsmosisProtoRevTotalRevenue]: null! as OsmosisDenominatedAmountDTO[],
+    [RealtimeValueName.OsmosisProtoRevTotalTradeCount]: null! as number,
     [RealtimeValueName.OsmosisProtoRevIsEnabled]: null! as boolean,
     [RealtimeValueName.OsmosisProtoRevAdminAddress]: null! as string,
     [RealtimeValueName.OsmosisProtoRevDeveloperAddress]: null! as string

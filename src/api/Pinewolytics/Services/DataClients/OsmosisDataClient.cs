@@ -37,10 +37,16 @@ public class OsmosisDataClient : BaseDataClient
         return await OsmosisLCD.GetTotalSuperfluidDelegationsAsync(default);
     }
 
-    [RealtimeValue("Osmosis-Total-ProtoRev-Revenue", 40 * SECONDS)]
+    [RealtimeValue("Osmosis-ProtoRev-Total-Revenue", 40 * SECONDS)]
     private async Task<DenominatedAmount[]> LoadTotalProtoRevRevenueAsync()
     {
         return await OsmosisLCD.GetTotalProtoRevProfitsAsync(default);
+    }
+
+    [RealtimeValue("Osmosis-ProtoRev-Total-Trade-Count", 40 * SECONDS)]
+    private async Task<long> LoadTotalProtoRevTradesAsync()
+    {
+        return await OsmosisLCD.GetTotalProtoRevTradeCountAsync();
     }
 
     [RealtimeValue("Osmosis-ProtoRev-Enabled", 300 * SECONDS)]

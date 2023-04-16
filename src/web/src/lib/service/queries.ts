@@ -9,6 +9,7 @@ import type {
 	OsmosisWalletRankingDTO
 } from '$lib/models/DTOs/OsmosisDTOs';
 import type { QueryName } from './query-definitions';
+import type { RealtimeValueName } from './realtime-value-definitions';
 
 export async function getQuerySrc(queryName: QueryName): Promise<string> {
 	const response = await fetch('/Api/Query/Src/' + queryName);
@@ -87,6 +88,16 @@ export async function getICNSNameByAddress(address: string): Promise<string | nu
 	}
 
 	return await response.text();
+}
+
+export async function getQueryValue(queryName: QueryName) {
+	const response = await fetch("/Api/Subscriptions/Query/" + queryName);
+	return (await response.json());
+}
+
+export async function getRealtimeValueValue(realtimeValueName: RealtimeValueName) {
+	const response = await fetch("/Api/Subscriptions/RealtimeValue/" + realtimeValueName);
+	return (await response.json());
 }
 
 function makeListParams(paramName: string, values: any[]) {
