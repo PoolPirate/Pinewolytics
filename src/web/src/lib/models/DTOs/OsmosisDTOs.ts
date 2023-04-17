@@ -150,3 +150,7 @@ export interface OsmosisTokenInfoDTO {
 	price: number;
 	exponent: number;
 }
+
+export interface OsmosisTransactionDTO {
+	hash: string;
+}

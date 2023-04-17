@@ -4,7 +4,8 @@ import { browser } from '$app/environment';
 import { type QueryName, queryTypes } from './query-definitions';
 import type RefreshAnimation from '$lib/components/RefreshAnimation.svelte';
 import type { RealtimeValueName, realtimeValueTypes } from './realtime-value-definitions';
-import { getQueryValue, getRealtimeValueValue } from './queries';
+import { getQueryValue, getRealtimeFeedValue, getRealtimeValueValue } from './queries';
+import { realtimeFeedLengths, type RealtimeFeedName, type realtimeFeedTypes } from './realtime-feed-definitions';
 
 
 interface QuerySubscription {
@@ -15,16 +16,23 @@ interface RealtimeValueSubscription {
 	name: RealtimeValueName;
 	handler: (arg0: any) => void;
 }
+interface RealtimeFeedSubscription {
+	name: RealtimeFeedName;
+	setter: (arg0: any[]) => void;
+	handler: (arg0: any) => void;
+}
 
 export class SocketSubscriptionBuilder {
 	private connection: HubConnection | null;
 
 	private querySubscriptions: QuerySubscription[];
 	private realtimeValueSubscriptions: RealtimeValueSubscription[];
+	private realtimeFeedSubscriptions: RealtimeFeedSubscription[];
 
 	constructor() {
 		this.querySubscriptions = [];
 		this.realtimeValueSubscriptions = [];
+		this.realtimeFeedSubscriptions = [];
 
 		if (!browser) {
 			this.connection = null!;
@@ -43,9 +51,16 @@ export class SocketSubscriptionBuilder {
 					x.handler(result);
 				});
 		});
-		this.connection.on('SendRealtimeValue', (queryName, result) => {
+		this.connection.on('SendRealtimeValue', (valueName, result) => {
 			this.realtimeValueSubscriptions
-				.filter((x) => x.name == queryName)
+				.filter((x) => x.name == valueName)
+				.forEach((x) => {
+					x.handler(result);
+				});
+		});
+		this.connection.on('SendRealtimeFeedExtension', (feedName, result) => {
+			this.realtimeFeedSubscriptions
+				.filter((x) => x.name == feedName)
 				.forEach((x) => {
 					x.handler(result);
 				});
@@ -65,6 +80,10 @@ export class SocketSubscriptionBuilder {
 			const result = await getRealtimeValueValue(subscription.name);
 			subscription.handler(result.value);
 		});
+		this.realtimeFeedSubscriptions.forEach(async (subscription) => {
+			const result = await getRealtimeFeedValue(subscription.name);
+			subscription.setter(result.value as any[]);
+		});
 
 		this.connection.onreconnected(() => {
 			this.sendSubscriptions();
@@ -79,6 +98,9 @@ export class SocketSubscriptionBuilder {
 			await this.connection!.send('Subscribe', subscription.name);
 		});
 		this.realtimeValueSubscriptions.forEach(async (subscription) => {
+			await this.connection!.send('Subscribe', subscription.name);
+		});
+		this.realtimeFeedSubscriptions.forEach(async (subscription) => {
 			await this.connection!.send('Subscribe', subscription.name);
 		});
 	}
@@ -111,6 +133,19 @@ export class SocketSubscriptionBuilder {
 		});
 		return this;
 	}
+
+	addRealtimeFeed<T extends RealtimeFeedName, R extends typeof realtimeFeedTypes[T]>(
+		name: T,
+		handler: (data: R) => void,
+		setter: (data: R[]) => void
+	) {
+		this.realtimeFeedSubscriptions.push({
+			name: name,
+			handler: handler,
+			setter: setter
+		});
+		return this;
+	}
 }
 
 export function createQueryListener<T extends QueryName, R extends typeof queryTypes[T]>(
@@ -138,6 +173,36 @@ export function createRealtimeValueListener<T extends RealtimeValueName, R exten
 	builder.addRealtimeValue(realtimeValueName, (value) => {
 		set(value as any);
 		animationGetter().forEach(x => x.play());
+	});
+
+	return {
+		subscribe
+	};
+}
+
+export function createRealtimeFeedListener<T extends RealtimeFeedName, R extends typeof realtimeFeedTypes[T]>(
+	builder: SocketSubscriptionBuilder,
+	realtimeFeedName: T
+) {
+	const { subscribe, set, update } = writable<R[] | null>(null);
+
+	builder.addRealtimeFeed(realtimeFeedName, (value) => {
+		update(current => {
+			if (current == null) {
+				console.log([value as R]);
+				return [value as R];
+			}
+
+			current.push(value as R);
+			
+			if (current.length > realtimeFeedLengths[realtimeFeedName]) {
+				return current.slice(1, current.length);
+			}
+
+			return current;
+		});
+	}, (value) => {
+		set(value as R[]);
 	});
 
 	return {

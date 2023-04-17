@@ -10,6 +10,7 @@ import type {
 } from '$lib/models/DTOs/OsmosisDTOs';
 import type { SubscriptionValueDTO } from '$lib/models/SharedDTOs';
 import type { QueryName } from './query-definitions';
+import type { RealtimeFeedName } from './realtime-feed-definitions';
 import type { RealtimeValueName } from './realtime-value-definitions';
 
 export async function getQuerySrc(queryName: QueryName): Promise<string> {
@@ -98,6 +99,11 @@ export async function getQueryValue(queryName: QueryName) {
 
 export async function getRealtimeValueValue(realtimeValueName: RealtimeValueName) {
 	const response = await fetch("/Api/Subscriptions/RealtimeValue/" + realtimeValueName);
+	return (await response.json() as SubscriptionValueDTO);
+}
+
+export async function getRealtimeFeedValue(realtimeFeedName: RealtimeFeedName) {
+	const response = await fetch("/Api/Subscriptions/RealtimeFeed/" + realtimeFeedName);
 	return (await response.json() as SubscriptionValueDTO);
 }
 

@@ -44,7 +44,7 @@ public class SocketSubscriptionService : Singleton
         }
     }
 
-    public async Task BroadcastQueryUpdate(string queryName)
+    public async Task BroadcastQueryUpdateAsync(string queryName)
     {
         var result = await Cache.GetFromCacheAsync(queryName);
 
@@ -67,7 +67,7 @@ public class SocketSubscriptionService : Singleton
             .SendQueryResult(queryName, result);
     }
 
-    public async Task BroadcastRealtimeValueUpdate(string key, object value)
+    public async Task BroadcastRealtimeValueUpdateAsync(string key, object value)
     {
         string[] targetClients;
 
@@ -81,5 +81,21 @@ public class SocketSubscriptionService : Singleton
 
         await QueryHubContext.Clients.Clients(targetClients)
             .SendRealtimeValue(key, value);
+    }
+
+    public async Task BroadcastFeedExtensionAsync(string key, object value)
+    {
+        string[] targetClients;
+
+        lock (SubscriptionsLock)
+        {
+            targetClients = Subscriptions
+                .Where(x => x.Value.Contains(key))
+                .Select(x => x.Key)
+                .ToArray();
+        }
+
+        await QueryHubContext.Clients.Clients(targetClients)
+            .SendRealtimeFeedExtension(key, value);
     }
 }

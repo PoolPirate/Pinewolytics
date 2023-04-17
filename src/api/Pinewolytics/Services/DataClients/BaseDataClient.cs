@@ -103,7 +103,7 @@ public abstract class BaseDataClient : Singleton
                     continue;
                 }
 
-                await SocketSubscriptionService.BroadcastRealtimeValueUpdate(property.Key, property.Value);
+                await SocketSubscriptionService.BroadcastRealtimeValueUpdateAsync(property.Key, property.Value);
             }
             catch (Exception ex)
             {

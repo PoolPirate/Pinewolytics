@@ -62,7 +62,7 @@ public class QueryRunner : Singleton
             type,
             scheduledQuery.Query);
 
-        await QuerySusbcriptionService.BroadcastQueryUpdate(scheduledQuery.Name);
+        await QuerySusbcriptionService.BroadcastQueryUpdateAsync(scheduledQuery.Name);
     }
 
     private static Type GetTypeByName(string name) 

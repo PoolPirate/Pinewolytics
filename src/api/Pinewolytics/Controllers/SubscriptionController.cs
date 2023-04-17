@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Pinewolytics.Services;
 using Pinewolytics.Services.DataClients;
+using Pinewolytics.Services.FeedClients;
 
 namespace Pinewolytics.Controllers;
 [Route("api/subscriptions")]
@@ -9,11 +10,13 @@ public class SubscriptionController : ControllerBase
 {
     private readonly QueryCache QueryCache = null!;
     private readonly DataClientManager DataClientManager = null!;
+    private readonly FeedClientManager FeedClientManager = null!;
 
-    public SubscriptionController(QueryCache queryCache, DataClientManager dataClientManager)
+    public SubscriptionController(QueryCache queryCache, DataClientManager dataClientManager, FeedClientManager feedClientManager)
     {
         QueryCache = queryCache;
         DataClientManager = dataClientManager;
+        FeedClientManager = feedClientManager;
     }
 
     public record SubscriptionValueDTO(object Value);
@@ -36,5 +39,14 @@ public class SubscriptionController : ControllerBase
         return value is null 
             ? NotFound() 
             : Ok(new SubscriptionValueDTO(value));
+    }
+
+    [HttpGet("RealtimeFeed/{key}")]
+    [ResponseCache(Duration = 30, Location = ResponseCacheLocation.Client)] 
+    public ActionResult<SubscriptionValueDTO> GetRealtimeFeedValue([FromRoute] string key)
+    {
+        return !FeedClientManager.TryGetRealtimeValue(key, out var value)
+            ? NotFound()
+            : Ok(new SubscriptionValueDTO(value!));
     }
 }
