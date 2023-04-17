@@ -66,8 +66,15 @@ export class SocketSubscriptionBuilder {
 			subscription.handler(result.value);
 		});
 
-		await this.connection.start();
+		this.connection.onreconnected(() => {
+			this.sendSubscriptions();
+		})
 
+		await this.connection.start();
+		await this.sendSubscriptions();
+	}
+
+	async sendSubscriptions() {
 		this.querySubscriptions.forEach(async (subscription) => {
 			await this.connection!.send('Subscribe', subscription.name);
 		});
