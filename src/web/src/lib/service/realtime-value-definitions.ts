@@ -1,5 +1,5 @@
 import type { OptimismGasPricesDTO } from "$lib/models/DTOs/OptimismDTO";
-import type { OsmosisDenominatedAmountDTO, OsmosisEpochInfoDTO } from "$lib/models/DTOs/OsmosisDTOs";
+import type { OsmosisDenominatedAmountDTO, OsmosisEpochInfoDTO, OsmosisProtoRevRouteStatisticsDTO, OsmosisTokenInfoDTO } from "$lib/models/DTOs/OsmosisDTOs";
 import type { MarketDataDTO } from "$lib/models/SharedDTOs";
 
 export enum RealtimeValueName {
@@ -21,7 +21,9 @@ export enum RealtimeValueName {
     OsmosisProtoRevTotalTradeCount = "Osmosis-ProtoRev-Total-Trade-Count",
     OsmosisProtoRevIsEnabled = "Osmosis-ProtoRev-Enabled",
     OsmosisProtoRevAdminAddress = "Osmosis-ProtoRev-Admin-Address",
-    OsmosisProtoRevDeveloperAddress = "Osmosis-ProtoRev-Developer-Address"
+    OsmosisProtoRevDeveloperAddress = "Osmosis-ProtoRev-Developer-Address",
+    OsmosisProtoRevAllRouteStatistics = "Osmosis-ProtoRev-All-Route-Statistics",
+    OsmosisAllTokenInfos = "Osmosis-All-Token-Infos"
 }
 
 export const realtimeValueTypes = {
@@ -43,5 +45,7 @@ export const realtimeValueTypes = {
     [RealtimeValueName.OsmosisProtoRevTotalTradeCount]: null! as number,
     [RealtimeValueName.OsmosisProtoRevIsEnabled]: null! as boolean,
     [RealtimeValueName.OsmosisProtoRevAdminAddress]: null! as string,
-    [RealtimeValueName.OsmosisProtoRevDeveloperAddress]: null! as string
+    [RealtimeValueName.OsmosisProtoRevDeveloperAddress]: null! as string,
+    [RealtimeValueName.OsmosisProtoRevAllRouteStatistics]: null! as OsmosisProtoRevRouteStatisticsDTO[],
+    [RealtimeValueName.OsmosisAllTokenInfos]: null! as OsmosisTokenInfoDTO[]
 };

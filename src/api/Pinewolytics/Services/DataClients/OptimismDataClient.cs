@@ -11,22 +11,22 @@ public class OptimismDataClient : BaseDataClient
     private readonly CoinGeckoClient CoinGeckoClient = null!;
 
     [Inject]
-    private readonly OptimismRpcClient OptimismRpcClient = null!;
+    private readonly OptimismRPCClient OptimismRpcClient = null!;
 
     [RealtimeValue("Optimism-MarketData", 20 * SECONDS)]
-    private async Task<MarketDataDTO> LoadMarketDataAsync()
+    public async Task<MarketDataDTO> LoadMarketDataAsync()
     {
         return await CoinGeckoClient.GetOPMarketDataDTOAsync();
     }
 
     [RealtimeValue("Optimism-Block-Height", SECONDS)]
-    private async Task<double> LoadPeakBlockHeightAsync()
+    public async Task<double> LoadPeakBlockHeightAsync()
     {
         return await OptimismRpcClient.GetPeakBlockHeightAsync();
     }
 
     [RealtimeValue("Optimism-Gas-Prices", 10 * SECONDS)]
-    private async Task<OptimismGasPriceDTO> LoadGasPricesAsync()
+    public async Task<OptimismGasPriceDTO> LoadGasPricesAsync()
     {
         return await OptimismRpcClient.GetGasPricesAsync();
     }

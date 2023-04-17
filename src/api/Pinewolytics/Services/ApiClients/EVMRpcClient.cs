@@ -3,7 +3,7 @@ using System.Globalization;
 
 namespace Pinewolytics.Services.ApiClients;
 
-public abstract class EVMRpcClient : Singleton
+public abstract class EVMRPCClient : Singleton
 {
     [Inject]
     private readonly HttpClient Client = null!;

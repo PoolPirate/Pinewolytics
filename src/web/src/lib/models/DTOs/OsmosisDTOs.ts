@@ -137,3 +137,16 @@ export interface OsmosisProtoRevRevenueDTO {
 	totalAmount: number;
 	totalAmountUSD: number;
 }
+
+export interface OsmosisProtoRevRouteStatisticsDTO {
+	profits: OsmosisDenominatedAmountDTO[],
+	numberOfTrades: number;
+	route: string[];
+}
+
+export interface OsmosisTokenInfoDTO {
+	denom: string;
+	symbol: string;
+	price: number;
+	exponent: number;
+}

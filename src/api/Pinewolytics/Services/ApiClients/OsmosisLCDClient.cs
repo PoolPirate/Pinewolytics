@@ -1,5 +1,4 @@
 ﻿using Common.Services;
-using Microsoft.AspNetCore.Routing;
 using Pinewolytics.Models.DTOs.Osmosis;
 using Pinewolytics.Utils;
 using System.Text;
@@ -14,8 +13,6 @@ public class OsmosisLCDClient : Singleton
 
     [Inject]
     private readonly HttpClient Client = null!;
-
-    public record DenominatedAmount(string Denom, double Amount);
 
     record ICNSResult(ICNSName  Data);
     record ICNSName(string Name);
@@ -42,7 +39,7 @@ public class OsmosisLCDClient : Singleton
             : name;
     }
 
-    record BalanceResult(DenominatedAmount Balance);
+    record BalanceResult(DenominatedAmountDTO Balance);
     public async Task<double> GetCurrentOSMOBalanceAsync(string address, CancellationToken cancellationToken)
     {
         var route = new Uri(ApiEndpoint, $"cosmos/bank/v1beta1/balances/{address}/by_denom?denom=uosmo");
@@ -54,7 +51,7 @@ public class OsmosisLCDClient : Singleton
         return result!.Balance!.Amount / Math.Pow(10, 6);
     }
 
-    record AmountResult(DenominatedAmount Amount);
+    record AmountResult(DenominatedAmountDTO Amount);
     public async Task<double> GetTotalOSMOSupplyAsync(CancellationToken cancellationToken)
     {
         var route = new Uri(ApiEndpoint, "cosmos/bank/v1beta1/supply/uosmo");
@@ -98,8 +95,8 @@ public class OsmosisLCDClient : Singleton
         return result!.TotalDelegations / Math.Pow(10, 6);
     }
 
-    record ProtoRevProfitsResult(DenominatedAmount[] Profits);
-    public async Task<DenominatedAmount[]> GetTotalProtoRevProfitsAsync(CancellationToken cancellationToken)
+    record ProtoRevProfitsResult(DenominatedAmountDTO[] Profits);
+    public async Task<DenominatedAmountDTO[]> GetTotalProtoRevProfitsAsync(CancellationToken cancellationToken)
     {
         var route = new Uri(ApiEndpoint, "/osmosis/v14/protorev/all_profits");
         var response = await Client.GetAsync(route, cancellationToken);
@@ -181,6 +178,23 @@ public class OsmosisLCDClient : Singleton
         }, cancellationToken: cancellationToken);
 
         return result!.Enabled;
+    }
+
+    record ProtoRevRouteStatisticsResult(OsmosisProtoRevRouteStatisticsDTO[] Statistics);
+    public async Task<OsmosisProtoRevRouteStatisticsDTO[]> GetProtoRevAllRouteStatisticsAsync(CancellationToken cancellationToken = default)
+    {
+        var route = new Uri(ApiEndpoint, "/osmosis/v14/protorev/all_route_statistics");
+        var response = await Client.GetAsync(route, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadFromJsonAsync<ProtoRevRouteStatisticsResult>(new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString,
+        }, cancellationToken: cancellationToken);
+
+        return result!.Statistics;
     }
 }
 

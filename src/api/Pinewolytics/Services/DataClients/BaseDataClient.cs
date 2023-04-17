@@ -51,7 +51,7 @@ public abstract class BaseDataClient : Singleton
 
     public BaseDataClient()
     {
-        Properties = GetType().GetMethods(BindingFlags.NonPublic | BindingFlags.Instance)
+        Properties = GetType().GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Where(x => x.GetCustomAttribute<RealtimeValue>() is not null)
             .Select(x =>
             {

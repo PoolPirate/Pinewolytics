@@ -11,33 +11,33 @@ public class LunaDataClient : BaseDataClient
     private readonly CoinGeckoClient CoinGeckoClient = null!;
 
     [RealtimeValue("Luna-Block-Height", 2 * SECONDS)]
-    private async Task<ulong> LoadPeakBlockHeightAsync()
+    public async Task<ulong> LoadPeakBlockHeightAsync()
     {
         var (height, _) = await LunaLCDClient.GetLatestBlockInfoAsync();
         return height;
     }
 
     [RealtimeValue("Luna-Block-Timestamp", 2 * SECONDS)]
-    private async Task<DateTimeOffset> LoadPeakBlockTimestampAsync()
+    public async Task<DateTimeOffset> LoadPeakBlockTimestampAsync()
     {
         var (_, timestamp) = await LunaLCDClient.GetLatestBlockInfoAsync();
         return timestamp;
     }
 
     [RealtimeValue("Luna-Price", 10 * SECONDS)]
-    private async Task<double> LoadPriceAsync()
+    public async Task<double> LoadPriceAsync()
     {
         return await CoinGeckoClient.GetLunaPriceAsync();
     }
 
     [RealtimeValue("Luna-Total-Supply", 30 * SECONDS)]
-    private async Task<double> LoadTotalSupplyAsync()
+    public async Task<double> LoadTotalSupplyAsync()
     {
         return await LunaLCDClient.GetTotalSupplyAsync();
     }
 
     [RealtimeValue("Luna-Circulating-Supply", 30 * SECONDS)]
-    private async Task<double> LoadCirculatingSupplyAsync()
+    public async Task<double> LoadCirculatingSupplyAsync()
     {
         return await LunaLCDClient.GetCirculatingSupplyAsync();
     }

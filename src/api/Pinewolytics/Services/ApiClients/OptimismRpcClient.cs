@@ -5,7 +5,7 @@ using System.Globalization;
 
 namespace Pinewolytics.Services.ApiClients;
 
-public class OptimismRpcClient : EVMRpcClient
+public class OptimismRPCClient : EVMRPCClient
 {
     [Inject]
     private readonly ApiKeyOptions ApiKeyOptions = null!;
