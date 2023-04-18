@@ -16,22 +16,22 @@ public class FlipsideCloner : Singleton
         RefreshTimer = new PeriodicTimer(TimeSpan.FromHours(2));
     }
 
-    protected override async ValueTask RunAsync()
-    {
-        while (true)
-        {
-            try
-            {
-                await CloneICNSTagsAsync();
-            }
-            catch (Exception ex)
-            {
-                Logger.LogCritical(ex, "There was an error cloning ICNS Tags");
-            }
+    //protected override async ValueTask RunAsync()
+    //{
+    //    while (true)
+    //    {
+    //        try
+    //        {
+    //            await CloneICNSTagsAsync();
+    //        }
+    //        catch (Exception ex)
+    //        {
+    //            Logger.LogCritical(ex, "There was an error cloning ICNS Tags");
+    //        }
 
-            await RefreshTimer.WaitForNextTickAsync();
-        }
-    }
+    //        await RefreshTimer.WaitForNextTickAsync();
+    //    }
+    //}
 
     private async Task CloneICNSTagsAsync()
     {

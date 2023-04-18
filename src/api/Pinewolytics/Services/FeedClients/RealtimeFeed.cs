@@ -4,11 +4,15 @@
 public class RealtimeFeed : Attribute
 {
     public string Key { get; }
-    public int CacheSize { get; }
+    public int CacheSizeLimit { get; }
+    public TimeSpan? MaximumItemAge { get; }
 
-    public RealtimeFeed(string key, int cacheSize)
+    public RealtimeFeed(string key, int cacheSizeLimit = 0, int maximumItemAgeSeconds = 0)
     {
         Key = key;
-        CacheSize = cacheSize;
+        CacheSizeLimit = cacheSizeLimit;
+        MaximumItemAge = maximumItemAgeSeconds == 0 
+            ? null 
+            : TimeSpan.FromSeconds(maximumItemAgeSeconds);
     }
 }

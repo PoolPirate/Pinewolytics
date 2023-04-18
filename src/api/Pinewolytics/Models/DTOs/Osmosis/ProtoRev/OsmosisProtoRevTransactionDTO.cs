@@ -1,6 +1,8 @@
-﻿namespace Pinewolytics.Models.DTOs.Osmosis.ProtoRev;
+﻿using Pinewolytics.Models.DTOs.All;
 
-public class OsmosisProtoRevTransactionDTO
+namespace Pinewolytics.Models.DTOs.Osmosis.ProtoRev;
+
+public class OsmosisProtoRevTransactionDTO : ITimestampedDTO
 {
     public required string Hash { get; init; }
     public required ulong Height { get; init; }
@@ -8,4 +10,7 @@ public class OsmosisProtoRevTransactionDTO
     public required int Index { get; init; }
 
     public required DenominatedAmountDTO[] Profits { get; init; }
+
+    public DateTimeOffset GetTimestamp() 
+        => Timestamp;
 }

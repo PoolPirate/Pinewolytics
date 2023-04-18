@@ -10,12 +10,12 @@ public class OsmosisFeedClient : BaseFeedClient
     [Inject]
     private readonly OsmosisRPCClient OsmosisRPC = null!;
 
-    [RealtimeFeed("Osmosis-ProtoRev-Tx-Feed", 10)]
-    public async IAsyncEnumerable<object> ProtoRevTXFeed()
+    [RealtimeFeed("Osmosis-ProtoRev-Tx-Feed", maximumItemAgeSeconds: 900)]
+    public async IAsyncEnumerable<OsmosisProtoRevTransactionDTO> ProtoRevTXFeed()
     {
-        ulong maxHeight = await OsmosisRPC.GetPeakBlockHeightAsync() - 100;
+        ulong maxHeight = await OsmosisRPC.GetPeakBlockHeightAsync() - 500;
         int maxIndex = 0;
-        int limit = 10;
+        int limit = 50;
 
         while (true)
         {

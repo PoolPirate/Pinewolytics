@@ -1,6 +1,9 @@
 <script lang="ts">
 	import SingleValueChart from '$lib/charts/SingleValueChart.svelte';
-	import type { OsmosisDenominatedAmountDTO } from '$lib/models/DTOs/OsmosisDTOs';
+	import type {
+		OsmosisDenominatedAmountDTO,
+		OsmosisTokenInfoDTO
+	} from '$lib/models/DTOs/OsmosisDTOs';
 	import { RealtimeFeedName } from '$lib/service/realtime-feed-definitions';
 	import { RealtimeValueName } from '$lib/service/realtime-value-definitions';
 	import {
@@ -55,11 +58,12 @@
 		() => []
 	);
 
-	$: makeProtoRevTotalRevenueChart($protoRevTotalRevenue);
+	$: makeProtoRevTotalRevenueChart($protoRevTotalRevenue, $allTokenInfos);
 	function makeProtoRevTotalRevenueChart(
-		totalProtoRevRevenue: OsmosisDenominatedAmountDTO[] | null
+		totalProtoRevRevenue: OsmosisDenominatedAmountDTO[] | null,
+		allTokenInfos: OsmosisTokenInfoDTO[] | null
 	) {
-		if (totalProtoRevRevenue == null) {
+		if (totalProtoRevRevenue == null || allTokenInfos == null) {
 			return;
 		}
 
@@ -67,9 +71,10 @@
 			type: 'pie',
 
 			data: totalProtoRevRevenue.map((x) => {
+				const tokenInfo = allTokenInfos?.find((t) => t.denom == x.denom)!;
 				return {
-					name: x.denom,
-					value: x.amount
+					name: tokenInfo.symbol,
+					value: (tokenInfo.price * x.amount) / Math.pow(10, tokenInfo.exponent)
 				};
 			})
 		});
@@ -89,6 +94,8 @@
 </script>
 
 <SingleValueChart series={$protoRevTotalRevenueChart} queryName={null} />
+
+{$protoRevTotalTrades}
 
 <div class="h-1/3 flex flex-col w-full transparent-background p-2 rounded-md">
 	<h2 class="font-bold text-xl">Live Trade Feed</h2>

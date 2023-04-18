@@ -1,4 +1,5 @@
 ﻿using Common.Services;
+using Pinewolytics.Models.DTOs.All;
 using Pinewolytics.Services.DataClients;
 using System.Reflection;
 
@@ -10,15 +11,17 @@ public abstract class BaseFeedClient : Singleton
     class Feed
     {
         public string Key { get; }
-        public int CacheSize { get; }
+        public int CacheSizeLimit { get; }
+        public TimeSpan? MaxItemAge { get; }
         public IAsyncEnumerable<object> Enumerable { get; }
 
         public List<object> FeedCache { get; set; } = new List<object>();
 
-        public Feed(string key, int cacheSize, IAsyncEnumerable<object> enumerable)
+        public Feed(string key, int cacheSize, TimeSpan? maxItemAge, IAsyncEnumerable<object> enumerable)
         {
             Key = key;
-            CacheSize = cacheSize;
+            CacheSizeLimit = cacheSize;
+            MaxItemAge = maxItemAge;
             Enumerable = enumerable;
         }
 
@@ -26,12 +29,14 @@ public abstract class BaseFeedClient : Singleton
         {
             FeedCache.Insert(0, entry);
 
-            if (FeedCache.Count <= CacheSize)
+            if (CacheSizeLimit > 0 && FeedCache.Count <= CacheSizeLimit)
             {
-                return;
+                FeedCache.RemoveAt(FeedCache.Count - 1);
             }
-
-            FeedCache.RemoveAt(FeedCache.Count - 1);
+            if (MaxItemAge is not null)
+            {
+                FeedCache.RemoveAll(x => ((ITimestampedDTO)x).GetTimestamp() < DateTimeOffset.UtcNow - MaxItemAge.Value);
+            }
         }
     }
 
@@ -56,9 +61,12 @@ public abstract class BaseFeedClient : Singleton
 
             var attribute = x.GetCustomAttribute<RealtimeFeed>()!;
 
-            return new Feed(
+            return attribute.MaximumItemAge.HasValue && (x.ReturnType.GenericTypeArguments[0].GetInterface(typeof(ITimestampedDTO).Name) is null)
+                ? throw new InvalidOperationException($"RealtimeFeed {x.Name} must return a IAsyncEnumerable<T> where T is ITimestampedDTO")
+                : new Feed(
                 attribute.Key,
-                attribute.CacheSize,
+                attribute.CacheSizeLimit,
+                attribute.MaximumItemAge,
                 (IAsyncEnumerable<object>)x.Invoke(this, null)!
             );
         })
