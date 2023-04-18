@@ -40,7 +40,7 @@ public class OsmosisLCDClient : Singleton
     }
 
     record BalanceResult(DenominatedAmountDTO Balance);
-    public async Task<double> GetCurrentOSMOBalanceAsync(string address, CancellationToken cancellationToken)
+    public async Task<decimal> GetCurrentOSMOBalanceAsync(string address, CancellationToken cancellationToken)
     {
         var route = new Uri(ApiEndpoint, $"cosmos/bank/v1beta1/balances/{address}/by_denom?denom=uosmo");
         var response = await Client.GetAsync(route, cancellationToken); 
@@ -48,11 +48,11 @@ public class OsmosisLCDClient : Singleton
         response.EnsureSuccessStatusCode();
     
         var result = await response.Content.ReadFromJsonAsync<BalanceResult>(cancellationToken: cancellationToken);
-        return result!.Balance!.Amount / Math.Pow(10, 6);
+        return result!.Balance!.Amount / (decimal) Math.Pow(10, 6);
     }
 
     record AmountResult(DenominatedAmountDTO Amount);
-    public async Task<double> GetTotalOSMOSupplyAsync(CancellationToken cancellationToken)
+    public async Task<decimal> GetTotalOSMOSupplyAsync(CancellationToken cancellationToken = default)
     {
         var route = new Uri(ApiEndpoint, "cosmos/bank/v1beta1/supply/uosmo");
         var response = await Client.GetAsync(route, cancellationToken);
@@ -60,7 +60,7 @@ public class OsmosisLCDClient : Singleton
         response.EnsureSuccessStatusCode();
 
         var result = await response.Content.ReadFromJsonAsync<AmountResult>(cancellationToken: cancellationToken);
-        return result!.Amount.Amount / Math.Pow(10, 6);
+        return result!.Amount.Amount / (decimal) Math.Pow(10, 6);
     }
 
     record EpochResult(OsmosisEpochInfoDTO[] Epochs);

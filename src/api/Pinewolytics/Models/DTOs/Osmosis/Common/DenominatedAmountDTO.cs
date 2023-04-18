@@ -1,7 +1,26 @@
-﻿namespace Pinewolytics.Models.DTOs.Osmosis;
+﻿using System.Text;
+using System.Text.RegularExpressions;
 
-public class DenominatedAmountDTO
+namespace Pinewolytics.Models.DTOs.Osmosis;
+
+public partial class DenominatedAmountDTO
 {
+    [GeneratedRegex("\\d+", RegexOptions.Compiled)]
+    private static partial Regex LeadingNumberRegex();
+
     public required string Denom { get; init; }
-    public required double Amount { get; init; }
+    public required decimal Amount { get; init; }
+
+    public static DenominatedAmountDTO FromBase64AttributeValue(string rawAttributeValue)
+    {
+        string attributeValue = Encoding.UTF8.GetString(Convert.FromBase64String(rawAttributeValue));
+
+        var rawAmount = LeadingNumberRegex().Match(attributeValue).Value;
+
+        return new DenominatedAmountDTO()
+        {
+            Amount = decimal.Parse(rawAmount),
+            Denom = attributeValue[rawAmount.Length..],
+        };
+    }
 }

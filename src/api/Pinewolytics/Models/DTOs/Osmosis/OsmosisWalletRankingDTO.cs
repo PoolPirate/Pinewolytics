@@ -7,10 +7,10 @@ public class OsmosisWalletRankingDTO : IFlipsideObject<OsmosisWalletRankingDTO>
 {
     public required string Address { get; init; }
     public required DateTimeOffset LastUpdatedAt { get; init; }
-    public required double StakedAmount { get; init; }
+    public required decimal StakedAmount { get; init; }
     public required long StakedRank { get; init; }
         
-    public required double BalanceAmount { get; set; }
+    public required decimal BalanceAmount { get; set; }
     public required long BalanceRank { get; init; }
 
     public required OsmosisWalletPoolRankingDTO[] PoolRankings { get; init; }
@@ -21,8 +21,8 @@ public class OsmosisWalletRankingDTO : IFlipsideObject<OsmosisWalletRankingDTO>
         var lpTokenBalances = JsonSerializer.Deserialize<double[]>(rawValues[7]) ?? throw new JsonException("Unexpected format");
         var rankings = JsonSerializer.Deserialize<long[]>(rawValues[8]) ?? throw new JsonException("Unexpected format");
 
-        double stakedAmount = double.Parse(rawValues[2], NumberStyles.Float);
-        double balanceAmount = double.Parse(rawValues[4], NumberStyles.Float);
+        decimal stakedAmount = decimal.Parse(rawValues[2], NumberStyles.Float);
+        decimal balanceAmount = decimal.Parse(rawValues[4], NumberStyles.Float);
 
         return new OsmosisWalletRankingDTO()
         {

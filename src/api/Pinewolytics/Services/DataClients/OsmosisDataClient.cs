@@ -15,13 +15,13 @@ public class OsmosisDataClient : BaseDataClient
     private readonly OsmosisHistoricalDataClient OsmosisHistoricalData = null!;
 
     [RealtimeValue("Osmosis-Total-Supply", 300 * SECONDS)]
-    public async Task<double> LoadPriceAsync()
+    public async Task<decimal> LoadPriceAsync()
     {
-        return await OsmosisLCD.GetTotalOSMOSupplyAsync(default);
+        return await OsmosisLCD.GetTotalOSMOSupplyAsync();
     }
 
     [RealtimeValue("Osmosis-Community-Pool-Balance", 150 * SECONDS)]
-    public async Task<double> LoadCommunityPoolBalanceAsync()
+    public async Task<decimal> LoadCommunityPoolBalanceAsync()
     {
         return await OsmosisLCD.GetCurrentOSMOBalanceAsync(CommunityPoolAddress, default);
     }

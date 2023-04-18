@@ -151,6 +151,10 @@ export interface OsmosisTokenInfoDTO {
 	exponent: number;
 }
 
-export interface OsmosisTransactionDTO {
+export interface OsmosisProtoRevTransactionDTO {
 	hash: string;
+	height: number;
+	timestamp: string;
+	index: number;
+	profits: OsmosisDenominatedAmountDTO[]
 }

@@ -24,14 +24,14 @@ public abstract class BaseFeedClient : Singleton
 
         public void Push(object entry)
         {
-            FeedCache.Add(entry);
+            FeedCache.Insert(0, entry);
 
             if (FeedCache.Count <= CacheSize)
             {
                 return;
             }
 
-            FeedCache.RemoveAt(0);
+            FeedCache.RemoveAt(FeedCache.Count - 1);
         }
     }
 

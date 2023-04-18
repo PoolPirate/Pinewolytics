@@ -1,7 +1,7 @@
 ﻿using Common.Services;
+using Pinewolytics.Models.DTOs.Osmosis.ProtoRev;
 using Pinewolytics.Services.ApiClients;
 using Pinewolytics.Services.StreamClients;
-using static Pinewolytics.Services.ApiClients.OsmosisRPCClient;
 
 namespace Pinewolytics.Services.FeedClients;
 
@@ -19,7 +19,7 @@ public class OsmosisFeedClient : BaseFeedClient
 
         while (true)
         {
-            Transaction[] newTxs = null!;
+            OsmosisProtoRevTransactionDTO[] newTxs = null!;
 
             try
             {
@@ -46,6 +46,8 @@ public class OsmosisFeedClient : BaseFeedClient
             catch (Exception ex)
             {
                 Logger.LogWarning(ex, "Osmosis-ProtoRev-Tx-Feed: Feed refresh failed");
+                await Task.Delay(10000);
+                continue;
             }
 
             maxHeight = newTxs.Max(x => x.Height);

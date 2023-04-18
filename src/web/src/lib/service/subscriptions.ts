@@ -193,10 +193,10 @@ export function createRealtimeFeedListener<T extends RealtimeFeedName, R extends
 				return [value as R];
 			}
 
-			current.push(value as R);
-			
+			current = [value as R, ...current];
+
 			if (current.length > realtimeFeedLengths[realtimeFeedName]) {
-				return current.slice(1, current.length);
+				return current.slice(0, current.length - 1);
 			}
 
 			return current;
