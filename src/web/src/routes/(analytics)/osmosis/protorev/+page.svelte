@@ -22,6 +22,8 @@
 		QueryName.OsmosisProtoRevRevenueHistory
 	);
 
+	const protoRevTotalRevenueUSD = writable<number | null>(null);
+
 	$: makeOsmosisProtoRevRevenueChart($osmosisProtoRevRevenueHistoryQuery, $isWeeklyModeStore);
 	function makeOsmosisProtoRevRevenueChart(
 		revenueHistory: OsmosisProtoRevRevenueDTO[],

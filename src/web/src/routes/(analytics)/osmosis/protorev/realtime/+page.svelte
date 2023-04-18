@@ -11,6 +11,7 @@
 		createRealtimeFeedListener,
 		createRealtimeValueListener
 	} from '$lib/service/subscriptions';
+	import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils';
 	import type { SeriesOption } from 'echarts';
 	import { onDestroy, onMount } from 'svelte';
 	import { writable } from 'svelte/store';
@@ -32,9 +33,6 @@
 		timer = setTimeout(updateTime, 1000);
 	}
 
-	const currentTime = writable<Date>(new Date());
-
-	const protoRevTotalRevenueChart = writable<SeriesOption | null>(null);
 	const protoRevTotalRevenue = createRealtimeValueListener(
 		subscriptionBuilder,
 		RealtimeValueName.OsmosisProtoRevTotalRevenue,
@@ -58,26 +56,16 @@
 		() => []
 	);
 
-	$: makeProtoRevTotalRevenueChart($protoRevTotalRevenue, $allTokenInfos);
-	function makeProtoRevTotalRevenueChart(
-		totalProtoRevRevenue: OsmosisDenominatedAmountDTO[] | null,
-		allTokenInfos: OsmosisTokenInfoDTO[] | null
-	) {
-		if (totalProtoRevRevenue == null || allTokenInfos == null) {
-			return;
-		}
+	const currentTime = writable<Date>(new Date());
+	const protoRevTotalRevenueUSD = writable<number | null>(null);
 
-		protoRevTotalRevenueChart.set({
-			type: 'pie',
-
-			data: totalProtoRevRevenue.map((x) => {
-				const tokenInfo = allTokenInfos?.find((t) => t.denom == x.denom)!;
-				return {
-					name: tokenInfo.symbol,
-					value: (tokenInfo.price * x.amount) / Math.pow(10, tokenInfo.exponent)
-				};
-			})
-		});
+	$: if ($protoRevTotalRevenue != null && $allTokenInfos != null) {
+		protoRevTotalRevenueUSD.set(
+			$protoRevTotalRevenue.reduce((prev, x) => {
+				const tokenInfo = $allTokenInfos?.find((y) => x.denom == y.denom)!;
+				return prev + (tokenInfo.price * x.amount) / Math.pow(10, tokenInfo.exponent);
+			}, 0)
+		);
 	}
 
 	function toTimespanString(millis: number) {
@@ -93,49 +81,71 @@
 	}
 </script>
 
-<SingleValueChart series={$protoRevTotalRevenueChart} queryName={null} />
+<div class="grid grid-cols-1 gap-8 p-3">
+	<div class="grid grid-cols-1 sm:grid-cols-2 transparent-background p-3 rounded-md gap-4">
+		<div class="transparent-background p-2">
+			<h2 class="text-lg font-bold">All Time Profit</h2>
+			{#if $protoRevTotalRevenueUSD == null}
+				<p>Loading...</p>
+			{:else}
+				{Math.round(100 * $protoRevTotalRevenueUSD) / 100} $
+			{/if}
+		</div>
+		<div class="transparent-background p-2">
+			<h2 class="text-lg font-bold">All Time Trade Count</h2>
+			{$protoRevTotalTrades}
+		</div>
+	</div>
 
-{$protoRevTotalTrades}
-
-<div class="h-1/3 flex flex-col w-full transparent-background p-2 rounded-md">
-	<h2 class="font-bold text-xl">Live Trade Feed</h2>
-	<div class="overflow-y-auto px-4">
-		<table class="w-full">
-			<thead class="sticky top-0 z-2 bg-slate-400">
-				<tr>
-					<th class="text-left">Wen?</th>
-					<th class="text-center">Profit?</th>
-					<th class="text-right">Link?</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each $protoRevTxs ?? [] as tx}
+	<div class="h-full flex flex-col w-full transparent-background p-2 rounded-md">
+		<h2 class="font-bold text-xl">Live Trade Feed</h2>
+		<div class="overflow-y-auto px-4">
+			<table class="w-full">
+				<thead class="sticky top-0 z-2 bg-slate-400">
 					<tr>
-						<td class="text-left">
-							{toTimespanString($currentTime.getTime() - new Date(tx.timestamp).getTime())} ago
-						</td>
-						<td class="text-center">
-							{#each tx.profits as profit}
-								<p>
-									{profit.amount /
-										Math.pow(
-											10,
-											$allTokenInfos?.find((x) => x.denom == profit.denom)?.exponent ?? 0
-										)}
-									- {$allTokenInfos?.find((x) => x.denom == profit.denom)?.symbol}
-								</p>
-							{/each}
-						</td>
-						<td class="text-right">
-							<a
-								rel="external noreferrer"
-								href="https://www.mintscan.io/osmosis/txs/{tx.hash}"
-								target="_blank">See on Mintscan</a
-							>
-						</td>
+						<th class="text-left  p-2">Wen?</th>
+						<th class="text-center  p-2">Profit?</th>
+						<th class="text-right  p-2">Link?</th>
 					</tr>
-				{/each}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					{#each $protoRevTxs ?? [] as tx}
+						<tr>
+							<td class="text-left p-2 border-b-2 border-black">
+								{toTimespanString($currentTime.getTime() - new Date(tx.timestamp).getTime())} ago
+							</td>
+							<td class="text-center p-2 border-b-2 border-black">
+								{#each tx.profits as profit}
+									<p>
+										{profit.amount /
+											Math.pow(
+												10,
+												$allTokenInfos?.find((x) => x.denom == profit.denom)?.exponent ?? 0
+											)}
+										- {$allTokenInfos?.find((x) => x.denom == profit.denom)?.symbol}
+										({Math.round(
+											1000 *
+												((profit.amount *
+													($allTokenInfos?.find((x) => x.denom == profit.denom)?.price ?? 0)) /
+													Math.pow(
+														10,
+														$allTokenInfos?.find((x) => x.denom == profit.denom)?.exponent ?? 0
+													))
+										) / 1000} $)
+									</p>
+								{/each}
+							</td>
+							<td class="text-right p-2 border-b-2 border-black">
+								<a
+									rel="external noreferrer"
+									href="https://www.mintscan.io/osmosis/txs/{tx.hash}"
+									target="_blank">See on Mintscan</a
+								>
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
 	</div>
 </div>
