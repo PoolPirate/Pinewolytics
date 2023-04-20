@@ -68,10 +68,17 @@
 
 		protoRevIsEnabledChart.set({
 			type: 'gauge',
+			detail: {
+				show: true,
+				offsetCenter: [0, '50%']
+			},
 			data: [
 				{
 					name: 'Status',
-					value: isEnabled ? 100 : 0
+					value: isEnabled ? 100 : 0,
+					detail: {
+						formatter: (v) => (v == 100 ? 'Active' : 'Offline')
+					}
 				}
 			],
 			progress: {
