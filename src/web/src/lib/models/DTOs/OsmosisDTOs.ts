@@ -158,3 +158,9 @@ export interface OsmosisProtoRevTransactionDTO {
 	index: number;
 	profits: OsmosisDenominatedAmountDTO[]
 }
+
+export interface OsomsisProtoRevAssetRevenueDTO {
+	currency: string;
+	totalAsset: number;
+	totalUSD: number;
+}

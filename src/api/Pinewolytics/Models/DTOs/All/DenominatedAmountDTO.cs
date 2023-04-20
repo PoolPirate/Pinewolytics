@@ -1,7 +1,8 @@
-﻿using System.Text;
+﻿using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
 
-namespace Pinewolytics.Models.DTOs.Osmosis;
+namespace Pinewolytics.Models.DTOs;
 
 public partial class DenominatedAmountDTO
 {
@@ -19,7 +20,7 @@ public partial class DenominatedAmountDTO
 
         return new DenominatedAmountDTO()
         {
-            Amount = decimal.Parse(rawAmount),
+            Amount = decimal.Parse(rawAmount, NumberStyles.Float),
             Denom = attributeValue[rawAmount.Length..],
         };
     }

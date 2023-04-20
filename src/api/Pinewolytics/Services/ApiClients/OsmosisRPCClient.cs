@@ -8,6 +8,7 @@ using System.Threading;
 using Pinewolytics.Models.DTOs.Osmosis.ProtoRev;
 using System.Text;
 using Pinewolytics.Models.DTOs.Osmosis;
+using Pinewolytics.Models.DTOs;
 
 namespace Pinewolytics.Services.ApiClients;
 
@@ -83,7 +84,14 @@ public class OsmosisRPCClient : Singleton
                     Amount = receivedAmount.Amount - mintAmount.Amount,
 
                 };
-            }).ToArray();
+            })
+            .GroupBy(x => x.Denom)
+            .Select(x => new DenominatedAmountDTO()
+            {
+                Denom = x.Key,
+                Amount = x.Sum(x => x.Amount)
+            })
+            .ToArray();
 
             return new OsmosisProtoRevTransactionDTO()
             {

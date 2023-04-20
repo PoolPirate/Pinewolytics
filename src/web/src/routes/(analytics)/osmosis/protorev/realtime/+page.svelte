@@ -84,7 +84,7 @@
 <div class="grid grid-cols-1 gap-8 p-3">
 	<div class="grid grid-cols-1 sm:grid-cols-2 transparent-background p-3 rounded-md gap-4">
 		<div class="transparent-background p-2">
-			<h2 class="text-lg font-bold">All Time Profit</h2>
+			<h2 class="text-lg font-bold">All Time Profit (current prices)</h2>
 			{#if $protoRevTotalRevenueUSD == null}
 				<p>Loading...</p>
 			{:else}

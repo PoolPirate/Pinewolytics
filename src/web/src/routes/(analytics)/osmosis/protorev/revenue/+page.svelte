@@ -1,8 +1,20 @@
 <script lang="ts">
+	import SingleValueChart from '$lib/charts/SingleValueChart.svelte';
 	import TimeSeriesChart from '$lib/charts/TimeSeriesChart.svelte';
-	import type { OsmosisProtoRevRevenueDTO } from '$lib/models/DTOs/OsmosisDTOs';
+	import type {
+		OsmosisDenominatedAmountDTO,
+		OsmosisProtoRevRevenueDTO,
+		OsomsisProtoRevAssetRevenueDTO
+	} from '$lib/models/DTOs/OsmosisDTOs';
 	import { QueryName } from '$lib/service/query-definitions';
-	import { SocketSubscriptionBuilder, createQueryListener } from '$lib/service/subscriptions';
+	import { RealtimeFeedName } from '$lib/service/realtime-feed-definitions';
+	import { RealtimeValueName } from '$lib/service/realtime-value-definitions';
+	import {
+		SocketSubscriptionBuilder,
+		createQueryListener,
+		createRealtimeFeedListener,
+		createRealtimeValueListener
+	} from '$lib/service/subscriptions';
 	import {
 		DaySeriesToWeekSeriesBySum,
 		onlyUnique,
@@ -16,14 +28,26 @@
 	const subscriptionBuilder = new SocketSubscriptionBuilder();
 	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
-	const osmosisProtoRevRevenueChart = writable<SeriesOption[]>([]);
-	const osmosisProtoRevRevenueHistoryQuery = createQueryListener(
+	const protoRevRevenueChart = writable<SeriesOption[]>([]);
+	const protoRevRevenueHistoryQuery = createQueryListener(
 		subscriptionBuilder,
 		QueryName.OsmosisProtoRevRevenueHistory
 	);
 
-	$: makeOsmosisProtoRevRevenueChart($osmosisProtoRevRevenueHistoryQuery, $isWeeklyModeStore);
-	function makeOsmosisProtoRevRevenueChart(
+	const protoRevRevenuePerAssetChart = writable<SeriesOption | null>(null);
+	const protoRevRevenuePerAssetQuery = createQueryListener(
+		subscriptionBuilder,
+		QueryName.OsmosisProtoRevRevenuePerAsset
+	);
+
+	const allTokenInfos = createRealtimeValueListener(
+		subscriptionBuilder,
+		RealtimeValueName.OsmosisAllTokenInfos,
+		() => []
+	);
+
+	$: makeProtoRevRevenueChart($protoRevRevenueHistoryQuery, $isWeeklyModeStore);
+	function makeProtoRevRevenueChart(
 		revenueHistory: OsmosisProtoRevRevenueDTO[],
 		isWeeklyMode: boolean
 	) {
@@ -55,7 +79,7 @@
 			});
 		}
 
-		osmosisProtoRevRevenueChart.set(
+		protoRevRevenueChart.set(
 			incomeSeries.map((x) => {
 				return {
 					type: 'bar',
@@ -67,6 +91,24 @@
 		);
 	}
 
+	$: makeProtoRevRevenuePerAssetChart($protoRevRevenuePerAssetQuery);
+	function makeProtoRevRevenuePerAssetChart(profits: OsomsisProtoRevAssetRevenueDTO[] | null) {
+		if (profits == null) {
+			return;
+		}
+
+		protoRevRevenuePerAssetChart.set({
+			type: 'pie',
+			data: profits.map((x) => {
+				const tokenInfo = $allTokenInfos?.find((y) => y.denom == x.currency)!;
+				return {
+					name: tokenInfo.symbol,
+					value: x.totalUSD
+				};
+			})
+		});
+	}
+
 	onMount(async () => {
 		await subscriptionBuilder.start();
 	});
@@ -75,7 +117,12 @@
 	});
 </script>
 
+<SingleValueChart
+	series={$protoRevRevenuePerAssetChart}
+	queryName={QueryName.OsmosisProtoRevRevenuePerAsset}
+/>
+
 <TimeSeriesChart
-	series={$osmosisProtoRevRevenueChart}
+	series={$protoRevRevenueChart}
 	queryName={QueryName.OsmosisProtoRevRevenueHistory}
 />

@@ -10,7 +10,7 @@ public class OsmosisFeedClient : BaseFeedClient
     [Inject]
     private readonly OsmosisRPCClient OsmosisRPC = null!;
 
-    [RealtimeFeed("Osmosis-ProtoRev-Tx-Feed", maximumItemAgeSeconds: 900)]
+    [RealtimeFeed("Osmosis-ProtoRev-Tx-Feed", maximumItemAgeSeconds: 1800)]
     public async IAsyncEnumerable<OsmosisProtoRevTransactionDTO> ProtoRevTXFeed()
     {
         ulong maxHeight = await OsmosisRPC.GetPeakBlockHeightAsync() - 500;

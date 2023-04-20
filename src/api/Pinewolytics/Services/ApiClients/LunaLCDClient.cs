@@ -1,4 +1,5 @@
 ﻿using Common.Services;
+using Pinewolytics.Models.DTOs;
 using System.Text.Json.Nodes;
 
 namespace Pinewolytics.Services.ApiClients;
@@ -10,30 +11,20 @@ public class LunaLCDClient : Singleton
     [Inject]
     private readonly HttpClient Client = null!;
 
+    record AmountResult(DenominatedAmountDTO Amount);
     public async Task<ulong> GetTotalSupplyAsync()
     {
-        var response = await Client.GetAsync(new Uri(ApiEndpoint, "cosmos/bank/v1beta1/supply"));
+        var response = await Client.GetAsync(new Uri(ApiEndpoint, "cosmos/bank/v1beta1/supply/by_denom?denom=uluna"));
         response.EnsureSuccessStatusCode();
 
-        var result = await response.Content.ReadFromJsonAsync<JsonObject>();
+        var result = await response.Content.ReadFromJsonAsync<AmountResult>();
 
         if (result is null)
         {
             throw new Exception("Unexpected json format");
         }
-        if (!result.TryGetPropertyValue("supply", out var supplyArray))
-        {
-            throw new Exception("Unexpected json format");
-        }
 
-        var lunaSupplyNode = supplyArray!
-            .AsArray()
-            .SingleOrDefault(x => x!.AsObject()
-                                   .TryGetPropertyValue("denom", out var denom)
-                                   && denom is not null && denom.AsValue().GetValue<string>() == "uluna");
-
-        lunaSupplyNode!.AsObject().TryGetPropertyValue("amount", out var amountValue);
-        return ulong.Parse(amountValue!.AsValue().GetValue<string>());
+        return (ulong) result.Amount.Amount;
     }
 
     public async Task<ulong> GetCirculatingSupplyAsync()
@@ -41,7 +32,11 @@ public class LunaLCDClient : Singleton
         var response = await Client.GetAsync(new Uri("https://phoenix-api.terra.dev/balance/circulating-supply"));
         response.EnsureSuccessStatusCode();
 
-        return await response.Content.ReadFromJsonAsync<ulong>();
+        long supply = await response.Content.ReadFromJsonAsync<long>();
+
+        return supply < 0 
+            ? 0 
+            : (ulong)supply;
     }
 
     public async Task<(ulong Height, DateTimeOffset Timestamp)> GetLatestBlockInfoAsync()

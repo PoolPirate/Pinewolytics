@@ -1,4 +1,5 @@
 ﻿using Common.Services;
+using Pinewolytics.Models.DTOs;
 using Pinewolytics.Models.DTOs.Osmosis;
 using Pinewolytics.Services.ApiClients;
 using static Pinewolytics.Services.ApiClients.OsmosisLCDClient;
