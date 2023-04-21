@@ -1,6 +1,4 @@
-﻿using Hangfire.Annotations;
-
-namespace Pinewolytics.Queries.Flipside;
+﻿namespace Pinewolytics.Queries.Flipside;
 
 public static class FlipsideQueries
 {

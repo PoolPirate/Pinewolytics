@@ -4,7 +4,6 @@ using Pinewolytics.Configuration;
 using Pinewolytics.Models;
 using Pinewolytics.Models.FlipsideAPI;
 using Polly;
-using Polly.Contrib.WaitAndRetry;
 using System.Reflection;
 using System.Text.Json;
 
@@ -23,7 +22,7 @@ public class FlipsideClient : Singleton
         Policy<QueryResultsResult>
             .HandleResult(x => x.Status == QueryResultStatus.Running)
             .WaitAndRetryForeverAsync(x => TimeSpan.FromMilliseconds(200) * x);
-            
+
     public async Task RunQueryAndCacheAsync(string key, Type type, string sql,
         CancellationToken cancellationToken = default)
     {
@@ -49,15 +48,15 @@ public class FlipsideClient : Singleton
         CancellationToken cancellationToken = default)
         where T : IFlipsideObject<T>
     {
-        var resultJson = await Cache.GetFromCacheRawAsync(sql);
+        string? resultJson = await Cache.GetFromCacheRawAsync(sql);
 
         if (resultJson is null)
         {
             return await RunQueryAsync<T>(sql, cancellationToken);
         }
         //
-        return JsonSerializer.Deserialize<T[]>(resultJson) 
-            ?? throw new InvalidOperationException("Redis resonse json was invalid!");        
+        return JsonSerializer.Deserialize<T[]>(resultJson)
+            ?? throw new InvalidOperationException("Redis resonse json was invalid!");
     }
 
     public async Task<T[]> RunQueryAsync<T>(string sql,
@@ -72,7 +71,7 @@ public class FlipsideClient : Singleton
     {
         var queueResult = await QueueQueryAsync(sql, cancellationToken);
         object[][] rows = await GetQueryResultsAsync(queueResult.Token, cancellationToken: cancellationToken);
-        var result = ParseFlipsideObjects(type, rows);
+        object[] result = ParseFlipsideObjects(type, rows);
         return result;
     }
 
@@ -92,7 +91,7 @@ public class FlipsideClient : Singleton
                 throw new InvalidOperationException($"Missing method on Type {type.Name}");
             }
             //
-            var parsed = method.Invoke(
+            object parsed = method.Invoke(
                 null,
                 new[] { result.Select(x => x?.ToString() ?? "").ToArray() }
             )!;

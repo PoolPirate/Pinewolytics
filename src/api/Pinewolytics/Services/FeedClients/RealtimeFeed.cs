@@ -11,8 +11,8 @@ public class RealtimeFeed : Attribute
     {
         Key = key;
         CacheSizeLimit = cacheSizeLimit;
-        MaximumItemAge = maximumItemAgeSeconds == 0 
-            ? null 
+        MaximumItemAge = maximumItemAgeSeconds == 0
+            ? null
             : TimeSpan.FromSeconds(maximumItemAgeSeconds);
     }
 }

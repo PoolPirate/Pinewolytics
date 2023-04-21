@@ -2,7 +2,7 @@
 
 public class OsmosisTotalDelegationsDTO : IFlipsideObject<OsmosisTotalDelegationsDTO>
 {
-    public  required DateTimeOffset Date { get; init; }
+    public required DateTimeOffset Date { get; init; }
     public required double TotalDelegated { get; init; }
     public required double TotalUndelegated { get; init; }
 

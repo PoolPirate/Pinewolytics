@@ -1,7 +1,6 @@
 ﻿using Common.Services;
 using Microsoft.AspNetCore.SignalR;
 using Pinewolytics.Hubs;
-using Pinewolytics.Services.DataClients;
 
 namespace Pinewolytics.Services;
 
@@ -46,7 +45,7 @@ public class SocketSubscriptionService : Singleton
 
     public async Task BroadcastQueryUpdateAsync(string queryName)
     {
-        var result = await Cache.GetFromCacheAsync(queryName);
+        object[]? result = await Cache.GetFromCacheAsync(queryName);
 
         if (result is null)
         {

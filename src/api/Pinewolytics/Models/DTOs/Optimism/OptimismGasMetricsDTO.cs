@@ -1,5 +1,4 @@
-﻿using Pinewolytics.Models;
-using System.Globalization;
+﻿using System.Globalization;
 
 namespace Pinewolytics.Models.DTOs.Optimism;
 

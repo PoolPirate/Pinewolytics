@@ -1,15 +1,10 @@
 ﻿using Common.Services;
-using Pinewolytics.Utils;
-using System.Collections.Generic;
-using System.Net;
-using System.Text.Json.Serialization;
-using System.Text.Json;
-using System.Threading;
-using Pinewolytics.Models.DTOs.Osmosis.ProtoRev;
-using System.Text;
-using Pinewolytics.Models.DTOs.Osmosis;
 using Pinewolytics.Models.DTOs;
-using System.Numerics;
+using Pinewolytics.Models.DTOs.Osmosis;
+using Pinewolytics.Utils;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Pinewolytics.Services.ApiClients;
 
@@ -53,7 +48,7 @@ public class OsmosisRPCClient : Singleton
                 attribute => attribute.Key == Convert.ToBase64String(Encoding.UTF8.GetBytes("minter"))).Value == ProtoRevModuleAddressBase64)
             .ToArray();
 
-            var profits = mintEvents.Select(mintEvent =>
+            var swaps = mintEvents.Select(mintEvent =>
             {
                 int mintIndex = tx.TxResult.Events.IndexOf(mintEvent);
 
@@ -79,18 +74,16 @@ public class OsmosisRPCClient : Singleton
                     .Where(x => x.Denom == mintAmount.Denom)
                     .Last();
 
-                return new DenominatedAmountDTO()
+                return new OsmosisProtoRevSwapDTO()
                 {
-                    Denom = mintAmount.Denom,
-                    Amount = receivedAmount.Amount - mintAmount.Amount,
+                    Profit = new DenominatedAmountDTO()
+                    {
+                        Denom = mintAmount.Denom,
+                        Amount = receivedAmount.Amount - mintAmount.Amount,
+                    },
+                    ProfitUSD = 0 //ToDo: Add price calculation  
 
                 };
-            })
-            .GroupBy(x => x.Denom)
-            .Select(x => new DenominatedAmountDTO()
-            {
-                Denom = x.Key,
-                Amount = x.Aggregate(BigInteger.Zero, (prev, curr) => prev + curr.Amount)
             })
             .ToArray();
 
@@ -98,9 +91,9 @@ public class OsmosisRPCClient : Singleton
             {
                 Hash = tx.Hash,
                 Height = tx.Height,
-                Timestamp = await GetBlockTimestampAsync(tx.Height, cancellationToken),
                 Index = tx.Index,
-                Profits = profits
+                Timestamp = await GetBlockTimestampAsync(tx.Height, cancellationToken),
+                Swaps = swaps
             };
         }));
     }

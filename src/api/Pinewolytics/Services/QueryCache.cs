@@ -12,11 +12,13 @@ public class QueryCache : Singleton
     private readonly IConnectionMultiplexer RedisConnection = null!;
 
     public async Task<bool> IsCachedAsync(string queryName)
-        => await RedisConnection.GetDatabase(CacheDatabase).KeyExistsAsync(queryName);
+    {
+        return await RedisConnection.GetDatabase(CacheDatabase).KeyExistsAsync(queryName);
+    }
 
     public async Task AddToCacheAsync(string queryName, object[] results)
     {
-        var resultJson = JsonSerializer.Serialize(results, new JsonSerializerOptions()
+        string resultJson = JsonSerializer.Serialize(results, new JsonSerializerOptions()
         {
             PropertyNamingPolicy = JsonNamingPolicy.CamelCase
         });
@@ -24,15 +26,17 @@ public class QueryCache : Singleton
         await RedisConnection.GetDatabase(CacheDatabase).StringSetAsync(queryName, resultJson);
     }
 
-    public async Task<string?> GetFromCacheRawAsync(string queryName) 
-        => await RedisConnection.GetDatabase(CacheDatabase).StringGetAsync(queryName);
+    public async Task<string?> GetFromCacheRawAsync(string queryName)
+    {
+        return await RedisConnection.GetDatabase(CacheDatabase).StringGetAsync(queryName);
+    }
 
     public async Task<object[]?> GetFromCacheAsync(string queryName)
     {
         string json = await RedisConnection.GetDatabase(CacheDatabase).StringGetAsync(queryName);
 
-        return json is null 
-            ? null 
+        return json is null
+            ? null
             : JsonSerializer.Deserialize<object[]>(json);
     }
 }

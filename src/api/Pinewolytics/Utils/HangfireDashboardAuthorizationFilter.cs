@@ -14,7 +14,8 @@ public class HangfireDashboardAuthorizationFilter : IDashboardAuthorizationFilte
             return false;
         }
 
-        if (!context.GetHttpContext().Request.Cookies.ContainsKey(HangfireCookieName)) {
+        if (!context.GetHttpContext().Request.Cookies.ContainsKey(HangfireCookieName))
+        {
             return true;
         }
 
@@ -23,5 +24,7 @@ public class HangfireDashboardAuthorizationFilter : IDashboardAuthorizationFilte
     }
 
     public bool Authorize(DashboardContext context)
-        => true;
+    {
+        return true;
+    }
 }

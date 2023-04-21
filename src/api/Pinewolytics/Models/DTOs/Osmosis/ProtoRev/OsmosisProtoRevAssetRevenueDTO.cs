@@ -1,6 +1,6 @@
 ﻿using System.Globalization;
 
-namespace Pinewolytics.Models.DTOs.Osmosis.ProtoRev;
+namespace Pinewolytics.Models.DTOs.Osmosis;
 
 public class OsmosisProtoRevAssetRevenueDTO : IFlipsideObject<OsmosisProtoRevAssetRevenueDTO>
 {

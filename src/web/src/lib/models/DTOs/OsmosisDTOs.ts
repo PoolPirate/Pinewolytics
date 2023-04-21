@@ -164,3 +164,10 @@ export interface OsomsisProtoRevAssetRevenueDTO {
 	totalAsset: number;
 	totalUSD: number;
 }
+
+export interface OsmosisProtoRevSwapDTO {
+	hash: string;
+	timestamp: string;
+	amount: OsmosisDenominatedAmountDTO;
+	amountUSD: number;
+}

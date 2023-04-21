@@ -9,7 +9,7 @@ public class OsmosisWalletRankingDTO : IFlipsideObject<OsmosisWalletRankingDTO>
     public required DateTimeOffset LastUpdatedAt { get; init; }
     public required decimal StakedAmount { get; init; }
     public required long StakedRank { get; init; }
-        
+
     public required decimal BalanceAmount { get; set; }
     public required long BalanceRank { get; init; }
 
@@ -17,9 +17,9 @@ public class OsmosisWalletRankingDTO : IFlipsideObject<OsmosisWalletRankingDTO>
 
     public static OsmosisWalletRankingDTO Parse(string[] rawValues)
     {
-        var pids = JsonSerializer.Deserialize<ulong[]>(rawValues[6]) ?? throw new JsonException("Unexpected format");
-        var lpTokenBalances = JsonSerializer.Deserialize<double[]>(rawValues[7]) ?? throw new JsonException("Unexpected format");
-        var rankings = JsonSerializer.Deserialize<long[]>(rawValues[8]) ?? throw new JsonException("Unexpected format");
+        ulong[] pids = JsonSerializer.Deserialize<ulong[]>(rawValues[6]) ?? throw new JsonException("Unexpected format");
+        double[] lpTokenBalances = JsonSerializer.Deserialize<double[]>(rawValues[7]) ?? throw new JsonException("Unexpected format");
+        long[] rankings = JsonSerializer.Deserialize<long[]>(rawValues[8]) ?? throw new JsonException("Unexpected format");
 
         decimal stakedAmount = decimal.Parse(rawValues[2], NumberStyles.Float);
         decimal balanceAmount = decimal.Parse(rawValues[4], NumberStyles.Float);
@@ -28,7 +28,7 @@ public class OsmosisWalletRankingDTO : IFlipsideObject<OsmosisWalletRankingDTO>
         {
             Address = rawValues[0],
             LastUpdatedAt = DateTimeOffset.Parse(rawValues[1]),
-            StakedAmount = Math.Max(0 ,stakedAmount),
+            StakedAmount = Math.Max(0, stakedAmount),
             StakedRank = stakedAmount > 0 ? long.Parse(rawValues[3]) : -1,
             BalanceAmount = Math.Max(0, balanceAmount),
             BalanceRank = balanceAmount > 0 ? long.Parse(rawValues[5]) : -1,

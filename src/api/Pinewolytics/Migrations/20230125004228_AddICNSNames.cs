@@ -17,10 +17,7 @@ namespace Pinewolytics.Migrations
                     Name = table.Column<string>(type: "text", nullable: false),
                     OSMOAddress = table.Column<string>(type: "text", nullable: false)
                 },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_ICNSNames", x => x.Name);
-                });
+                constraints: table => table.PrimaryKey("PK_ICNSNames", x => x.Name));
 
             migrationBuilder.CreateIndex(
                 name: "IX_ICNSNames_OSMOAddress",

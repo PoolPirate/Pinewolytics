@@ -33,8 +33,8 @@ public class LunaLCDClient : Singleton
 
         long supply = await response.Content.ReadFromJsonAsync<long>();
 
-        return supply < 0 
-            ? 0 
+        return supply < 0
+            ? 0
             : (ulong)supply;
     }
 

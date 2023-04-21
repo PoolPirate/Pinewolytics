@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace Pinewolytics.Services.DataClients;
+﻿namespace Pinewolytics.Services.DataClients;
 
 [AttributeUsage(AttributeTargets.Method)]
 public class RealtimeValue : Attribute

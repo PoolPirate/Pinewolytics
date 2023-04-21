@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace Pinewolytics.Models.DTOs.Osmosis;
+﻿namespace Pinewolytics.Models.DTOs.Osmosis;
 
 public class OsmosisTokenInfoDTO
 {

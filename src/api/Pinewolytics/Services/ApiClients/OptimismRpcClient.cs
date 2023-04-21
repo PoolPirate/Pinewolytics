@@ -10,8 +10,10 @@ public class OptimismRPCClient : EVMRPCClient
     [Inject]
     private readonly ApiKeyOptions ApiKeyOptions = null!;
 
-    protected override Uri GetAPIUrl() 
-        => new Uri(ApiKeyOptions.OptimismRPCProviderUrl, UriKind.Absolute);
+    protected override Uri GetAPIUrl()
+    {
+        return new Uri(ApiKeyOptions.OptimismRPCProviderUrl, UriKind.Absolute);
+    }
 
     record GasPricesResultRaw(string L1GasPrice, string L2GasPrice);
     public async Task<OptimismGasPriceDTO> GetGasPricesAsync(CancellationToken cancellationToken = default)

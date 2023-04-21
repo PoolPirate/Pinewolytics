@@ -14,10 +14,10 @@ public class OptimismContractMetricsDTO : IFlipsideObject<OptimismContractMetric
         return new OptimismContractMetricsDTO()
         {
             Timestamp = DateTimeOffset.Parse(rawValues[0]),
-            NewContracts= long.Parse(rawValues[1]),
-            TotalContracts= long.Parse(rawValues[2]),
+            NewContracts = long.Parse(rawValues[1]),
+            TotalContracts = long.Parse(rawValues[2]),
             ActiveDevelopers = long.Parse(rawValues[3]),
-            TotalDevelopers= long.Parse(rawValues[4]),
+            TotalDevelopers = long.Parse(rawValues[4]),
         };
     }
 }

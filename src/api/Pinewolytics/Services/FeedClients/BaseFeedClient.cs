@@ -1,6 +1,5 @@
 ﻿using Common.Services;
 using Pinewolytics.Models.DTOs.All;
-using Pinewolytics.Services.DataClients;
 using System.Reflection;
 
 namespace Pinewolytics.Services.StreamClients;
@@ -75,25 +74,25 @@ public abstract class BaseFeedClient : Singleton
 
     protected override ValueTask InitializeAsync()
     {
-        foreach(var feed in Feeds)
+        foreach (var feed in Feeds)
         {
-           _ = Task.Run(async () =>
-            {
-                try
-                {
-                    await foreach (var entry in feed.Enumerable)
-                    {
-                        feed.Push(entry);
-                        await SocketSubscriptionService.BroadcastFeedExtensionAsync(feed.Key, entry);
-                    }
+            _ = Task.Run(async () =>
+             {
+                 try
+                 {
+                     await foreach (object entry in feed.Enumerable)
+                     {
+                         feed.Push(entry);
+                         await SocketSubscriptionService.BroadcastFeedExtensionAsync(feed.Key, entry);
+                     }
 
-                    Logger.LogCritical("A feed exited without an exception: {key}", feed.Key);
-                }
-                catch (Exception ex)
-                {
-                    Logger.LogCritical(ex, "A feed crashed with an exception: {key}", feed.Key);
-                }
-            });
+                     Logger.LogCritical("A feed exited without an exception: {key}", feed.Key);
+                 }
+                 catch (Exception ex)
+                 {
+                     Logger.LogCritical(ex, "A feed crashed with an exception: {key}", feed.Key);
+                 }
+             });
         }
 
         return base.InitializeAsync();

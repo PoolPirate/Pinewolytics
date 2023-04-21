@@ -2,7 +2,6 @@
 using Pinewolytics.Models.DTOs;
 using Pinewolytics.Models.DTOs.Osmosis;
 using Pinewolytics.Services.ApiClients;
-using static Pinewolytics.Services.ApiClients.OsmosisLCDClient;
 
 namespace Pinewolytics.Services.DataClients;
 
@@ -70,7 +69,7 @@ public class OsmosisDataClient : BaseDataClient
         return await OsmosisLCD.GetProtoRevDeveloperAddressAsync();
     }
 
-    [RealtimeValue("Osmosis-ProtoRev-All-Route-Statistics", 300 * SECONDS)] 
+    [RealtimeValue("Osmosis-ProtoRev-All-Route-Statistics", 300 * SECONDS)]
     public async Task<OsmosisProtoRevRouteStatisticsDTO[]> LoadOsmosisProtoRevRouteStatisticsAsync()
     {
         return await OsmosisLCD.GetProtoRevAllRouteStatisticsAsync();

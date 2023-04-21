@@ -1,9 +1,5 @@
 ﻿using Common.Services;
-using Microsoft.AspNetCore.SignalR;
-using Pinewolytics.Hubs;
-using Pinewolytics.Services;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 namespace Pinewolytics.Services.DataClients;
 
@@ -123,7 +119,7 @@ public abstract class BaseDataClient : Singleton
             return false;
         }
 
-        value = property.Value; 
+        value = property.Value;
         return true;
     }
 }

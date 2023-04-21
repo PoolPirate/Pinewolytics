@@ -25,8 +25,8 @@ public class SubscriptionController : ControllerBase
     [ResponseCache(Duration = 90, Location = ResponseCacheLocation.Client)]
     public ActionResult<SubscriptionValueDTO> GetRealtimeValue([FromRoute] string key)
     {
-        return !DataClientManager.TryGetRealtimeValue(key, out var value) 
-            ? NotFound() 
+        return !DataClientManager.TryGetRealtimeValue(key, out object? value)
+            ? NotFound()
             : Ok(new SubscriptionValueDTO(value!));
     }
 
@@ -34,18 +34,18 @@ public class SubscriptionController : ControllerBase
     [ResponseCache(Duration = 90, Location = ResponseCacheLocation.Client)]
     public async Task<ActionResult<SubscriptionValueDTO>> GetQueryValueAsync([FromRoute] string key)
     {
-        var value = await QueryCache.GetFromCacheAsync(key);
+        object[]? value = await QueryCache.GetFromCacheAsync(key);
 
-        return value is null 
-            ? NotFound() 
+        return value is null
+            ? NotFound()
             : Ok(new SubscriptionValueDTO(value));
     }
 
     [HttpGet("RealtimeFeed/{key}")]
-    [ResponseCache(Duration = 30, Location = ResponseCacheLocation.Client)] 
+    [ResponseCache(Duration = 30, Location = ResponseCacheLocation.Client)]
     public ActionResult<SubscriptionValueDTO> GetRealtimeFeedValue([FromRoute] string key)
     {
-        return !FeedClientManager.TryGetRealtimeValue(key, out var value)
+        return !FeedClientManager.TryGetRealtimeValue(key, out object[]? value)
             ? NotFound()
             : Ok(new SubscriptionValueDTO(value!));
     }

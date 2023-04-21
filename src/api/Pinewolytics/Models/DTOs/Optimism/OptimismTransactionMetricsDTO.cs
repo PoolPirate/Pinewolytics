@@ -1,6 +1,4 @@
-﻿using System.Globalization;
-
-namespace Pinewolytics.Models.DTOs.Terra;
+﻿namespace Pinewolytics.Models.DTOs.Terra;
 
 public class OptimismTransactionMetricsDTO : IFlipsideObject<OptimismTransactionMetricsDTO>
 {
@@ -16,6 +14,6 @@ public class OptimismTransactionMetricsDTO : IFlipsideObject<OptimismTransaction
             Timestamp = DateTimeOffset.Parse(rawValues[0]),
             TransactionCount = long.Parse(rawValues[1]),
             BlockCount = long.Parse(rawValues[2])
-         };
+        };
     }
 }

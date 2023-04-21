@@ -18,12 +18,12 @@ public class QueryController : ControllerBase
 
     [HttpGet("Query/Src/{queryName}")]
     [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any)]
-    public async Task<IActionResult> GetQuerySrcAsync([FromRoute]string queryName)
+    public async Task<IActionResult> GetQuerySrcAsync([FromRoute] string queryName)
     {
         string? src = await QueryClient.GetQuerySrcAsync(queryName);
 
-        return src is null 
-            ? NotFound() 
+        return src is null
+            ? NotFound()
             : Ok(new { src });
     }
 
@@ -132,7 +132,7 @@ public class QueryController : ControllerBase
         if (poolIds.Length == 0)
         {
             return Ok(Array.Empty<OsmosisPoolInfoDTO>());
-        } 
+        }
 
         var ranking = await QueryClient.GetOsmosisPoolInfosAsync(poolIds, cancellationToken);
         return Ok(ranking);

@@ -20,13 +20,13 @@ public class ICNSController : ControllerBase
 
     [HttpGet("Reverse/{address}")]
     [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "address" })]
-    public async Task<IActionResult> LookupICNSReverseAsync([FromRoute] string address, 
+    public async Task<IActionResult> LookupICNSReverseAsync([FromRoute] string address,
         CancellationToken cancellationToken)
     {
         string? name = await OsmosisLCDClient.GetICNSNameFromAddressAsync(address, cancellationToken);
         Console.WriteLine(address);
-        return name is null 
-            ? NotFound() 
+        return name is null
+            ? NotFound()
             : Ok(name);
     }
 
@@ -41,8 +41,8 @@ public class ICNSController : ControllerBase
 
         var icnsName = await DbContext.ICNSNames.FirstOrDefaultAsync(x => x.Name == name, cancellationToken: cancellationToken);
 
-        return icnsName is null 
-            ? NotFound() 
+        return icnsName is null
+            ? NotFound()
             : Ok(icnsName);
     }
 }

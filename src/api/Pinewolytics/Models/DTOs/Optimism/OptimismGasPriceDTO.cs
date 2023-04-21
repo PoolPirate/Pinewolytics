@@ -2,7 +2,7 @@
 
 public class OptimismGasPriceDTO
 {
-    public double L1GasPrice { get;  }
+    public double L1GasPrice { get; }
     public double L2GasPrice { get; }
 
     public OptimismGasPriceDTO(double l1GasPrice, double l2GasPrice)

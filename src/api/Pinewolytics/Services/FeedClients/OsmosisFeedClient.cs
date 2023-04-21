@@ -1,5 +1,5 @@
 ﻿using Common.Services;
-using Pinewolytics.Models.DTOs.Osmosis.ProtoRev;
+using Pinewolytics.Models.DTOs.Osmosis;
 using Pinewolytics.Services.ApiClients;
 using Pinewolytics.Services.StreamClients;
 

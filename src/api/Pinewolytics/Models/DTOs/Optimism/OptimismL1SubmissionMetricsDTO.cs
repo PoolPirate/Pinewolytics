@@ -1,6 +1,4 @@
-﻿using Pinewolytics.Models;
-
-namespace Pinewolytics.Models.DTOs.Optimism;
+﻿namespace Pinewolytics.Models.DTOs.Optimism;
 
 public class OptimismL1SubmissionMetricsDTO : IFlipsideObject<OptimismL1SubmissionMetricsDTO>
 {

@@ -1,5 +1,4 @@
 ﻿using Pinewolytics.Utils;
-using System.Globalization;
 using System.Numerics;
 using System.Text;
 using System.Text.Json.Serialization;
@@ -20,7 +19,7 @@ public partial class DenominatedAmountDTO
     {
         string attributeValue = Encoding.UTF8.GetString(Convert.FromBase64String(rawAttributeValue));
 
-        var rawAmount = LeadingNumberRegex().Match(attributeValue).Value;
+        string rawAmount = LeadingNumberRegex().Match(attributeValue).Value;
 
         return new DenominatedAmountDTO()
         {

@@ -16,11 +16,11 @@ public class TerraWalletMetricsDTO : IFlipsideObject<TerraWalletMetricsDTO>
         return new TerraWalletMetricsDTO()
         {
             Timestamp = DateTimeOffset.Parse(rawValues[0]),
-            TotalReceivers= long.Parse(rawValues[1]),
-            TotalSenders= long.Parse(rawValues[2]),
-            TotalSendersAndReceivers= long.Parse(rawValues[3]),
+            TotalReceivers = long.Parse(rawValues[1]),
+            TotalSenders = long.Parse(rawValues[2]),
+            TotalSendersAndReceivers = long.Parse(rawValues[3]),
             Senders = long.Parse(rawValues[4]),
-            Receivers= long.Parse(rawValues[5]),
+            Receivers = long.Parse(rawValues[5]),
         };
     }
 }

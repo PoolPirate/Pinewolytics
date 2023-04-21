@@ -19,9 +19,9 @@ public class OptimismWalletMetricsDTO : IFlipsideObject<OptimismWalletMetricsDTO
         return new OptimismWalletMetricsDTO()
         {
             Timestamp = DateTimeOffset.Parse(rawValues[0]),
-            TotalReceivers= long.Parse(rawValues[1]),
-            TotalSenders= long.Parse(rawValues[2]),
-            TotalSendersAndReceivers= long.Parse(rawValues[3]),
+            TotalReceivers = long.Parse(rawValues[1]),
+            TotalSenders = long.Parse(rawValues[2]),
+            TotalSendersAndReceivers = long.Parse(rawValues[3]),
             DailySenders = long.Parse(rawValues[4]),
             DailyReceivers = long.Parse(rawValues[5]),
             WeeklySenders = long.Parse(rawValues[6]),

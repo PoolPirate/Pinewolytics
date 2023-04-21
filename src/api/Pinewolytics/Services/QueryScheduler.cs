@@ -3,6 +3,7 @@ using Hangfire;
 using Pinewolytics.Configuration;
 using Pinewolytics.Database;
 using Pinewolytics.Models.Entities;
+using Pinewolytics.Utils;
 
 namespace Pinewolytics.Services;
 
@@ -28,16 +29,16 @@ public class QueryScheduler : Singleton
         var scheduledQueries = dbContext.ScheduledQueries.ToArray();
 
         Logger.LogInformation("Scheduling {count} queries for automatic caching", scheduledQueries.Length);
-        Parallel.ForEach(scheduledQueries, 
+        Parallel.ForEach(scheduledQueries,
             (scheduledQuery, cancellationToken) => ScheduleQuery(scheduledQuery));
 
         if (InstanceOptions.RequireFullSync)
         {
             Logger.LogInformation("Refreshing all queries");
-            await Parallel.ForEachAsync(scheduledQueries, 
+            await Parallel.ForEachAsync(scheduledQueries,
                 async (scheduledQuery, cancellationToken) => await QueryRunner.RunAndCacheQueryAsync(scheduledQuery));
         }
-        else if (InstanceOptions.RequirePartialSync) 
+        else if (InstanceOptions.RequirePartialSync)
         {
             Logger.LogInformation("Refreshing necessary queries");
             await Parallel.ForEachAsync(scheduledQueries,
@@ -65,24 +66,6 @@ public class QueryScheduler : Singleton
         RecurringJob.AddOrUpdate<QueryRunner>(
             scheduledQuery.Name,
             runner => runner.RunAndCacheQueryAsync(scheduledQuery.Name),
-            ConvertFromPeriodRecurrence(scheduledQuery.Interval));
-    }
-
-    private static string ConvertFromPeriodRecurrence(TimeSpan periodRecurrence)
-    {
-        if (periodRecurrence.Seconds > 0 || periodRecurrence.Milliseconds > 0)
-        {
-            throw new ArgumentException("Interval cannot contain seconds nor milliseconds.");
-        }
-        if (periodRecurrence.Hours >= 1)
-        {
-            return $"{periodRecurrence.Minutes} */{periodRecurrence.Hours} * * *";
-        }
-        if (periodRecurrence.Minutes > 1)
-        {
-            return $"*/{periodRecurrence.Minutes} * * * *";
-        }
-        //
-        return $"*/1 * * * *";
+            CronUtils.ConvertFromPeriodRecurrence(scheduledQuery.Interval));
     }
 }

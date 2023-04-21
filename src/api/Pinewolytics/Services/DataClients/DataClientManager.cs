@@ -23,7 +23,7 @@ public class DataClientManager : Singleton
 
     public bool TryGetRealtimeValue(string key, out object? value)
     {
-        foreach(var client in DataClients)
+        foreach (var client in DataClients)
         {
             if (!client.TryGetProperty(key, out value))
             {
@@ -36,5 +36,5 @@ public class DataClientManager : Singleton
         value = null;
         return false;
     }
-    
+
 }

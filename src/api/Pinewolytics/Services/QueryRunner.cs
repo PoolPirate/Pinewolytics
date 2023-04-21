@@ -65,13 +65,17 @@ public class QueryRunner : Singleton
         await QuerySusbcriptionService.BroadcastQueryUpdateAsync(scheduledQuery.Name);
     }
 
-    private static Type GetTypeByName(string name) 
-        => Assembly.GetExecutingAssembly()
-            .GetTypes()
-            .SingleOrDefault(x => x.Name == name) ?? throw new InvalidOperationException($"Unable to find type {name}");
+    private static Type GetTypeByName(string name)
+    {
+        return Assembly.GetExecutingAssembly()
+                .GetTypes()
+                .SingleOrDefault(x => x.Name == name) ?? throw new InvalidOperationException($"Unable to find type {name}");
+    }
 
     private static Type GetTypeParamByName(string name)
-        => Assembly.GetAssembly(typeof(Int32))!
-            .GetTypes()
-            .SingleOrDefault(x => x.Name == name) ?? throw new InvalidOperationException($"Unable to find type {name}");
+    {
+        return Assembly.GetAssembly(typeof(int))!
+                .GetTypes()
+                .SingleOrDefault(x => x.Name == name) ?? throw new InvalidOperationException($"Unable to find type {name}");
+    }
 }

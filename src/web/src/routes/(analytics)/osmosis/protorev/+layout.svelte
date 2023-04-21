@@ -20,6 +20,7 @@
 
 		<NavLink href="/osmosis/protorev/revenue">Revenue</NavLink>
 		<NavLink href="/osmosis/protorev/routes">Routes</NavLink>
+		<NavLink href="/osmosis/protorev/leaderboards">Leaderboards</NavLink>
 		<NavLink href="/osmosis/protorev/parameters">Parameters</NavLink>
 
 		<LinkBumper />

@@ -2,7 +2,6 @@
 using Pinewolytics.Models.DTOs;
 using Pinewolytics.Models.DTOs.Osmosis;
 using Pinewolytics.Utils;
-using System.Numerics;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -18,7 +17,7 @@ public class OsmosisLCDClient : Singleton
     [Inject]
     private readonly HttpClient Client = null!;
 
-    record ICNSResult(ICNSName  Data);
+    record ICNSResult(ICNSName Data);
     record ICNSName(string Name);
     public async Task<string?> GetICNSNameFromAddressAsync(string address, CancellationToken cancellationToken)
     {
@@ -47,12 +46,12 @@ public class OsmosisLCDClient : Singleton
     public async Task<decimal> GetCurrentOSMOBalanceAsync(string address, CancellationToken cancellationToken)
     {
         var route = new Uri(ApiEndpoint, $"cosmos/bank/v1beta1/balances/{address}/by_denom?denom=uosmo");
-        var response = await Client.GetAsync(route, cancellationToken); 
-        
+        var response = await Client.GetAsync(route, cancellationToken);
+
         response.EnsureSuccessStatusCode();
-    
+
         var result = await response.Content.ReadFromJsonAsync<BalanceResult>(cancellationToken: cancellationToken);
-        return (decimal) ((double) result!.Balance!.Amount / Math.Pow(10, 6));
+        return (decimal)((double)result!.Balance!.Amount / Math.Pow(10, 6));
     }
 
     record AmountResult(DenominatedAmountDTO Amount);
@@ -64,20 +63,20 @@ public class OsmosisLCDClient : Singleton
         response.EnsureSuccessStatusCode();
 
         var result = await response.Content.ReadFromJsonAsync<AmountResult>(cancellationToken: cancellationToken);
-        return (decimal) ((double) result!.Amount.Amount / Math.Pow(10, 6));
+        return (decimal)((double)result!.Amount.Amount / Math.Pow(10, 6));
     }
 
     record EpochResult(OsmosisEpochInfoDTO[] Epochs);
     public async Task<OsmosisEpochInfoDTO[]> GetEpochInfosAsync(CancellationToken cancellationToken)
     {
         var route = new Uri(ApiEndpoint, "osmosis/epochs/v1beta1/epochs");
-        var response = await Client.GetAsync(route, cancellationToken); 
+        var response = await Client.GetAsync(route, cancellationToken);
 
         response.EnsureSuccessStatusCode();
 
         var result = await response.Content.ReadFromJsonAsync<EpochResult>(new JsonSerializerOptions()
         {
-            PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance, 
+            PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
             NumberHandling = JsonNumberHandling.AllowReadingFromString,
         }, cancellationToken: cancellationToken);
         return result!.Epochs;

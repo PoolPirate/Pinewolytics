@@ -12,7 +12,7 @@ public abstract class EVMRPCClient : Singleton
 
     public async Task<ulong> GetPeakBlockHeightAsync(CancellationToken cancellationToken = default)
     {
-        var result = await SendRpcCallAsync <string>("eth_blockNumber", Array.Empty<object>(), cancellationToken);
+        string result = await SendRpcCallAsync<string>("eth_blockNumber", Array.Empty<object>(), cancellationToken);
         return ulong.Parse(result[2..], NumberStyles.HexNumber);
     }
 

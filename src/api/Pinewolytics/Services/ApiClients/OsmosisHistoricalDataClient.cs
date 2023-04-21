@@ -1,8 +1,8 @@
 ﻿using Common.Services;
 using Pinewolytics.Models.DTOs.Osmosis;
 using Pinewolytics.Utils;
-using System.Text.Json.Serialization;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Pinewolytics.Services.ApiClients;
 
