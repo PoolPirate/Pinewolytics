@@ -128,44 +128,53 @@
 
 <h1 class="font-bold text-2xl">Routes</h1>
 
-{#if $selectedRoutes == null}
-	<img class="w-64 p-4 invert" src={Loading} alt="Loading" />
-{:else}
-	<table class="table-auto">
-		<thead>
-			<tr>
-				<th
-					class="hover:cursor-pointer"
-					on:click={() => setOrdering(OrderDirection.NumberOfTrades)}
-				>
-					Number Of Trades
-					{getOrderingSuffic($orderDirection, $reverseOrdering, OrderDirection.NumberOfTrades)}
-				</th>
-				<th class="hover:cursor-pointer" on:click={() => setOrdering(OrderDirection.ProfitUSD)}>
-					Profit $USD
-					{getOrderingSuffic($orderDirection, $reverseOrdering, OrderDirection.ProfitUSD)}
-				</th>
-				<th>Pools</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each $selectedRoutes as routeStatistics}
-				<tr>
-					<td>{routeStatistics.numberOfTrades}</td>
-					<td>
-						{Math.round(100 * routeStatistics.profitUSD) / 100} $
-					</td>
-					<td>
-						{routeStatistics.route.reduce((prev, curr) => prev + ' -> ' + curr)}
-					</td>
+<div class="w-full transparent-background p-2 flex flex-col gap-2">
+	{#if $selectedRoutes == null}
+		<img class="w-64 p-4 invert" src={Loading} alt="Loading" />
+	{:else}
+		<table class="w-full table-auto">
+			<thead>
+				<tr class="text-xl">
+					<th
+						class="hover:cursor-pointer"
+						on:click={() => setOrdering(OrderDirection.NumberOfTrades)}
+					>
+						Number Of Trades
+						{getOrderingSuffic($orderDirection, $reverseOrdering, OrderDirection.NumberOfTrades)}
+					</th>
+					<th class="hover:cursor-pointer" on:click={() => setOrdering(OrderDirection.ProfitUSD)}>
+						Profit $USD
+						{getOrderingSuffic($orderDirection, $reverseOrdering, OrderDirection.ProfitUSD)}
+					</th>
+					<th>Pools</th>
 				</tr>
-			{/each}
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				{#each $selectedRoutes as routeStatistics}
+					<tr>
+						<td>{routeStatistics.numberOfTrades}</td>
+						<td>
+							{Math.round(100 * routeStatistics.profitUSD) / 100} $
+						</td>
+						<td>
+							{routeStatistics.route.reduce((prev, curr) => prev + ' -> ' + curr)}
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
 
-	<div class="flex flex-row gap-5">
-		<button class="bg-gray-200 px-4 py-1" on:click={decrementPage}>Back</button>
-		<p class="bg-gray-200 px-4 py-1">{$page + 1}</p>
-		<button class="bg-gray-200 px-4 py-1" on:click={incrementPage}>Next</button>
-	</div>
-{/if}
+		<div class="flex flex-row gap-5">
+			<button class="bg-gray-200 px-4 py-1" on:click={decrementPage}>Back</button>
+			<p class="bg-gray-200 px-4 py-1">{$page + 1}</p>
+			<button class="bg-gray-200 px-4 py-1" on:click={incrementPage}>Next</button>
+		</div>
+	{/if}
+</div>
+
+<style>
+	th,
+	td {
+		border: 2px solid black;
+	}
+</style>

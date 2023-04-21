@@ -9,6 +9,7 @@ using Pinewolytics.Models.DTOs.Osmosis.ProtoRev;
 using System.Text;
 using Pinewolytics.Models.DTOs.Osmosis;
 using Pinewolytics.Models.DTOs;
+using System.Numerics;
 
 namespace Pinewolytics.Services.ApiClients;
 
@@ -89,7 +90,7 @@ public class OsmosisRPCClient : Singleton
             .Select(x => new DenominatedAmountDTO()
             {
                 Denom = x.Key,
-                Amount = x.Sum(x => x.Amount)
+                Amount = x.Aggregate(BigInteger.Zero, (prev, curr) => prev + curr.Amount)
             })
             .ToArray();
 

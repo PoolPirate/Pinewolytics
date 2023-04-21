@@ -1,5 +1,8 @@
-﻿using System.Globalization;
+﻿using Pinewolytics.Utils;
+using System.Globalization;
+using System.Numerics;
 using System.Text;
+using System.Text.Json.Serialization;
 using System.Text.RegularExpressions;
 
 namespace Pinewolytics.Models.DTOs;
@@ -10,7 +13,8 @@ public partial class DenominatedAmountDTO
     private static partial Regex LeadingNumberRegex();
 
     public required string Denom { get; init; }
-    public required decimal Amount { get; init; }
+    [JsonConverter(typeof(BigIntegerNumberConverter))]
+    public required BigInteger Amount { get; init; }
 
     public static DenominatedAmountDTO FromBase64AttributeValue(string rawAttributeValue)
     {
@@ -20,7 +24,7 @@ public partial class DenominatedAmountDTO
 
         return new DenominatedAmountDTO()
         {
-            Amount = decimal.Parse(rawAmount, NumberStyles.Float),
+            Amount = BigInteger.Parse(rawAmount),
             Denom = attributeValue[rawAmount.Length..],
         };
     }

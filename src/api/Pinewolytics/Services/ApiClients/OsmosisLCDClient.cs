@@ -2,6 +2,7 @@
 using Pinewolytics.Models.DTOs;
 using Pinewolytics.Models.DTOs.Osmosis;
 using Pinewolytics.Utils;
+using System.Numerics;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -10,6 +11,8 @@ namespace Pinewolytics.Services.ApiClients;
 
 public class OsmosisLCDClient : Singleton
 {
+    private static readonly string ProtoRevModuleAddress = "osmo17qdmjdumw4xawam4g46gtwzle5rd4zwyfqvvza";
+
     private readonly Uri ApiEndpoint = new Uri("https://lcd-osmosis.imperator.co", UriKind.Absolute);
 
     [Inject]
@@ -49,7 +52,7 @@ public class OsmosisLCDClient : Singleton
         response.EnsureSuccessStatusCode();
     
         var result = await response.Content.ReadFromJsonAsync<BalanceResult>(cancellationToken: cancellationToken);
-        return result!.Balance!.Amount / (decimal) Math.Pow(10, 6);
+        return (decimal) ((double) result!.Balance!.Amount / Math.Pow(10, 6));
     }
 
     record AmountResult(DenominatedAmountDTO Amount);
@@ -61,7 +64,7 @@ public class OsmosisLCDClient : Singleton
         response.EnsureSuccessStatusCode();
 
         var result = await response.Content.ReadFromJsonAsync<AmountResult>(cancellationToken: cancellationToken);
-        return result!.Amount.Amount / (decimal) Math.Pow(10, 6);
+        return (decimal) ((double) result!.Amount.Amount / Math.Pow(10, 6));
     }
 
     record EpochResult(OsmosisEpochInfoDTO[] Epochs);
@@ -196,6 +199,23 @@ public class OsmosisLCDClient : Singleton
         }, cancellationToken: cancellationToken);
 
         return result!.Statistics;
+    }
+
+    record ProtoRevBalanceResult(DenominatedAmountDTO[] Balances);
+    public async Task<DenominatedAmountDTO[]> GetProtoRevModuleBalanceAsync(CancellationToken cancellationToken = default)
+    {
+        var route = new Uri(ApiEndpoint, $"cosmos/bank/v1beta1/balances/{ProtoRevModuleAddress}");
+        var response = await Client.GetAsync(route, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadFromJsonAsync<ProtoRevBalanceResult>(new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString,
+        }, cancellationToken: cancellationToken);
+
+        return result!.Balances;
     }
 }
 

@@ -4,6 +4,7 @@
 	import type {
 		OsmosisDenominatedAmountDTO,
 		OsmosisProtoRevRevenueDTO,
+		OsmosisTokenInfoDTO,
 		OsomsisProtoRevAssetRevenueDTO
 	} from '$lib/models/DTOs/OsmosisDTOs';
 	import { QueryName } from '$lib/service/query-definitions';
@@ -91,16 +92,19 @@
 		);
 	}
 
-	$: makeProtoRevRevenuePerAssetChart($protoRevRevenuePerAssetQuery);
-	function makeProtoRevRevenuePerAssetChart(profits: OsomsisProtoRevAssetRevenueDTO[] | null) {
-		if (profits == null) {
+	$: makeProtoRevRevenuePerAssetChart($protoRevRevenuePerAssetQuery, $allTokenInfos);
+	function makeProtoRevRevenuePerAssetChart(
+		profits: OsomsisProtoRevAssetRevenueDTO[] | null,
+		allTokenInfos: OsmosisTokenInfoDTO[] | null
+	) {
+		if (profits == null || allTokenInfos == null) {
 			return;
 		}
 
 		protoRevRevenuePerAssetChart.set({
 			type: 'pie',
 			data: profits.map((x) => {
-				const tokenInfo = $allTokenInfos?.find((y) => y.denom == x.currency)!;
+				const tokenInfo = allTokenInfos?.find((y) => y.denom == x.currency)!;
 				return {
 					name: tokenInfo.symbol,
 					value: x.totalUSD

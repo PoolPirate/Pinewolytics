@@ -23,7 +23,8 @@ export enum RealtimeValueName {
     OsmosisProtoRevAdminAddress = "Osmosis-ProtoRev-Admin-Address",
     OsmosisProtoRevDeveloperAddress = "Osmosis-ProtoRev-Developer-Address",
     OsmosisProtoRevAllRouteStatistics = "Osmosis-ProtoRev-All-Route-Statistics",
-    OsmosisAllTokenInfos = "Osmosis-All-Token-Infos"
+    OsmosisAllTokenInfos = "Osmosis-All-Token-Infos",
+    OsmosisProtoRevModuleBalance = "Osmosis-ProtoRev-Module-Balance"
 }
 
 export const realtimeValueTypes = {
@@ -47,5 +48,6 @@ export const realtimeValueTypes = {
     [RealtimeValueName.OsmosisProtoRevAdminAddress]: null! as string,
     [RealtimeValueName.OsmosisProtoRevDeveloperAddress]: null! as string,
     [RealtimeValueName.OsmosisProtoRevAllRouteStatistics]: null! as OsmosisProtoRevRouteStatisticsDTO[],
-    [RealtimeValueName.OsmosisAllTokenInfos]: null! as OsmosisTokenInfoDTO[]
+    [RealtimeValueName.OsmosisAllTokenInfos]: null! as OsmosisTokenInfoDTO[],
+    [RealtimeValueName.OsmosisProtoRevModuleBalance]: null! as OsmosisDenominatedAmountDTO[]
 };

@@ -19,12 +19,11 @@ public class LunaLCDClient : Singleton
 
         var result = await response.Content.ReadFromJsonAsync<AmountResult>();
 
-        if (result is null)
+        return result switch
         {
-            throw new Exception("Unexpected json format");
-        }
-
-        return (ulong) result.Amount.Amount;
+            not null => (ulong)result.Amount.Amount,
+            _ => throw new Exception("Unexpected json format")
+        };
     }
 
     public async Task<ulong> GetCirculatingSupplyAsync()

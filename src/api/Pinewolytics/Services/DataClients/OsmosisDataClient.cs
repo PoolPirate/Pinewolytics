@@ -81,4 +81,10 @@ public class OsmosisDataClient : BaseDataClient
     {
         return await OsmosisHistoricalData.GetAllTokenInfosAsync();
     }
+
+    [RealtimeValue("Osmosis-ProtoRev-Module-Balance", 30 * SECONDS)]
+    public async Task<DenominatedAmountDTO[]> LoadProtoRevModuleBalanceAsync()
+    {
+        return await OsmosisLCD.GetProtoRevModuleBalanceAsync();
+    }
 }
