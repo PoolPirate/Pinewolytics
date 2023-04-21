@@ -169,9 +169,10 @@
 							</td>
 							<td class="text-right p-2 border-b-2 border-black">
 								<a
+									class="text-blue-600 font-bold"
 									rel="external noreferrer"
 									href="https://www.mintscan.io/osmosis/txs/{tx.hash}"
-									target="_blank">See on Mintscan</a
+									target="_blank">-> Mintscan</a
 								>
 							</td>
 						</tr>
