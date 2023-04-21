@@ -103,13 +103,28 @@
 
 		protoRevRevenuePerAssetChart.set({
 			type: 'pie',
+			radius: ['40%', '70%'],
+			avoidLabelOverlap: true,
+			label: {
+				show: false,
+				position: 'center'
+			},
+			emphasis: {
+				label: {
+					show: true,
+					fontSize: 20,
+					fontWeight: 'bold',
+					formatter: (x) => Math.round(100 * (x.value as number)) / 100 + ' $'
+				}
+			},
 			data: profits.map((x) => {
 				const tokenInfo = allTokenInfos?.find((y) => y.denom == x.currency)!;
 				return {
 					name: tokenInfo.symbol,
 					value: x.totalUSD
 				};
-			})
+			}),
+			top: '20px'
 		});
 	}
 
@@ -123,6 +138,7 @@
 
 <SingleValueChart
 	series={$protoRevRevenuePerAssetChart}
+	showLegend={true}
 	queryName={QueryName.OsmosisProtoRevRevenuePerAsset}
 />
 
