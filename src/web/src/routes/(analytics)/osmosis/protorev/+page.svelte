@@ -1,9 +1,5 @@
 <script lang="ts">
-	import SingleValueChart from '$lib/charts/SingleValueChart.svelte';
-	import type {
-		OsmosisDenominatedAmountDTO,
-		OsmosisTokenInfoDTO
-	} from '$lib/models/DTOs/OsmosisDTOs';
+	import RefreshAnimation, { RefreshAnimationType } from '$lib/components/RefreshAnimation.svelte';
 	import { RealtimeFeedName } from '$lib/service/realtime-feed-definitions';
 	import { RealtimeValueName } from '$lib/service/realtime-value-definitions';
 	import {
@@ -11,8 +7,6 @@
 		createRealtimeFeedListener,
 		createRealtimeValueListener
 	} from '$lib/service/subscriptions';
-	import { ConsoleLogger } from '@microsoft/signalr/dist/esm/Utils';
-	import type { SeriesOption } from 'echarts';
 	import { onDestroy, onMount } from 'svelte';
 	import { writable } from 'svelte/store';
 
@@ -65,6 +59,8 @@
 	const currentTime = writable<Date>(new Date());
 	const protoRevTotalRevenueUSD = writable<number | null>(null);
 
+	const refreshAnimations: RefreshAnimation[] = [];
+
 	$: if ($protoRevTotalRevenue != null && $allTokenInfos != null) {
 		protoRevTotalRevenueUSD.set(
 			$protoRevTotalRevenue.reduce((prev, x) => {
@@ -107,13 +103,15 @@
 		<h2 class="text-xl font-bold">Current Module Balance</h2>
 		<hr class="m-2 border-black border-t-2" />
 		{#if $protoRevModuleBalance != null && $allTokenInfos != null}
-			<ul class="flex flex-row justify-between">
-				{#each $protoRevModuleBalance as balance}
-					<p class="flex flex-row items-center gap-2">
-						{Math.round(
-							balance.amount /
-								Math.pow(10, $allTokenInfos.find((x) => x.denom == balance.denom)?.exponent ?? 1)
-						)}
+			<ul class="flex flex-row justify-around">
+				{#each $protoRevModuleBalance as balance, i}
+					<li class="flex flex-row items-center gap-2 text-lg font-bold">
+						<p>
+							{Math.round(
+								balance.amount /
+									Math.pow(10, $allTokenInfos.find((x) => x.denom == balance.denom)?.exponent ?? 1)
+							)}
+						</p>
 						<img
 							class="h-11"
 							src="https://app.osmosis.zone/tokens/{$allTokenInfos
@@ -121,7 +119,11 @@
 								?.symbol?.toLowerCase()}.svg"
 							alt="token_symbol"
 						/>
-					</p>
+						<RefreshAnimation
+							type={RefreshAnimationType.ArrowUp}
+							bind:this={refreshAnimations[i]}
+						/>
+					</li>
 				{/each}
 			</ul>
 		{:else}
