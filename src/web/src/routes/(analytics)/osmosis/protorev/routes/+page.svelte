@@ -105,7 +105,7 @@
 		}
 	}
 
-	function getOrderingSuffic(
+	function getOrderingSuffix(
 		currentOrderDirection: OrderDirection,
 		isReverse: boolean,
 		orderDirection: OrderDirection
@@ -135,16 +135,13 @@
 		<table class="w-full table-auto">
 			<thead>
 				<tr class="text-xl">
-					<th
-						class="hover:cursor-pointer"
-						on:click={() => setOrdering(OrderDirection.NumberOfTrades)}
-					>
+					<th class="cursor-pointer" on:click={() => setOrdering(OrderDirection.NumberOfTrades)}>
 						Number Of Trades
-						{getOrderingSuffic($orderDirection, $reverseOrdering, OrderDirection.NumberOfTrades)}
+						{getOrderingSuffix($orderDirection, $reverseOrdering, OrderDirection.NumberOfTrades)}
 					</th>
-					<th class="hover:cursor-pointer" on:click={() => setOrdering(OrderDirection.ProfitUSD)}>
+					<th class="cursor-pointer" on:click={() => setOrdering(OrderDirection.ProfitUSD)}>
 						Profit $USD
-						{getOrderingSuffic($orderDirection, $reverseOrdering, OrderDirection.ProfitUSD)}
+						{getOrderingSuffix($orderDirection, $reverseOrdering, OrderDirection.ProfitUSD)}
 					</th>
 					<th>Pools</th>
 				</tr>

@@ -1,11 +1,11 @@
 import { HubConnection, HubConnectionBuilder } from '@microsoft/signalr';
 import { writable } from 'svelte/store';
 import { browser } from '$app/environment';
-import { type QueryName, queryTypes } from './query-definitions';
 import type RefreshAnimation from '$lib/components/RefreshAnimation.svelte';
 import type { RealtimeValueName, realtimeValueTypes } from './realtime-value-definitions';
 import { getQueryValue, getRealtimeFeedValue, getRealtimeValueValue } from './queries';
 import { realtimeFeedLengths, type RealtimeFeedName, type realtimeFeedTypes } from './realtime-feed-definitions';
+import type { QueryName, queryTypes } from './query-definitions';
 
 
 interface QuerySubscription {
@@ -152,7 +152,7 @@ export function createQueryListener<T extends QueryName, R extends typeof queryT
 	builder: SocketSubscriptionBuilder,
 	queryName: T
 ) {
-	const { subscribe, set } = writable<R>(queryTypes[queryName] as any);
+	const { subscribe, set } = writable<R | null>(null);
 
 	builder.addQuery(queryName, (value) => {
 		set(value as any);

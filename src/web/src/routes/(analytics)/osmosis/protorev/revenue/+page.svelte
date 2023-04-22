@@ -54,10 +54,10 @@
 
 	$: makeProtoRevRevenueChart($protoRevRevenueHistoryQuery, $isWeeklyModeStore);
 	function makeProtoRevRevenueChart(
-		revenueHistory: OsmosisProtoRevRevenueDTO[],
+		revenueHistory: OsmosisProtoRevRevenueDTO[] | null,
 		isWeeklyMode: boolean
 	) {
-		if (revenueHistory.length == 0) {
+		if (revenueHistory == null) {
 			return;
 		}
 

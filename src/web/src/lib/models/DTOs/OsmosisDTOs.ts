@@ -168,3 +168,8 @@ export interface OsmosisProtoRevSwapDTO {
 	profit: OsmosisDenominatedAmountDTO;
 	profitUSD: number;
 }
+
+export interface OsmosisProtoRevAddressStatsDTO {
+	address: string;
+	aggregatedSwaps: OsmosisProtoRevSwapDTO[]
+}
