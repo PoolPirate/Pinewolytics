@@ -78,7 +78,7 @@
 		<p>Loading...</p>
 	{:then protoRevTransactions}
 		<h2 class:hidden={!isValidAddress(selectedAddress)} class="font-bold text-xl">
-			ProtoRev Status for {selectedAddress}
+			ProtoRev Stats for {selectedAddress} (Last 180 Days)
 		</h2>
 		<h2 class:hidden={isValidAddress(selectedAddress)} class="font-bold text-red-600 text-xl">
 			Invalid Address {selectedAddress}
@@ -113,38 +113,61 @@
 			/>
 		</div>
 
-		<table class:hidden={protoRevTransactions == null}>
-			<thead>
-				<tr>
-					<th>Transaction</th>
-					<th>Revenue at tx time ($USD)</th>
-				</tr>
-			</thead>
-			<tbody>
-				{#each protoRevTransactions as tx}
+		<div class="flex flex-col transparent-background rounded-md p-3">
+			<h2 class="text-xl font-bold">Transactions</h2>
+			<hr class="m-2 border-black border-t-2" />
+			<table class:hidden={protoRevTransactions == null}>
+				<thead>
 					<tr>
-						<td>
-							<a
-								class="text-blue-400"
-								target="_blank"
-								rel="noreferrer external"
-								href="https://www.mintscan.io/osmosis/txs/{tx.hash}"
-								>{tx.hash.substring(0, 6)}...{tx.hash.substring(
-									tx.hash.length - 6,
-									tx.hash.length
-								)}</a
-							>
-						</td>
-						<td>
-							{#each tx.swaps as swap}
-								<p>{swap.profit.amount} {swap.profit.denom} ({swap.profitUSD}$)</p>
-							{/each}
-						</td>
+						<th>Transaction</th>
+						<th>Timestamp</th>
+						<th>Revenue at tx time ($USD) </th>
 					</tr>
-				{/each}
-			</tbody>
-		</table>
+				</thead>
+				<tbody>
+					{#each protoRevTransactions as tx}
+						<tr>
+							<td>
+								<a
+									class="text-blue-600 font-bold"
+									target="_blank"
+									rel="noreferrer external"
+									href="https://www.mintscan.io/osmosis/txs/{tx.hash}"
+									>{tx.hash.substring(0, 6)}...{tx.hash.substring(
+										tx.hash.length - 6,
+										tx.hash.length
+									)}</a
+								>
+							</td>
+							<td>
+								{new Date(tx.timestamp).toLocaleDateString()}
+							</td>
+							<td>
+								{#each tx.swaps as swap}
+									<p>
+										{swap.profit.amount /
+											Math.pow(
+												10,
+												$allTokenInfos?.find((x) => x.denom == swap.profit.denom)?.exponent ?? 0
+											)}
+										- {$allTokenInfos?.find((x) => x.denom == swap.profit.denom)?.symbol}
+										({Math.round(1000 * swap.profitUSD) / 1000} $)
+									</p>
+								{/each}
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		</div>
 	{:catch}
 		<p>There was an error</p>
 	{/await}
 </div>
+
+<style>
+	th,
+	td {
+		border: 2px solid black;
+	}
+</style>
