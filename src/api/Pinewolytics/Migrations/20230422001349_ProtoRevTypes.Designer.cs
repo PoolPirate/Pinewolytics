@@ -3,6 +3,7 @@ using System;
 using System.Numerics;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using Pinewolytics.Database;
@@ -12,9 +13,11 @@ using Pinewolytics.Database;
 namespace Pinewolytics.Migrations
 {
     [DbContext(typeof(PinewolyticsContext))]
-    partial class PinewolyticsContextModelSnapshot : ModelSnapshot
+    [Migration("20230422001349_ProtoRevTypes")]
+    partial class ProtoRevTypes
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

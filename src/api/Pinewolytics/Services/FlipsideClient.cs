@@ -128,14 +128,54 @@ public class FlipsideClient : Singleton
             ?? throw new InvalidOperationException("Failed parsing result from flipside!");
     }
 
-    private async Task<object[][]> GetQueryResultsAsync(string token, int pageNumber = 1, int pageSize = 100000,
+    private async Task<object[][]> GetQueryResultsAsync(string token,
         CancellationToken cancellationToken = default)
     {
-        var result = await RetryPolicy.ExecuteAsync(() => GetFinishedQueryResultAsync(token, pageNumber, pageSize, cancellationToken));
+        var result = await RetryPolicy.ExecuteAsync(() => GetFinishedQueryResultsAsync(token, cancellationToken));
         return result.Results;
     }
 
-    private async Task<QueryResultsResult> GetFinishedQueryResultAsync(string token, int pageNumber = 1, int pageSize = 100000,
+    private async Task<QueryResultsResult> GetFinishedQueryResultsAsync(string token, CancellationToken cancellationToken = default)
+    {
+        List<QueryResultsResult>? resultPages = null;
+
+        for(int i = 1; i <= 10; i++)
+        {
+            var page = await GetFinishedQueryResultPageAsync(token, i, 100000, cancellationToken);
+
+            if (page.Status != "finished")
+            {
+                return page;
+            }
+
+            if (page.Results.Length < 100_000)
+            {
+                if (resultPages is null)
+                {
+                    return page;
+                }
+
+                resultPages.Add(page);
+                break;
+            }
+
+            resultPages ??= new List<QueryResultsResult>();
+            resultPages.Add(page);
+        }
+
+        return new QueryResultsResult()
+        {
+            Results = resultPages!.SelectMany(x => x.Results).ToArray(),
+            ColumnLabels = resultPages![0].ColumnLabels,
+            ColumnTypes = resultPages![0].ColumnTypes,
+            Status = resultPages![0].Status,
+            Message = resultPages![0].Message,
+            StartedAt = resultPages![0].StartedAt,
+            EndedAt = resultPages![0].EndedAt,
+        };
+}
+
+    private async Task<QueryResultsResult> GetFinishedQueryResultPageAsync(string token, int pageNumber, int pageSize,
         CancellationToken cancellationToken = default)
     {
         var request = new HttpRequestMessage(HttpMethod.Get, $"https://node-api.flipsidecrypto.com/queries/{token}?pageNumber={pageNumber}&pageSize={pageSize}");

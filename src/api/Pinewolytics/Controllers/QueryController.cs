@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using Pinewolytics.Database;
 using Pinewolytics.Models.DTOs.Osmosis;
 using Pinewolytics.Services;
 using Pinewolytics.Utils;
@@ -10,10 +12,12 @@ namespace Pinewolytics.Controllers;
 public class QueryController : ControllerBase
 {
     private readonly QueryClient QueryClient;
+    private readonly PinewolyticsContext DbContext;
 
-    public QueryController(QueryClient queryClient)
+    public QueryController(QueryClient queryClient, PinewolyticsContext dbContext)
     {
         QueryClient = queryClient;
+        DbContext = dbContext;
     }
 
     [HttpGet("Query/Src/{queryName}")]
@@ -136,5 +140,33 @@ public class QueryController : ControllerBase
 
         var ranking = await QueryClient.GetOsmosisPoolInfosAsync(poolIds, cancellationToken);
         return Ok(ranking);
+    }
+
+    [HttpGet("Osmosis/ProtoRevTx/{address}")]
+    [ResponseCache(Duration = 180, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "address" })]
+    public async Task<IActionResult> GetProtoRevTxAsync([FromRoute] string address)
+    {
+        var swaps = await DbContext.ProtoRevTransactions
+            .Include(x => x.Swaps)
+            .Where(x => x.TxFrom == address)
+            .ToArrayAsync();
+
+        return Ok(
+            swaps.Select(x => new OsmosisProtoRevTransactionDTO()
+            {
+                Hash= x.Hash,
+                Timestamp = x.TimeStamp,
+                TxFrom = x.TxFrom,
+                Swaps = x.Swaps.Select(x => new OsmosisProtoRevSwapDTO()
+                {
+                    Profit = new Models.DTOs.DenominatedAmountDTO()
+                    {
+                        Denom = x.Currency,
+                        Amount = x.Profit
+                    },
+                    ProfitUSD = x.ProfitUSD
+                }).ToArray()
+            })
+        );
     }
 }

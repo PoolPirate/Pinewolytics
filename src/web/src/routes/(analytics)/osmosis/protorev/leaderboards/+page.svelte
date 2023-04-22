@@ -15,9 +15,9 @@
 		subscriptionBuilder.dispose();
 	});
 
-	const protoRevBiggestSwaps = createQueryListener(
+	const OsmosisProtoRevBiggestProfitTransactions = createQueryListener(
 		subscriptionBuilder,
-		QueryName.OsmosisProtoRevBiggestSwaps
+		QueryName.OsmosisProtoRevBiggestProfitTransactions
 	);
 
 	const protoRevBiggestTx = writable<any>();
@@ -26,8 +26,8 @@
 <div class="grid grid-cols-1">
 	<div>
 		<h2>Transactions with the most revenue</h2>
-		<p class:hidden={$protoRevBiggestSwaps != null}>Loading...</p>
-		<table class:hidden={$protoRevBiggestSwaps == null}>
+		<p class:hidden={$OsmosisProtoRevBiggestProfitTransactions != null}>Loading...</p>
+		<table class:hidden={$OsmosisProtoRevBiggestProfitTransactions == null}>
 			<thead>
 				<tr>
 					<th>Transaction</th>
@@ -35,21 +35,23 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each $protoRevBiggestSwaps as swap}
+				{#each $OsmosisProtoRevBiggestProfitTransactions as tx}
 					<tr>
 						<td>
 							<a
 								class="text-blue-400"
 								rel="noreferrer external"
-								href="https://www.mintscan.io/osmosis/txs/{swap.hash}"
-								>{swap.hash.substring(0, 6)}...{swap.hash.substring(
-									swap.hash.length - 6,
-									swap.hash.length
+								href="https://www.mintscan.io/osmosis/txs/{tx.hash}"
+								>{tx.hash.substring(0, 6)}...{tx.hash.substring(
+									tx.hash.length - 6,
+									tx.hash.length
 								)}</a
 							>
 						</td>
 						<td>
-							{Math.round(swap.amountUSD)} $USD
+							{#each tx.swaps as swap}
+								<p>{swap.profit.amount} {swap.profit.denom} ({swap.profitUSD}$)</p>
+							{/each}
 						</td>
 					</tr>
 				{/each}

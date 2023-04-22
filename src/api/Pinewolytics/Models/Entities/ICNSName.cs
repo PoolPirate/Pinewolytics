@@ -1,4 +1,4 @@
-﻿namespace Pinewolytics.Models.DTOs.ICNS;
+﻿namespace Pinewolytics.Models.Entities;
 
 public class ICNSName
 {

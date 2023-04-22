@@ -1,5 +1,5 @@
 import type { OptimismAddressBalanceDTO, OptimismContractActivityDTO, OptimismContractMetricsDTO, OptimismDAppUsageDTO, OptimismGasMetricsDTO, OptimismL1SubmissionMetricsDTO, OptimismOPHolderMetricsDTO, OptimismTransactionMetricsDTO, OptimismWalletMetricsDTO } from "$lib/models/DTOs/OptimismDTO";
-import type { OsmosisLPJoinDTO, OsmosisLPExitDTO, OsmosisIBCTransferDTO, OsmosisTransferDTO, OsmosisSwapDTO, OsmosisDelegateDTO, OsmosisUndelegateDTO, OsmosisStakingRewardDTO, OsmosisTotalDelegationsDTO, OsmosisProtoRevRevenueDTO, OsomsisProtoRevAssetRevenueDTO, OsmosisProtoRevSwapDTO } from "$lib/models/DTOs/OsmosisDTOs";
+import type { OsmosisLPJoinDTO, OsmosisLPExitDTO, OsmosisIBCTransferDTO, OsmosisTransferDTO, OsmosisSwapDTO, OsmosisDelegateDTO, OsmosisUndelegateDTO, OsmosisStakingRewardDTO, OsmosisTotalDelegationsDTO, OsmosisProtoRevRevenueDTO, OsomsisProtoRevAssetRevenueDTO, OsmosisProtoRevSwapDTO, OsmosisProtoRevTransactionDTO } from "$lib/models/DTOs/OsmosisDTOs";
 import type { TerraAddressBalanceDTO, TerraContractMetricsDTO, TerraTotalFeeDTO, TerraTransactionMetricsDTO, TerraValidatorCountDTO, TerraWalletMetricsDTO } from "$lib/models/DTOs/TerraDTOs";
 import type { StringPrimitiveObject, TimeSeriesEntryDTO } from "$lib/models/SharedDTOs";
 
@@ -38,7 +38,7 @@ export enum QueryName {
 
 	OsmosisProtoRevRevenueHistory = "osmosis-protorev-revenue-history",
 	OsmosisProtoRevRevenuePerAsset = "osmosis-protorev-revenue-per-asset",
-	OsmosisProtoRevBiggestSwaps = "osmosis-protorev-biggest-swaps"
+	OsmosisProtoRevBiggestProfitTransactions = "osmosis-protorev-biggest-profit-tx"
 }
 
 export const queryTypes = {
@@ -75,5 +75,5 @@ export const queryTypes = {
 	[QueryName.OsmosisL5DevTotalDelegationsHistory]: [] as OsmosisTotalDelegationsDTO[],
 	[QueryName.OsmosisProtoRevRevenueHistory]: [] as OsmosisProtoRevRevenueDTO[],
 	[QueryName.OsmosisProtoRevRevenuePerAsset]: [] as OsomsisProtoRevAssetRevenueDTO[] ,
-	[QueryName.OsmosisProtoRevBiggestSwaps]: [] as OsmosisProtoRevSwapDTO[]
+	[QueryName.OsmosisProtoRevBiggestProfitTransactions]: [] as OsmosisProtoRevTransactionDTO[]
 };

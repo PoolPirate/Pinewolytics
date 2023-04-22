@@ -153,10 +153,9 @@ export interface OsmosisTokenInfoDTO {
 
 export interface OsmosisProtoRevTransactionDTO {
 	hash: string;
-	height: number;
 	timestamp: string;
-	index: number;
-	profits: OsmosisDenominatedAmountDTO[]
+	txFrom: string;
+	swaps: OsmosisProtoRevSwapDTO[]
 }
 
 export interface OsomsisProtoRevAssetRevenueDTO {
@@ -166,8 +165,6 @@ export interface OsomsisProtoRevAssetRevenueDTO {
 }
 
 export interface OsmosisProtoRevSwapDTO {
-	hash: string;
-	timestamp: string;
-	amount: OsmosisDenominatedAmountDTO;
-	amountUSD: number;
+	profit: OsmosisDenominatedAmountDTO;
+	profitUSD: number;
 }

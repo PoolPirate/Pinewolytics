@@ -4,6 +4,7 @@ using Pinewolytics.Database;
 using Pinewolytics.Models;
 using Pinewolytics.Models.DTOs.ICNS;
 using Pinewolytics.Models.DTOs.Osmosis;
+using Pinewolytics.Models.Entities;
 using Pinewolytics.Queries.Flipside;
 using Pinewolytics.Services.ApiClients;
 using System.Text;
@@ -333,5 +334,31 @@ public class QueryClient : Singleton
     {
         string sql = FlipsideQueries.ListICNSNames();
         return await Flipside.GetOrRunAsync<ICNSNameDTO>(sql);
+    }
+
+    public async Task<ProtoRevTransaction[]> ListProtoRevTransactionsAsync()
+    {
+        string sql = FlipsideQueries.ListProtoRevTransactions();
+        var txs = await Flipside.GetOrRunAsync<OsmosisProtoRevTransactionDTO>(sql);
+
+        return txs.Select(x => {
+            var id = Guid.NewGuid();
+
+            return new ProtoRevTransaction()
+            {
+                Id = id,
+                Hash = x.Hash,
+                TimeStamp = x.Timestamp,
+                TxFrom = x.TxFrom,
+                Swaps = x.Swaps.Select(x => new ProtoRevSwap()
+                {
+                    Id = Guid.NewGuid(),
+                    TransactionId = id,
+                    Currency = x.Profit.Denom,
+                    Profit = x.Profit.Amount,
+                    ProfitUSD = x.ProfitUSD
+                }).ToList()
+            }; 
+        }).ToArray();
     }
 }

@@ -4,6 +4,7 @@ import type {
 	OsmosisLPJoinDTO,
 	OsmosisNetTransferDTO,
 	OsmosisPoolInfoDTO,
+	OsmosisProtoRevTransactionDTO,
 	OsmosisSwapDTO,
 	OsmosisTransferDTO,
 	OsmosisWalletRankingDTO
@@ -80,6 +81,11 @@ export async function getOsmosisWalletRanking(address: string): Promise<OsmosisW
 export async function getOsmosisPoolInfosAsync(poolIds: number[]): Promise<OsmosisPoolInfoDTO[]> {
 	const response = await fetch("/Api/Osmosis/PoolInfos/"  + makeListParams("poolIds", poolIds));
 	return (await response.json()) as OsmosisPoolInfoDTO[];
+}
+
+export async function getOsmosisProtoRevTransactions(address: string): Promise<OsmosisProtoRevTransactionDTO[]> {
+	const response = await fetch("/Api/Osmosis/ProtoRevTx/" + address);
+	return (await response.json()) as OsmosisProtoRevTransactionDTO[];
 }
 
 export async function getICNSNameByAddress(address: string): Promise<string | null> {

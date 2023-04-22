@@ -36,21 +36,60 @@ public class FlipsideExtractor : Singleton
 
     public async Task ExtractICNSTagsAsync()
     {
-        using var scope = Provider.CreateScope();
+        var scope = Provider.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<PinewolyticsContext>();
-        using var transaction = await dbContext.Database.BeginTransactionAsync();
+        var transaction = await dbContext.Database.BeginTransactionAsync();
 
-        await dbContext.ICNSNames.ExecuteDeleteAsync();
+        try
+        {
+            await dbContext.ICNSNames.ExecuteDeleteAsync();
 
-        var names = await QueryClient.ListICNSNamesAsync();
-        dbContext.ICNSNames.AddRange(names);
+            var names = await QueryClient.ListICNSNamesAsync();
+            dbContext.ICNSNames.AddRange(names);
 
-        await dbContext.SaveChangesAsync();
-        await transaction.CommitAsync();
+            await dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+        finally
+        {
+            scope.Dispose();
+            await transaction.DisposeAsync();
+            GC.Collect();
+        }
     }
 
     public async Task ExtractAllAddressProtoRevTransactionsAsync()
     {
+        var scope = Provider.CreateScope();
+        var dbContext = scope.ServiceProvider.GetRequiredService<PinewolyticsContext>();
+        var transaction = await dbContext.Database.BeginTransactionAsync();
 
+        try
+        {
+            await dbContext.ProtoRevSwaps.ExecuteDeleteAsync();
+            await dbContext.ProtoRevTransactions.ExecuteDeleteAsync();
+
+            var txs = await QueryClient.ListProtoRevTransactionsAsync();
+            dbContext.ProtoRevTransactions.AddRange(txs); //Recursively finds Swaps
+
+            await dbContext.SaveChangesAsync();
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            throw;
+        }
+        finally
+        {
+            scope.Dispose();
+            await transaction.DisposeAsync();
+            GC.Collect();
+        }
     }
 }

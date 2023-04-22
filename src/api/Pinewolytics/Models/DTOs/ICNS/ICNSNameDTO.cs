@@ -1,4 +1,6 @@
-﻿namespace Pinewolytics.Models.DTOs.ICNS;
+﻿using Pinewolytics.Models.Entities;
+
+namespace Pinewolytics.Models.DTOs.ICNS;
 
 public class ICNSNameDTO : ICNSName, IFlipsideObject<ICNSNameDTO>
 {

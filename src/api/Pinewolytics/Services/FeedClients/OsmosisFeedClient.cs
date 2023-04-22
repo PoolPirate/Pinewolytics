@@ -19,7 +19,7 @@ public class OsmosisFeedClient : BaseFeedClient
 
         while (true)
         {
-            OsmosisProtoRevTransactionDTO[] newTxs = null!;
+            (OsmosisProtoRevTransactionDTO Tx, ulong Height, int Index)[] newTxs = null!;
 
             try
             {
@@ -55,7 +55,7 @@ public class OsmosisFeedClient : BaseFeedClient
 
             foreach (var tx in newTxs)
             {
-                yield return tx;
+                yield return tx.Tx;
             }
 
             await Task.Delay(10000);

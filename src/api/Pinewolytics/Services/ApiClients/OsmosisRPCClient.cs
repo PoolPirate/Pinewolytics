@@ -24,7 +24,7 @@ public class OsmosisRPCClient : Singleton
     record TxResult(List<TxEvent> Events);
     record TxEvent(string Type, TxEventAttribute[] Attributes);
     record TxEventAttribute(string Key, string Value);
-    public async Task<OsmosisProtoRevTransactionDTO[]> GetProtoRevTXsAsync(ulong minHeight, int limit, CancellationToken cancellationToken = default)
+    public async Task<(OsmosisProtoRevTransactionDTO Tx, ulong Height, int Index)[]> GetProtoRevTXsAsync(ulong minHeight, int limit, CancellationToken cancellationToken = default)
     {
         var route = new Uri(ApiEndpoint, $"tx_search" +
             $"?query=\"tx.height>%3D{minHeight}%20AND%20coinbase.minter%3D%27{ProtoRevModuleAddress}%27\"" +
@@ -87,14 +87,18 @@ public class OsmosisRPCClient : Singleton
             })
             .ToArray();
 
-            return new OsmosisProtoRevTransactionDTO()
+            var txFrom = Encoding.UTF8.GetString(Convert.FromBase64String(tx.TxResult.Events
+                .Where(x => x.Type == "message")
+                .SelectMany(x => x.Attributes.Where(y => y.Key == Convert.ToBase64String(Encoding.UTF8.GetBytes("sender"))))
+                .First().Value));
+
+            return (new OsmosisProtoRevTransactionDTO()
             {
                 Hash = tx.Hash,
-                Height = tx.Height,
-                Index = tx.Index,
+                TxFrom = txFrom,
                 Timestamp = await GetBlockTimestampAsync(tx.Height, cancellationToken),
                 Swaps = swaps
-            };
+            }, tx.Height, tx.Index);
         }));
     }
 

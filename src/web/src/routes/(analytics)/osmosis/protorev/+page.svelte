@@ -149,21 +149,21 @@
 								{toTimespanString($currentTime.getTime() - new Date(tx.timestamp).getTime())} ago
 							</td>
 							<td class="text-center p-2 border-b-2 border-black">
-								{#each tx.profits as profit}
+								{#each tx.swaps as swap}
 									<p>
-										{profit.amount /
+										{swap.profit.amount /
 											Math.pow(
 												10,
-												$allTokenInfos?.find((x) => x.denom == profit.denom)?.exponent ?? 0
+												$allTokenInfos?.find((x) => x.denom == swap.profit.denom)?.exponent ?? 0
 											)}
-										- {$allTokenInfos?.find((x) => x.denom == profit.denom)?.symbol}
+										- {$allTokenInfos?.find((x) => x.denom == swap.profit.denom)?.symbol}
 										({Math.round(
 											1000 *
-												((profit.amount *
-													($allTokenInfos?.find((x) => x.denom == profit.denom)?.price ?? 0)) /
+												((swap.profit.amount *
+													($allTokenInfos?.find((x) => x.denom == swap.profit.denom)?.price ?? 0)) /
 													Math.pow(
 														10,
-														$allTokenInfos?.find((x) => x.denom == profit.denom)?.exponent ?? 0
+														$allTokenInfos?.find((x) => x.denom == swap.profit.denom)?.exponent ?? 0
 													))
 										) / 1000} $)
 									</p>
