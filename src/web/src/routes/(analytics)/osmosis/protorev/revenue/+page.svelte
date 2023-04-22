@@ -52,22 +52,36 @@
 		() => []
 	);
 
-	$: makeProtoRevRevenueChart($protoRevRevenueHistoryQuery, $isWeeklyModeStore);
+	$: makeProtoRevRevenueChart(
+		$protoRevRevenueHistoryQuery,
+		$protoRevRevenuePerAssetQuery,
+		$isWeeklyModeStore
+	);
 	function makeProtoRevRevenueChart(
 		revenueHistory: OsmosisProtoRevRevenueDTO[] | null,
+		revenuePerAsset: OsomsisProtoRevAssetRevenueDTO[] | null,
 		isWeeklyMode: boolean
 	) {
-		if (revenueHistory == null) {
+		if (revenueHistory == null || revenuePerAsset == null) {
 			return;
 		}
 
-		const symbols = revenueHistory.map((x) => x.symbol).filter(onlyUnique);
+		const currencies = revenueHistory
+			.map((x) => x.symbol)
+			.filter(onlyUnique)
+			.map((x) => {
+				return {
+					symbol: x,
+					currency: revenueHistory.find((y) => y.symbol == x)!.currency
+				};
+			});
 
-		const incomeSeries = symbols.map((symbol) => {
+		const incomeSeries = currencies.map((currency) => {
 			return {
-				symbol: symbol,
+				symbol: currency.symbol,
+				currency: currency.currency,
 				data: revenueHistory
-					.filter((x) => x.symbol == symbol)
+					.filter((x) => x.symbol == currency.symbol)
 					.map<TimeSeriesEntry>((x) => {
 						return {
 							timestamp: new Date(x.date),
@@ -79,22 +93,47 @@
 		});
 
 		if (isWeeklyMode) {
-			symbols.forEach((symbol) => {
-				const series = incomeSeries.find((x) => x.symbol == symbol)!;
+			currencies.forEach((currency) => {
+				const series = incomeSeries.find((x) => x.symbol == currency.symbol)!;
 				series.data = DaySeriesToWeekSeriesBySum(series.data);
 			});
 		}
 
-		protoRevRevenueChart.set(
-			incomeSeries.map((x) => {
-				return {
-					type: 'bar',
-					stack: 'income',
-					name: x.symbol,
-					data: x.data.map((x) => [x.timestamp, Math.round(100 * x.value) / 100])
-				};
-			})
-		);
+		const incomeCharts = incomeSeries.map<SeriesOption>((x) => {
+			return {
+				type: 'bar',
+				stack: 'income',
+				yAxisId: '1',
+				name: x.symbol,
+				data: x.data.map((x) => [x.timestamp, Math.round(100 * x.value) / 100])
+			};
+		});
+		const totalProfitCharts = incomeSeries.map<SeriesOption>((x) => {
+			const assetProfit = revenuePerAsset.find((y) => y.currency == x.currency)!;
+			return {
+				type: 'line',
+				areaStyle: {},
+				yAxisId: '2',
+				stack: 'total',
+				name: x.symbol,
+				z: 0,
+				data: x.data
+					.map((x, i, arr) => {
+						return {
+							cumulativeUSD: arr
+								.filter((y) => y.timestamp > x.timestamp)
+								.reduce((total, y) => total + y.value, 0),
+							...x
+						};
+					})
+					.map((x) => [
+						x.timestamp,
+						Math.round(100 * (assetProfit.totalUSD - x.cumulativeUSD)) / 100
+					])
+			};
+		});
+
+		protoRevRevenueChart.set(totalProfitCharts.concat(incomeCharts));
 	}
 
 	$: makeProtoRevRevenuePerAssetChart($protoRevRevenuePerAssetQuery, $allTokenInfos);
@@ -105,6 +144,8 @@
 		if (profits == null || allTokenInfos == null) {
 			return;
 		}
+
+		console.log(profits);
 
 		protoRevRevenuePerAssetChart.set({
 			type: 'pie',
@@ -124,6 +165,7 @@
 			},
 			data: profits.map((x) => {
 				const tokenInfo = allTokenInfos?.find((y) => y.denom == x.currency)!;
+				console.log(tokenInfo);
 				return {
 					name: tokenInfo.symbol,
 					value: x.totalUSD
@@ -134,13 +176,22 @@
 	}
 </script>
 
-<SingleValueChart
-	series={$protoRevRevenuePerAssetChart}
-	showLegend={true}
-	queryName={QueryName.OsmosisProtoRevRevenuePerAsset}
-/>
+<div class="flex flex-col h-full w-full transparent-background p-2 rounded-lg">
+	<div class="grid grid-cols-2 h-full">
+		<div class="flex flex-col justify-center items-center">
+			<h2 class="font-bold text-lg">Note:</h2>
+			<p>All values in $USD at <b>at time of the trasaction!</b></p>
+		</div>
+		<SingleValueChart
+			series={$protoRevRevenuePerAssetChart}
+			showLegend={true}
+			queryName={QueryName.OsmosisProtoRevRevenuePerAsset}
+		/>
+	</div>
 
-<TimeSeriesChart
-	series={$protoRevRevenueChart}
-	queryName={QueryName.OsmosisProtoRevRevenueHistory}
-/>
+	<TimeSeriesChart
+		series={$protoRevRevenueChart}
+		queryName={QueryName.OsmosisProtoRevRevenueHistory}
+		yAxis={[{ id: 1 }, { id: 2 }]}
+	/>
+</div>

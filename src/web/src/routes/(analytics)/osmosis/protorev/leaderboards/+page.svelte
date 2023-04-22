@@ -219,7 +219,7 @@
 	<hr class="border-2 border-black" />
 
 	<div class="flex flex-col transparent-background p-3 rounded-md gap-2">
-		<h2 class="font-bold text-xl">Addresses generated the most revenue</h2>
+		<h2 class="font-bold text-xl">Addresses generating the most revenue</h2>
 		<p class:hidden={$selectedAddresses != null}>Loading...</p>
 		<table class:hidden={$selectedTransactions == null}>
 			<thead>
