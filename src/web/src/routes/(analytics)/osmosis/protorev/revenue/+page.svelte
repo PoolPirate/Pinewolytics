@@ -2,13 +2,11 @@
 	import SingleValueChart from '$lib/charts/SingleValueChart.svelte';
 	import TimeSeriesChart from '$lib/charts/TimeSeriesChart.svelte';
 	import type {
-		OsmosisDenominatedAmountDTO,
 		OsmosisProtoRevRevenueDTO,
 		OsmosisTokenInfoDTO,
 		OsomsisProtoRevAssetRevenueDTO
 	} from '$lib/models/DTOs/OsmosisDTOs';
 	import { QueryName } from '$lib/service/query-definitions';
-	import { RealtimeFeedName } from '$lib/service/realtime-feed-definitions';
 	import { RealtimeValueName } from '$lib/service/realtime-value-definitions';
 	import {
 		SocketSubscriptionBuilder,
@@ -28,6 +26,13 @@
 
 	const subscriptionBuilder = new SocketSubscriptionBuilder();
 	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
+
+	onMount(async () => {
+		await subscriptionBuilder.start();
+	});
+	onDestroy(() => {
+		subscriptionBuilder.dispose();
+	});
 
 	const protoRevRevenueChart = writable<SeriesOption[]>([]);
 	const protoRevRevenueHistoryQuery = createQueryListener(
@@ -127,13 +132,6 @@
 			top: '20px'
 		});
 	}
-
-	onMount(async () => {
-		await subscriptionBuilder.start();
-	});
-	onDestroy(() => {
-		subscriptionBuilder.dispose();
-	});
 </script>
 
 <SingleValueChart

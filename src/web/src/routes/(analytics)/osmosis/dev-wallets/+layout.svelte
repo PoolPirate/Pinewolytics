@@ -1,6 +1,6 @@
 <script lang="ts">
 	import AnalyticsLayout from '../../AnalyticsLayout.svelte';
-	import osmologo from '$lib/static/logo/osmosis.png';
+	import osmologo from '$lib/static/logo/osmo.svg';
 	import NavLink from '$lib/links/NavLink.svelte';
 	import NavLinkGroup from '$lib/links/NavLinkGroup.svelte';
 	import LinkBumper from '$lib/links/LinkBumper.svelte';

@@ -1,6 +1,11 @@
 <script lang="ts">
 	import { QueryName } from '$lib/service/query-definitions';
-	import { SocketSubscriptionBuilder, createQueryListener } from '$lib/service/subscriptions';
+	import { RealtimeValueName } from '$lib/service/realtime-value-definitions';
+	import {
+		SocketSubscriptionBuilder,
+		createQueryListener,
+		createRealtimeValueListener
+	} from '$lib/service/subscriptions';
 	import { isWeeklyModeStoreName } from '$lib/utils/Utils';
 	import { getContext, hasContext, onDestroy, onMount } from 'svelte';
 	import { writable, type Readable } from 'svelte/store';
@@ -18,6 +23,12 @@
 	const OsmosisProtoRevBiggestProfitTransactions = createQueryListener(
 		subscriptionBuilder,
 		QueryName.OsmosisProtoRevBiggestProfitTransactions
+	);
+
+	const allTokenInfos = createRealtimeValueListener(
+		subscriptionBuilder,
+		RealtimeValueName.OsmosisAllTokenInfos,
+		() => []
 	);
 
 	const protoRevBiggestTx = writable<any>();
@@ -40,6 +51,7 @@
 						<td>
 							<a
 								class="text-blue-400"
+								target="_blank"
 								rel="noreferrer external"
 								href="https://www.mintscan.io/osmosis/txs/{tx.hash}"
 								>{tx.hash.substring(0, 6)}...{tx.hash.substring(

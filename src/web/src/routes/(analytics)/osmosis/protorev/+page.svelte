@@ -1,5 +1,5 @@
 <script lang="ts">
-	import RefreshAnimation, { RefreshAnimationType } from '$lib/components/RefreshAnimation.svelte';
+	import TokenList from '$lib/components/osmosis/TokenList.svelte';
 	import { RealtimeFeedName } from '$lib/service/realtime-feed-definitions';
 	import { RealtimeValueName } from '$lib/service/realtime-value-definitions';
 	import {
@@ -59,8 +59,6 @@
 	const currentTime = writable<Date>(new Date());
 	const protoRevTotalRevenueUSD = writable<number | null>(null);
 
-	const refreshAnimations: RefreshAnimation[] = [];
-
 	$: if ($protoRevTotalRevenue != null && $allTokenInfos != null) {
 		protoRevTotalRevenueUSD.set(
 			$protoRevTotalRevenue.reduce((prev, x) => {
@@ -102,36 +100,10 @@
 	<div class="transparent-background p-3 rounded-md">
 		<h2 class="text-xl font-bold">Current Module Balance</h2>
 		<hr class="m-2 border-black border-t-2" />
-		{#if $protoRevModuleBalance != null && $allTokenInfos != null}
-			<ul class="flex flex-row justify-around">
-				{#each $protoRevModuleBalance as balance, i}
-					<li class="flex flex-row items-center gap-2 text-lg font-bold">
-						<p>
-							{Math.round(
-								balance.amount /
-									Math.pow(10, $allTokenInfos.find((x) => x.denom == balance.denom)?.exponent ?? 1)
-							)}
-						</p>
-						<img
-							class="h-11"
-							src="https://app.osmosis.zone/tokens/{$allTokenInfos
-								.find((x) => x.denom == balance.denom)
-								?.symbol?.toLowerCase()}.svg"
-							alt="token_symbol"
-						/>
-						<RefreshAnimation
-							type={RefreshAnimationType.ArrowUp}
-							bind:this={refreshAnimations[i]}
-						/>
-					</li>
-				{/each}
-			</ul>
-		{:else}
-			<p>Loading...</p>
-		{/if}
+		<TokenList balance={$protoRevModuleBalance} allTokenInfos={$allTokenInfos} />
 	</div>
 
-	<div class="h-full flex flex-col w-full transparent-background p-3 rounded-md">
+	<div class="h-full flex flex-col w-full transparent-background p-3 rounded-md gap-2">
 		<h2 class="font-bold text-xl">Live Trade Feed</h2>
 		<div class="overflow-y-auto px-4">
 			<table class="w-full">
