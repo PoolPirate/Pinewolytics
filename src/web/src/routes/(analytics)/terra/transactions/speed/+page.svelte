@@ -34,8 +34,11 @@
 	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
 	$: makeNewTxCountSeries($txMetricQuery, $isWeeklyModeStore);
-	function makeNewTxCountSeries(values: TerraTransactionMetricsDTO[], isWeeklyMode: boolean) {
-		if (values.length == 0) {
+	function makeNewTxCountSeries(
+		values: TerraTransactionMetricsDTO[] | null,
+		isWeeklyMode: boolean
+	) {
+		if (values == null) {
 			return;
 		}
 
@@ -63,8 +66,8 @@
 	}
 
 	$: makeTPSSeries($txMetricQuery);
-	function makeTPSSeries(values: TerraTransactionMetricsDTO[]) {
-		if (values.length == 0) {
+	function makeTPSSeries(values: TerraTransactionMetricsDTO[] | null) {
+		if (values == null) {
 			return;
 		}
 
@@ -138,8 +141,8 @@
 	}
 
 	$: makeBPSSeries($txMetricQuery);
-	function makeBPSSeries(values: TerraTransactionMetricsDTO[]) {
-		if (values.length == 0) {
+	function makeBPSSeries(values: TerraTransactionMetricsDTO[] | null) {
+		if (values == null) {
 			return;
 		}
 

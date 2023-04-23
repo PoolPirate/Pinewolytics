@@ -36,8 +36,11 @@
 	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
 	$: makeNewTxCountChart($txMetricQuery, $isWeeklyModeStore);
-	function makeNewTxCountChart(values: OptimismTransactionMetricsDTO[], isWeeklyMode: boolean) {
-		if (values.length == 0) {
+	function makeNewTxCountChart(
+		values: OptimismTransactionMetricsDTO[] | null,
+		isWeeklyMode: boolean
+	) {
+		if (values == null) {
 			return;
 		}
 
@@ -80,8 +83,8 @@
 	}
 
 	$: makeTPSChart($txMetricQuery);
-	function makeTPSChart(values: OptimismTransactionMetricsDTO[]) {
-		if (values.length == 0) {
+	function makeTPSChart(values: OptimismTransactionMetricsDTO[] | null) {
+		if (values == null) {
 			return;
 		}
 
@@ -155,8 +158,8 @@
 	}
 
 	$: makeAverageBlockTimeChart($txMetricQuery);
-	function makeAverageBlockTimeChart(values: OptimismTransactionMetricsDTO[]) {
-		if (values.length == 0) {
+	function makeAverageBlockTimeChart(values: OptimismTransactionMetricsDTO[] | null) {
+		if (values == null) {
 			return;
 		}
 

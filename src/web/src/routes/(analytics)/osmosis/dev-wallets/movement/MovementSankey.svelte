@@ -28,8 +28,6 @@
 </script>
 
 <script lang="ts">
-	import { Chart } from 'svelte-echarts';
-	import type { EChartsOptions } from 'svelte-echarts';
 	import type { SankeySeriesOption } from 'echarts';
 
 	export let levels: SankeyLevelData[];
@@ -167,17 +165,7 @@
 			curveness: 0.5
 		}
 	};
-
-	const options: EChartsOptions = {
-		tooltip: {
-			trigger: 'item',
-			triggerOn: 'mousemove'
-		},
-		series: series
-	};
 </script>
-
-<Chart {options} />
 
 <style>
 </style>

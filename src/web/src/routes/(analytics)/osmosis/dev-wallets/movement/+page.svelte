@@ -118,7 +118,7 @@
 	};
 
 	$: makeUsageDistributionChart(
-		$osmosisDevWalletsQuery.map((x) => x.value),
+		$osmosisDevWalletsQuery?.map((x) => x.value) ?? null,
 		$osmosisDevLPJoinsQuery,
 		$osmosisDevLPExitsQuery,
 		$osmosisDevIBCTransfersQuery,
@@ -127,33 +127,34 @@
 		$osmosisDevDelegatesQuery,
 		$osmosisDevUndelegatesQuery,
 		$epochInfo,
-		$osmosisDevL0WalletsQuery.map((x) => x.value),
+		$osmosisDevL0WalletsQuery?.map((x) => x.value) ?? null,
 		$osmosisDevL0TransfersQuery
 	);
 	function makeUsageDistributionChart(
-		wallets: string[],
-		lpJoins: OsmosisLPJoinDTO[],
-		lpExits: OsmosisLPExitDTO[],
-		ibcTransfers: OsmosisIBCTransferDTO[],
-		transfers: OsmosisTransferDTO[],
-		swaps: OsmosisSwapDTO[],
-		delegates: OsmosisDelegateDTO[],
-		undelegates: OsmosisUndelegateDTO[],
+		wallets: string[] | null,
+		lpJoins: OsmosisLPJoinDTO[] | null,
+		lpExits: OsmosisLPExitDTO[] | null,
+		ibcTransfers: OsmosisIBCTransferDTO[] | null,
+		transfers: OsmosisTransferDTO[] | null,
+		swaps: OsmosisSwapDTO[] | null,
+		delegates: OsmosisDelegateDTO[] | null,
+		undelegates: OsmosisUndelegateDTO[] | null,
 		epochInfo: OsmosisEpochInfoDTO | null,
-		l0wallets: string[],
-		l0Transfers: OsmosisTransferDTO[]
+		l0wallets: string[] | null,
+		l0Transfers: OsmosisTransferDTO[] | null
 	) {
 		if (
-			wallets.length == 0 ||
-			lpJoins.length == 0 ||
-			lpExits.length == 0 ||
-			ibcTransfers.length == 0 ||
-			transfers.length == 0 ||
-			swaps.length == 0 ||
-			delegates.length == 0 ||
-			undelegates.length == 0 ||
+			wallets == null ||
+			lpJoins == null ||
+			lpExits == null ||
+			ibcTransfers == null ||
+			transfers == null ||
+			swaps == null ||
+			delegates == null ||
+			undelegates == null ||
 			epochInfo == null ||
-			l0Transfers.length == 0
+			l0wallets == null ||
+			l0Transfers == null
 		) {
 			return;
 		}

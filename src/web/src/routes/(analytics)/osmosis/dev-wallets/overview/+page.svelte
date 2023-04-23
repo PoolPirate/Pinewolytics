@@ -137,10 +137,10 @@
 	$: makeDeveloperMovedShareChart($epochInfo, $osmosisDevL0Wallets, $osmosisDevL0Transfers);
 	function makeDeveloperMovedShareChart(
 		epochInfo: OsmosisEpochInfoDTO | null,
-		walletsRaw: StringPrimitiveObject[],
-		transfers: OsmosisTransferDTO[]
+		walletsRaw: StringPrimitiveObject[] | null,
+		transfers: OsmosisTransferDTO[] | null
 	) {
-		if (epochInfo == null || walletsRaw.length == 0 || transfers.length == 0) {
+		if (epochInfo == null || walletsRaw == null || transfers == null) {
 			return;
 		}
 		const wallets = walletsRaw.map((x) => x.value);

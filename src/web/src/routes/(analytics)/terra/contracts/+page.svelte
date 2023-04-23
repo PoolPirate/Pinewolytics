@@ -33,8 +33,8 @@
 	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
 	$: makeContractsChart($contractMetricsHistoryQuery, $isWeeklyModeStore);
-	function makeContractsChart(values: TerraContractMetricsDTO[], isWeeklyMode: boolean) {
-		if (values.length == 0) {
+	function makeContractsChart(values: TerraContractMetricsDTO[] | null, isWeeklyMode: boolean) {
+		if (values == null) {
 			return;
 		}
 
@@ -79,8 +79,8 @@
 	}
 
 	$: makeDevelopersChart($contractMetricsHistoryQuery, $isWeeklyModeStore);
-	function makeDevelopersChart(values: TerraContractMetricsDTO[], isWeeklyMode: boolean) {
-		if (values.length == 0) {
+	function makeDevelopersChart(values: TerraContractMetricsDTO[] | null, isWeeklyMode: boolean) {
+		if (values == null) {
 			return;
 		}
 

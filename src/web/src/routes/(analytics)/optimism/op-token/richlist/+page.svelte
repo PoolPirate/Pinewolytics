@@ -26,8 +26,8 @@
 	var searchAddress: string = '';
 
 	$: makeRichlistChart($richlistQuery, searchAddress);
-	function makeRichlistChart(values: OptimismAddressBalanceDTO[], searchAddress: string) {
-		if (values.length == 0) {
+	function makeRichlistChart(values: OptimismAddressBalanceDTO[] | null, searchAddress: string) {
+		if (values == null) {
 			return;
 		}
 

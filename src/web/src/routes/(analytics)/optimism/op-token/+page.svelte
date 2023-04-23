@@ -45,8 +45,8 @@
 	const priceHistoryChart = writable<SeriesOption[]>([]);
 
 	$: makePriceHistoryChart($priceHistoryQuery, $isWeeklyModeStore);
-	function makePriceHistoryChart(values: TimeSeriesEntryDTO[], isWeeklyMode: boolean) {
-		if (values.length == 0) {
+	function makePriceHistoryChart(values: TimeSeriesEntryDTO[] | null, isWeeklyMode: boolean) {
+		if (values == null) {
 			return;
 		}
 

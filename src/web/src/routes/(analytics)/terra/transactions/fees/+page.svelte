@@ -39,8 +39,8 @@
 	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
 	$: makeMonthlyTotalFeeChart($totalFeeHistoryQuery);
-	function makeMonthlyTotalFeeChart(values: TerraTotalFeeDTO[]) {
-		if (values.length == 0) {
+	function makeMonthlyTotalFeeChart(values: TerraTotalFeeDTO[] | null) {
+		if (values == null) {
 			return;
 		}
 
@@ -166,8 +166,8 @@
 	}
 
 	$: makeGasFeeChart($transactionMetricsHistoryQuery, $isWeeklyModeStore);
-	function makeGasFeeChart(values: TerraTransactionMetricsDTO[], isWeeklyMode: boolean) {
-		if (values.length == 0) {
+	function makeGasFeeChart(values: TerraTransactionMetricsDTO[] | null, isWeeklyMode: boolean) {
+		if (values == null) {
 			return;
 		}
 
@@ -291,7 +291,7 @@
 				<h3 class="font-bold text-xl">Total Amount Of Fees Ever Paid</h3>
 				<p>
 					{$totalFeeHistoryQuery
-						.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0]
+						?.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())[0]
 						?.feesSinceInception?.toLocaleString()} $LUNA
 				</p>
 			</div>

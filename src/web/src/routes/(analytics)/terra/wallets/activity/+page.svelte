@@ -31,8 +31,8 @@
 	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
 	$: makeActiveWalletsChart($walletMetrics, $isWeeklyModeStore);
-	function makeActiveWalletsChart(values: TerraWalletMetricsDTO[], isWeeklyMode: boolean) {
-		if (values.length == 0) {
+	function makeActiveWalletsChart(values: TerraWalletMetricsDTO[] | null, isWeeklyMode: boolean) {
+		if (values == null) {
 			return;
 		}
 
@@ -83,8 +83,8 @@
 	}
 
 	$: makeNewWalletsChart($walletMetrics, $isWeeklyModeStore);
-	function makeNewWalletsChart(values: TerraWalletMetricsDTO[], isWeeklyMode: boolean) {
-		if (values.length == 0) {
+	function makeNewWalletsChart(values: TerraWalletMetricsDTO[] | null, isWeeklyMode: boolean) {
+		if (values == null) {
 			return;
 		}
 
@@ -150,8 +150,8 @@
 	}
 
 	$: makeTotalSeries($walletMetrics, $isWeeklyModeStore);
-	function makeTotalSeries(values: TerraWalletMetricsDTO[], isWeeklyMode: boolean) {
-		if (values.length == 0) {
+	function makeTotalSeries(values: TerraWalletMetricsDTO[] | null, isWeeklyMode: boolean) {
+		if (values == null) {
 			return;
 		}
 

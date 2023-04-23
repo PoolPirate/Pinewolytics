@@ -43,8 +43,11 @@
 	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
 	$: makeCalledContractsChart($contractActivityQuery, $isWeeklyModeStore);
-	function makeCalledContractsChart(values: OptimismContractActivityDTO[], isWeeklyMode: boolean) {
-		if (values.length == 0) {
+	function makeCalledContractsChart(
+		values: OptimismContractActivityDTO[] | null,
+		isWeeklyMode: boolean
+	) {
+		if (values == null) {
 			return;
 		}
 
@@ -106,8 +109,8 @@
 	}
 
 	$: makeDAppTxCountLeaderboardChart($dappLeaderboardQuery);
-	function makeDAppTxCountLeaderboardChart(values: OptimismDAppUsageDTO[]) {
-		if (values.length == 0) {
+	function makeDAppTxCountLeaderboardChart(values: OptimismDAppUsageDTO[] | null) {
+		if (values == null) {
 			return;
 		}
 
@@ -137,8 +140,8 @@
 	}
 
 	$: makeDAppAddressCountLeaderboardChart($dappLeaderboardQuery);
-	function makeDAppAddressCountLeaderboardChart(values: OptimismDAppUsageDTO[]) {
-		if (values.length == 0) {
+	function makeDAppAddressCountLeaderboardChart(values: OptimismDAppUsageDTO[] | null) {
+		if (values == null) {
 			return;
 		}
 

@@ -35,8 +35,11 @@
 	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
 	$: makeActiveWalletsChart($walletMetrics, $isWeeklyModeStore);
-	function makeActiveWalletsChart(values: OptimismWalletMetricsDTO[], isWeeklyMode: boolean) {
-		if (values.length == 0) {
+	function makeActiveWalletsChart(
+		values: OptimismWalletMetricsDTO[] | null,
+		isWeeklyMode: boolean
+	) {
+		if (values == null) {
 			return;
 		}
 
@@ -77,8 +80,8 @@
 	}
 
 	$: makeNewWalletsChart($walletMetrics, $isWeeklyModeStore);
-	function makeNewWalletsChart(values: OptimismWalletMetricsDTO[], isWeeklyMode: boolean) {
-		if (values.length == 0) {
+	function makeNewWalletsChart(values: OptimismWalletMetricsDTO[] | null, isWeeklyMode: boolean) {
+		if (values == null) {
 			return;
 		}
 
@@ -134,8 +137,8 @@
 	}
 
 	$: makeTotalSeries($walletMetrics, $isWeeklyModeStore);
-	function makeTotalSeries(values: OptimismWalletMetricsDTO[], isWeeklyMode: boolean) {
-		if (values.length == 0) {
+	function makeTotalSeries(values: OptimismWalletMetricsDTO[] | null, isWeeklyMode: boolean) {
+		if (values == null) {
 			return;
 		}
 

@@ -77,13 +77,13 @@
 		$totalSuperfluidStaked
 	);
 	function makeShareOfTotalDelegationsChart(
-		totalDevDelegations: OsmosisTotalDelegationsDTO[],
-		totalDelegations: TimeSeriesEntryDTO[],
+		totalDevDelegations: OsmosisTotalDelegationsDTO[] | null,
+		totalDelegations: TimeSeriesEntryDTO[] | null,
 		currentTotalSuperfluidStaked: number | null
 	) {
 		if (
-			totalDevDelegations.length == 0 ||
-			totalDelegations.length == 0 ||
+			totalDevDelegations == null ||
+			totalDelegations == null ||
 			currentTotalSuperfluidStaked == null
 		) {
 			return;
@@ -134,14 +134,14 @@
 		$epochInfo
 	);
 	function makeStakingAPRWithAndWithoutDevsChart(
-		totalDevDelegations: OsmosisTotalDelegationsDTO[],
-		totalDelegations: TimeSeriesEntryDTO[],
+		totalDevDelegations: OsmosisTotalDelegationsDTO[] | null,
+		totalDelegations: TimeSeriesEntryDTO[] | null,
 		currentTotalSuperfluidStaked: number | null,
 		epochInfo: OsmosisEpochInfoDTO | null
 	) {
 		if (
-			totalDevDelegations.length == 0 ||
-			totalDelegations.length == 0 ||
+			totalDevDelegations == null ||
+			totalDelegations == null ||
 			currentTotalSuperfluidStaked == null ||
 			epochInfo == null
 		) {
@@ -243,10 +243,10 @@
 
 	$: makeDevStakingRewardsChart($osmosisDevStakingRewardsQuery, $isWeeklyModeStore);
 	function makeDevStakingRewardsChart(
-		stakingRewards: OsmosisStakingRewardDTO[],
+		stakingRewards: OsmosisStakingRewardDTO[] | null,
 		isWeeklyMode: boolean
 	) {
-		if (stakingRewards.length == 0) {
+		if (stakingRewards == null) {
 			return;
 		}
 
@@ -294,10 +294,10 @@
 
 	$: makeDevDelegationsChart($osmosisDevTotalDelegationsHistoryQuery, $isWeeklyModeStore);
 	function makeDevDelegationsChart(
-		totalDevDelegations: OsmosisTotalDelegationsDTO[],
+		totalDevDelegations: OsmosisTotalDelegationsDTO[] | null,
 		isWeeklyMode: boolean
 	) {
-		if (totalDevDelegations.length == 0) {
+		if (totalDevDelegations == null) {
 			return;
 		}
 

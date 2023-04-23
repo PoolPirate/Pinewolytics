@@ -22,8 +22,8 @@
 	var searchAddress: string = '';
 
 	$: makeRichlistChart($richlistQuery, searchAddress);
-	function makeRichlistChart(values: TerraAddressBalanceDTO[], searchAddress: string) {
-		if (values.length == 0) {
+	function makeRichlistChart(values: TerraAddressBalanceDTO[] | null, searchAddress: string) {
+		if (values == null) {
 			return;
 		}
 
@@ -40,9 +40,9 @@
 					initLayout: 'circular'
 				},
 
-				data: values.map((x) => {
+				data: values.map((x, i, arr) => {
 					return {
-						value: [values.indexOf(x) + 1, x.balance],
+						value: [arr.indexOf(x) + 1, x.balance],
 						name: x.address,
 						symbolSize: Math.log10(x.balance) ** 2.5,
 						itemStyle: {
@@ -50,7 +50,7 @@
 								x.address?.toLowerCase().startsWith(searchAddress?.toLowerCase()) &&
 								searchAddress?.length > 5
 									? 'red'
-									: 'rgb(' + (150 - values.indexOf(x)) + ',0,' + (150 - values.indexOf(x)) + ')'
+									: 'rgb(' + (150 - arr.indexOf(x)) + ',0,' + (150 - arr.indexOf(x)) + ')'
 						}
 					};
 				}),

@@ -34,8 +34,11 @@
 	const opHolderBalanceDistributionChart = writable<SeriesOption[]>([]);
 
 	$: makeOPHolderCountChart($opHolderMetricsHistoryQuery, $isWeeklyModeStore);
-	function makeOPHolderCountChart(values: OptimismOPHolderMetricsDTO[], isWeeklyMode: boolean) {
-		if (values.length == 0) {
+	function makeOPHolderCountChart(
+		values: OptimismOPHolderMetricsDTO[] | null,
+		isWeeklyMode: boolean
+	) {
+		if (values == null) {
 			return;
 		}
 
@@ -81,10 +84,10 @@
 
 	$: makeOPHolderBalanceDistributionChart($opHolderMetricsHistoryQuery, $isWeeklyModeStore);
 	function makeOPHolderBalanceDistributionChart(
-		values: OptimismOPHolderMetricsDTO[],
+		values: OptimismOPHolderMetricsDTO[] | null,
 		isWeeklyMode: boolean
 	) {
-		if (values.length == 0) {
+		if (values == null) {
 			return;
 		}
 		const sortedValues = values.sort(

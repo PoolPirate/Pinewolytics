@@ -44,8 +44,11 @@
 	const isWeeklyModeStore = getContext<Readable<boolean>>(isWeeklyModeStoreName);
 
 	$: makeL1SubmissionsChart($l1SubmissionsQuery, $isWeeklyModeStore);
-	function makeL1SubmissionsChart(values: OptimismL1SubmissionMetricsDTO[], isWeeklyMode: boolean) {
-		if (values.length == 0) {
+	function makeL1SubmissionsChart(
+		values: OptimismL1SubmissionMetricsDTO[] | null,
+		isWeeklyMode: boolean
+	) {
+		if (values == null) {
 			return;
 		}
 
@@ -90,8 +93,8 @@
 	}
 
 	$: makeMonthlyTotalFeeChart($gasMetricsHistoryQuery);
-	function makeMonthlyTotalFeeChart(values: OptimismGasMetricsDTO[]) {
-		if (values.length == 0) {
+	function makeMonthlyTotalFeeChart(values: OptimismGasMetricsDTO[] | null) {
+		if (values == null) {
 			return;
 		}
 
@@ -222,8 +225,8 @@
 	}
 
 	$: makeTotalL1vsL2FeeChart($gasMetricsHistoryQuery);
-	function makeTotalL1vsL2FeeChart(values: OptimismGasMetricsDTO[]) {
-		if (values.length == 0) {
+	function makeTotalL1vsL2FeeChart(values: OptimismGasMetricsDTO[] | null) {
+		if (values == null) {
 			return;
 		}
 
@@ -267,8 +270,8 @@
 	}
 
 	$: makeFeeHistoryChart($gasMetricsHistoryQuery, $isWeeklyModeStore);
-	function makeFeeHistoryChart(values: OptimismGasMetricsDTO[], isWeeklyMode: boolean) {
-		if (values.length == 0) {
+	function makeFeeHistoryChart(values: OptimismGasMetricsDTO[] | null, isWeeklyMode: boolean) {
+		if (values == null) {
 			return;
 		}
 
