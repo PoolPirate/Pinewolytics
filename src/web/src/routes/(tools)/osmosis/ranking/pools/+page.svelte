@@ -1,25 +1,37 @@
 <script lang="ts">
 	import type {
 		OsmosisPoolInfoDTO,
+		OsmosisTokenInfoDTO,
 		OsmosisWalletPoolRankingDTO,
 		OsmosisWalletRankingDTO
 	} from '$lib/models/DTOs/OsmosisDTOs';
-	import { getOsmosisPoolInfosAsync, getOsmosisWalletRanking } from '$lib/service/queries';
+	import {
+		getOsmosisPoolInfosAsync,
+		getOsmosisWalletRanking,
+		getQueryValue,
+		getRealtimeValueValue
+	} from '$lib/service/queries';
 	import SinglePoolRanking from './SinglePoolRanking.svelte';
 	import externalLinkLogo from '$lib/static/logo/external-link.svg';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { onDestroy, onMount } from 'svelte';
 	import ICNSName from '../ICNSName.svelte';
 	import Loading from '$lib/static/loading.svg';
 	import Warning from '$lib/static/warning.svg';
+	import {
+		SocketSubscriptionBuilder,
+		createRealtimeValueListener
+	} from '$lib/service/subscriptions';
+	import { RealtimeValueName } from '$lib/service/realtime-value-definitions';
 
 	var loadingPromise: Promise<{
 		walletRanking: OsmosisWalletRankingDTO;
 		poolRankings: OsmosisWalletPoolRankingDTO[];
 		poolInfos: OsmosisPoolInfoDTO[];
-	}> = Promise.resolve({ walletRanking: null!, poolInfos: [], poolRankings: [] });
+		tokenInfos: OsmosisTokenInfoDTO[];
+	}> = Promise.resolve({ walletRanking: null!, poolInfos: [], poolRankings: [], tokenInfos: [] });
 
-	onMount(() => {
+	onMount(async () => {
 		const urlParams = new URLSearchParams(window.location.search);
 		const addr = urlParams.get('address');
 		if (addr == null) {
@@ -44,10 +56,14 @@
 			walletRanking.poolRankings.map((x) => x.poolId)
 		);
 
+		const tokenInfosResult = await getRealtimeValueValue(RealtimeValueName.OsmosisAllTokenInfos);
+		const tokenInfos = tokenInfosResult.value as OsmosisTokenInfoDTO[];
+
 		return {
 			walletRanking: walletRanking,
 			poolRankings: walletRanking.poolRankings,
-			poolInfos: poolInfos
+			poolInfos: poolInfos,
+			tokenInfos: tokenInfos
 		};
 	}
 
@@ -67,7 +83,7 @@
 <div class="px-4 pt-4">
 	{#await loadingPromise}
 		<img class="w-64 p-8 invert" src={Loading} alt="Loading" />
-	{:then { walletRanking, poolRankings, poolInfos }}
+	{:then { walletRanking, poolRankings, poolInfos, tokenInfos }}
 		<div
 			class="flex flex-row items-center gap-4 border border-gray-400 p-3 rounded-md bg-gray-200 mb-2"
 		>
@@ -94,6 +110,7 @@
 					rank={poolRanking.rank}
 					gammAmount={poolRanking.lpTokenBalance}
 					assets={poolInfos.find((x) => x.poolId == poolRanking.poolId)?.assets ?? null}
+					{tokenInfos}
 				/>
 			{/each}
 		</div>

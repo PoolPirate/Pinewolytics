@@ -1,6 +1,7 @@
 ﻿using Common.Services;
 using Microsoft.EntityFrameworkCore;
 using Pinewolytics.Database;
+using Pinewolytics.Entities;
 using Pinewolytics.Models;
 using Pinewolytics.Models.DTOs.ICNS;
 using Pinewolytics.Models.DTOs.Osmosis;
@@ -312,22 +313,10 @@ public class QueryClient : Singleton
         return results.Select(x => x.Value).ToArray();
     }
 
-    public async Task<OsmosisWalletRankingDTO> GetOsmosisWalletRankingAsync(string address, CancellationToken cancellationToken)
+    public async Task<OsmosisPoolInfoDTO[]> GetOsmosisPoolInfosAsync(int[] poolIds, CancellationToken cancellationToken)
     {
-        string sql = FlipsideQueries.OsmosisWalletRanking(address);
-        var results = await Flipside.GetOrRunAsync<OsmosisWalletRankingDTO>(sql, cancellationToken: cancellationToken);
-        var result = results.Single();
-
-        // Workaround for inaccurate Balances
-        result.BalanceAmount = await OsmosisLCD.GetCurrentOSMOBalanceAsync(address, cancellationToken);
-
-        return result;
-    }
-
-    public async Task<OsmosisPoolInfoDTO[]> GetOsmosisPoolInfosAsync(uint[] poolIds, CancellationToken cancellationToken)
-    {
-        string sql = FlipsideQueries.OsmosisPoolInfos(poolIds);
-        return await Flipside.GetOrRunAsync<OsmosisPoolInfoDTO>(sql, cancellationToken: cancellationToken);
+        return await Task.WhenAll(
+            poolIds.Select(async poolId => await OsmosisLCD.GetPoolInfoAsync(poolId, cancellationToken)));
     }
 
     public async Task<ICNSName[]> ListICNSNamesAsync()
@@ -360,5 +349,10 @@ public class QueryClient : Singleton
                 }).ToList()
             }; 
         }).ToArray();
+    }
+
+    public async Task<OsmosisWalletRankingDTO[]> ListWalletRankingAsync() {
+        string sql = FlipsideQueries.ListWalletRanking();
+        return await Flipside.GetOrRunAsync<OsmosisWalletRankingDTO>(sql);
     }
 }

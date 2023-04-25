@@ -3,11 +3,13 @@
 	import AddressList from '../AddressList.svelte';
 	import externalLinkLogo from '$lib/static/logo/external-link.svg';
 	import Rank from '../Rank.svelte';
+	import type { OsmosisTokenInfoDTO } from '$lib/models/DTOs/OsmosisDTOs';
 
 	export let pool: number;
 	export let assets: string[] | null;
 	export let rank: number;
 	export let gammAmount: number;
+	export let tokenInfos: OsmosisTokenInfoDTO[];
 
 	const expanded = writable<boolean>(false);
 </script>
@@ -28,7 +30,18 @@
 			<img class="h-4" src={externalLinkLogo} alt="Open Pool Site" />
 		</a>
 
-		<AddressList class="w-3/12" {assets} />
+		<div class="w-3/12">
+			{#if assets != null}
+				<ul>
+					{#each assets as asset}
+						<li>{tokenInfos.find((x) => x.denom == asset)?.symbol ?? asset}</li>
+					{/each}
+				</ul>
+			{:else}
+				<p>Unknown</p>
+			{/if}
+		</div>
+
 		<p class="w-5/12">{Math.round(gammAmount / Math.pow(10, 16)) / 100} Shares</p>
 		<Rank {rank} class="text-lg font-bold w-4-12" />
 	</div>

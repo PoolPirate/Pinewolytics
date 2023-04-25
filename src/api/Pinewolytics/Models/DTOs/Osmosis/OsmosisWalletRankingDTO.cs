@@ -1,4 +1,6 @@
-﻿using System.Globalization;
+﻿using Pinewolytics.Utils;
+using System.Globalization;
+using System.Numerics;
 using System.Text.Json;
 
 namespace Pinewolytics.Models.DTOs.Osmosis;
@@ -17,8 +19,11 @@ public class OsmosisWalletRankingDTO : IFlipsideObject<OsmosisWalletRankingDTO>
 
     public static OsmosisWalletRankingDTO Parse(string[] rawValues)
     {
-        ulong[] pids = JsonSerializer.Deserialize<ulong[]>(rawValues[6]) ?? throw new JsonException("Unexpected format");
-        double[] lpTokenBalances = JsonSerializer.Deserialize<double[]>(rawValues[7]) ?? throw new JsonException("Unexpected format");
+        var options = new JsonSerializerOptions();
+        options.Converters.Add(new BigIntegerNumberConverter());
+
+        int[] pids = JsonSerializer.Deserialize<int[]>(rawValues[6]) ?? throw new JsonException("Unexpected format");
+        var lpTokenBalances = JsonSerializer.Deserialize<BigInteger[]>(rawValues[7], options) ?? throw new JsonException("Unexpected format");
         long[] rankings = JsonSerializer.Deserialize<long[]>(rawValues[8]) ?? throw new JsonException("Unexpected format");
 
         decimal stakedAmount = decimal.Parse(rawValues[2], NumberStyles.Float);
@@ -35,7 +40,7 @@ public class OsmosisWalletRankingDTO : IFlipsideObject<OsmosisWalletRankingDTO>
             PoolRankings = pids.Zip(lpTokenBalances, rankings).Select(x => new OsmosisWalletPoolRankingDTO()
             {
                 PoolId = Math.Max(0, x.First),
-                LPTokenBalance = Math.Max(0, x.Second),
+                LPTokenBalance = x.Second < 0 ? 0 : x.Second,
                 Rank = x.Second < 0 ? -1 : x.Third,
             }).Where(x => x.Rank != -1).ToArray(),
         };

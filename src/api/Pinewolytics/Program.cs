@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using Pinewolytics.Configuration;
 using Pinewolytics.Database;
+using System.Numerics;
 using System.Reflection;
 
 namespace Pinewolytics;

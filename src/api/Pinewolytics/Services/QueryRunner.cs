@@ -2,6 +2,7 @@
 using Hangfire;
 using Microsoft.EntityFrameworkCore;
 using Pinewolytics.Database;
+using Pinewolytics.Entities;
 using Pinewolytics.Models.Entities;
 using System.Reflection;
 

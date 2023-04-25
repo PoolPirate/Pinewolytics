@@ -216,5 +216,34 @@ public class OsmosisLCDClient : Singleton
 
         return result!.Balances;
     }
+
+    record PoolInfoResult(PoolInfo Pool);
+    record PoolInfo(PoolAsset[]? PoolAssets, DenominatedAmountDTO[]? PoolLiquidity);
+    record PoolAsset(DenominatedAmountDTO Token);
+    public async Task<OsmosisPoolInfoDTO> GetPoolInfoAsync(int poolId, CancellationToken cancellationToken = default)
+    {
+        var route = new Uri(ApiEndpoint, $"osmosis/gamm/v1beta1/pools/{poolId}");
+        var response = await Client.GetAsync(route, cancellationToken);
+
+        response.EnsureSuccessStatusCode();
+
+        var result = await response.Content.ReadFromJsonAsync<PoolInfoResult>(new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy = SnakeCaseNamingPolicy.Instance,
+            NumberHandling = JsonNumberHandling.AllowReadingFromString,
+        }, cancellationToken: cancellationToken);
+
+        var denoms = (result!.Pool.PoolAssets?.Select(x => x.Token) 
+            ?? result.Pool.PoolLiquidity ?? throw new InvalidOperationException("Missing assets data"))
+                .Select(x => x.Denom)
+                .Distinct()
+                .ToArray();
+
+        return new OsmosisPoolInfoDTO()
+        {
+            PoolId = poolId,
+            Assets = denoms
+        };
+    }
 }
 

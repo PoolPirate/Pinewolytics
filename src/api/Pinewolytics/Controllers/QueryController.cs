@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Pinewolytics.Database;
+using Pinewolytics.Entities;
 using Pinewolytics.Models.DTOs.Osmosis;
 using Pinewolytics.Services;
 using Pinewolytics.Utils;
@@ -124,19 +125,49 @@ public class QueryController : ControllerBase
     public async Task<IActionResult> GetWalletRankingAsync([FromRoute] string address,
         CancellationToken cancellationToken)
     {
-        var ranking = await QueryClient.GetOsmosisWalletRankingAsync(address, cancellationToken);
-        return Ok(ranking);
+        var ranking = await DbContext.WalletRankings
+            .Include(x => x.LPerRanks)
+            .Where(x => x.Address.ToUpper() == address.ToUpper())
+            .SingleOrDefaultAsync(cancellationToken: cancellationToken);
+
+        if (ranking is null)
+        {
+            return NotFound();
+        }
+
+        var peak = await DbContext.UpdateTimestamps
+            .Where(x => x.Key == UpdateTimestamp.WalletRankingsKey)
+            .SingleOrDefaultAsync(cancellationToken: cancellationToken)
+            ?? UpdateTimestamp.Now();
+
+        return Ok(new OsmosisWalletRankingDTO()
+        {
+            Address = ranking.Address,
+            StakedRank = ranking.StakedRank,
+            StakedAmount = ranking.StakedAmount,
+            BalanceRank = ranking.BalanceRank,
+            BalanceAmount= ranking.BalanceAmount,
+            LastUpdatedAt = peak.Timestamp,
+            PoolRankings = ranking.LPerRanks!.Select(x => new OsmosisWalletPoolRankingDTO()
+            {
+                PoolId = x.PoolId,
+                LPTokenBalance = x.GammBalance,
+                Rank = x.Rank
+            }).ToArray()
+        });
     }
 
     [HttpGet("Osmosis/PoolInfos")]
     [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "poolIds" })]
-    public async Task<IActionResult> GetPoolInfosAsync([FromQuery][ModelBinder(typeof(CommaDelimitedArrayModelBinder))] uint[] poolIds,
+    public async Task<IActionResult> GetPoolInfosAsync([FromQuery][ModelBinder(typeof(CommaDelimitedArrayModelBinder))] int[] poolIds,
     CancellationToken cancellationToken)
     {
         if (poolIds.Length == 0)
         {
             return Ok(Array.Empty<OsmosisPoolInfoDTO>());
         }
+
+        
 
         var ranking = await QueryClient.GetOsmosisPoolInfosAsync(poolIds, cancellationToken);
         return Ok(ranking);

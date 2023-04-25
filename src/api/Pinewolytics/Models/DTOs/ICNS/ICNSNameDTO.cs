@@ -1,4 +1,5 @@
-﻿using Pinewolytics.Models.Entities;
+﻿using Pinewolytics.Entities;
+using Pinewolytics.Models.Entities;
 
 namespace Pinewolytics.Models.DTOs.ICNS;
 
