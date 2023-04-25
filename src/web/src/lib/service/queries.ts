@@ -73,9 +73,17 @@ export async function getRelatedWallets(addresses: string[]): Promise<string[]> 
 	return (await response.json()) as string[];
 }
 
-export async function getOsmosisWalletRanking(address: string): Promise<OsmosisWalletRankingDTO> {
+export async function getOsmosisWalletRanking(address: string): Promise<OsmosisWalletRankingDTO | null> {
 	const response = await fetch("/Api/Osmosis/WalletRankings/" + address);
-	return (await response.json()) as OsmosisWalletRankingDTO;
+
+	if (response.ok) {
+		return (await response.json()) as OsmosisWalletRankingDTO;
+	}
+	if (response.status == 404) {
+		return null;
+	}
+
+	throw response;
 }
 
 export async function getOsmosisPoolInfosAsync(poolIds: number[]): Promise<OsmosisPoolInfoDTO[]> {
