@@ -32,60 +32,60 @@ public class QueryController : ControllerBase
             : Ok(new { src });
     }
 
-    [HttpGet("Osmosis/Swaps")]
+    [HttpPost("Osmosis/Swaps")]
     [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "addresses" })]
     public async Task<IActionResult> GetSwapsAsync(
-        [FromQuery][ModelBinder(typeof(CommaDelimitedArrayModelBinder))] string[] addresses,
+        [FromBody] string[] addresses,
         CancellationToken cancellationToken)
     {
         var swaps = await QueryClient.GetOsmosisSwapsAsync(addresses, cancellationToken);
         return Ok(swaps);
     }
 
-    [HttpGet("Osmosis/Transfers")]
+    [HttpPost("Osmosis/Transfers")]
     [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "addresses" })]
     public async Task<IActionResult> GetTransfersAsync(
-        [FromQuery][ModelBinder(typeof(CommaDelimitedArrayModelBinder))] string[] addresses,
+        [FromBody] string[] addresses, 
         CancellationToken cancellationToken)
     {
         var transfers = await QueryClient.GetOsmoTransfersAsync(addresses, cancellationToken);
         return Ok(transfers);
     }
 
-    [HttpGet("Osmosis/InternalNetTransfers")]
+    [HttpPost("Osmosis/InternalNetTransfers")]
     [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "addresses" })]
     public async Task<IActionResult> GetInternalNetOsmoTransfersAsync(
-        [FromQuery][ModelBinder(typeof(CommaDelimitedArrayModelBinder))] string[] addresses,
+        [FromBody] string[] addresses,
         CancellationToken cancellationToken)
     {
         var transfers = await QueryClient.GetInternalNetOsmoTransfersAsync(addresses, cancellationToken);
         return Ok(transfers);
     }
 
-    [HttpGet("Osmosis/ExternalNetTransfers")]
+    [HttpPost("Osmosis/ExternalNetTransfers")]
     [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "addresses" })]
     public async Task<IActionResult> GetExternalNetOsmoTransfersAsync(
-        [FromQuery][ModelBinder(typeof(CommaDelimitedArrayModelBinder))] string[] addresses,
+         [FromBody] string[] addresses,
         CancellationToken cancellationToken)
     {
         var transfers = await QueryClient.GetExternalNetOsmoTransfersAsync(addresses, cancellationToken);
         return Ok(transfers);
     }
 
-    [HttpGet("Osmosis/IBCTransfers")]
+    [HttpPost("Osmosis/IBCTransfers")]
     [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "addresses" })]
     public async Task<IActionResult> GetIBCTransfersAync(
-        [FromQuery][ModelBinder(typeof(CommaDelimitedArrayModelBinder))] string[] addresses,
+        [FromBody] string[] addresses, 
         CancellationToken cancellationToken)
     {
         var ibcTransfers = await QueryClient.GetOsmoIBCTransfersAsync(addresses, cancellationToken);
         return Ok(ibcTransfers);
     }
 
-    [HttpGet("Osmosis/LPJoins")]
+    [HttpPost("Osmosis/LPJoins")]
     [ResponseCache(Duration = 600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "addresses" })]
     public async Task<IActionResult> GetLPJoinsAsync(
-        [FromQuery][ModelBinder(typeof(CommaDelimitedArrayModelBinder))] string[] addresses,
+        [FromBody] string[] addresses,
         CancellationToken cancellationToken)
     {
         var lpJoins = await QueryClient.GetOsmoLPJoinsAsync(addresses, cancellationToken);

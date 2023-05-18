@@ -20,36 +20,72 @@ export async function getQuerySrc(queryName: QueryName): Promise<string> {
 }
 
 export async function getOSMOSwaps(addresses: string[]): Promise<OsmosisSwapDTO[]> {
-	const response = await fetch('/Api/Osmosis/Swaps' + makeListParams("addresses", addresses));
+	const response = await fetch('/Api/Osmosis/Swaps' , {
+		method: "POST",
+		body: JSON.stringify(addresses),
+		headers: {
+			"Content-Type": "application/json"
+		}
+	});
 	return (await response.json()) as OsmosisSwapDTO[];
 }
 
 export async function getOSMOTransfers(addresses: string[]): Promise<OsmosisTransferDTO[]> {
-	const response = await fetch('/Api/Osmosis/Transfers' + makeListParams("addresses", addresses));
+	const response = await fetch('/Api/Osmosis/Transfers' , {
+		method: "POST",
+		body: JSON.stringify(addresses),
+		headers: {
+			"Content-Type": "application/json"
+		}
+	});
 	return (await response.json()) as OsmosisTransferDTO[];
 }
 
 export async function getInternalNetOSMOTransfers(
 	addresses: string[]
 ): Promise<OsmosisNetTransferDTO[]> {
-	const response = await fetch('/Api/Osmosis/InternalNetTransfers' + makeListParams("addresses", addresses));
+	const response = await fetch('/Api/Osmosis/InternalNetTransfers' , {
+		method: "POST",
+		body: JSON.stringify(addresses),
+		headers: {
+			"Content-Type": "application/json"
+		}
+	});
 	return (await response.json()) as OsmosisNetTransferDTO[];
 }
 
 export async function getExternalNetOSMOTransfers(
 	addresses: string[]
 ): Promise<OsmosisNetTransferDTO[]> {
-	const response = await fetch('/Api/Osmosis/ExternalNetTransfers' + makeListParams("addresses", addresses));
+	const response = await fetch('/Api/Osmosis/ExternalNetTransfers' , {
+		method: "POST",
+		body: JSON.stringify(addresses),
+		headers: {
+			"Content-Type": "application/json"
+		}
+	});
 	return (await response.json()) as OsmosisNetTransferDTO[];
 }
 
 export async function getOSMOIBCTransfers(addresses: string[]): Promise<OsmosisIBCTransferDTO[]> {
-	const response = await fetch('/Api/Osmosis/IBCTransfers' + makeListParams("addresses", addresses));
+	const response = await fetch('/Api/Osmosis/IBCTransfers' , {
+		method: "POST",
+		body: JSON.stringify(addresses),
+		headers: {
+			"Content-Type": "application/json"
+		}
+	});
 	return (await response.json()) as OsmosisIBCTransferDTO[];
 }
 
 export async function getOSMOLPJoins(addresses: string[]): Promise<OsmosisLPJoinDTO[]> {
-	const response = await fetch('/Api/Osmosis/LPJoins' + makeListParams("addresses", addresses));
+	const response = await fetch('/Api/Osmosis/LPJoins' , {
+		method: "POST",
+		body: JSON.stringify(addresses),
+		headers: {
+			"Content-Type": "application/json"
+		}
+	});
 	return (await response.json()) as OsmosisLPJoinDTO[];
 }
 
