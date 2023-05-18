@@ -110,10 +110,10 @@ public class QueryController : ControllerBase
         return Ok(wallets);
     }
 
-    [HttpGet("Osmosis/RelatedWallets")]
+    [HttpPost("Osmosis/RelatedWallets")]
     [ResponseCache(Duration = 3600, Location = ResponseCacheLocation.Any, VaryByQueryKeys = new[] { "addresses" })]
     public async Task<IActionResult> GetDeveloperWalletsRecursiveAsync(
-        [FromQuery][ModelBinder(typeof(CommaDelimitedArrayModelBinder))] string[] addresses,
+        [FromBody] string[] addresses,
         CancellationToken cancellationToken)
     {
         string[] wallets = await QueryClient.GetRelatedAddressesAsync(addresses, cancellationToken);

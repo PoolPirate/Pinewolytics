@@ -69,7 +69,13 @@ export async function getOsmosisDeveloperWalletsRecursive(depth: number): Promis
 }
 
 export async function getRelatedWallets(addresses: string[]): Promise<string[]> {
-	const response = await fetch('/Api/Osmosis/RelatedWallets' + makeListParams("addresses", addresses));
+	const response = await fetch('/Api/Osmosis/RelatedWallets', {
+		method: "POST",
+		body: JSON.stringify(addresses),
+		headers: {
+			"Content-Type": "application/json"
+		}
+	});
 	return (await response.json()) as string[];
 }
 
