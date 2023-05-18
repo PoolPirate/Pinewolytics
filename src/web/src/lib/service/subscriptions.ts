@@ -166,7 +166,7 @@ export function createQueryListener<T extends QueryName, R extends typeof queryT
 export function createRealtimeValueListener<T extends RealtimeValueName, R extends typeof realtimeValueTypes[T]>(
 	builder: SocketSubscriptionBuilder,
 	realtimeValueName: T,
-	animationGetter: ((oldValue: R | null, newValue: R | null) => RefreshAnimation[])
+	animationGetter: ((oldValue: R | null, newValue: R | null) => (RefreshAnimation | null)[])
 ) {
 	const store = writable<R | null>(null);
 	const { subscribe, set } = store;
@@ -175,7 +175,7 @@ export function createRealtimeValueListener<T extends RealtimeValueName, R exten
 	store.subscribe(newVal => currentVal = newVal);
 
 	builder.addRealtimeValue(realtimeValueName, (value) => {
-		animationGetter(currentVal, value as any).forEach(x => x.play());
+		animationGetter(currentVal, value as any).forEach(x => x?.play());
 		set(value as any);
 	});
 
