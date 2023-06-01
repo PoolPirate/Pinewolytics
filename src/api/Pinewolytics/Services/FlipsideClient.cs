@@ -1,16 +1,24 @@
 ﻿using Common.Services;
+using Microsoft.AspNetCore.Mvc.Formatters;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json.Linq;
 using Pinewolytics.Configuration;
 using Pinewolytics.Models;
 using Pinewolytics.Models.FlipsideAPI;
+using Pinewolytics.Models.FlipsideAPI.Requests;
+using Pinewolytics.Models.FlipsideAPI.Results;
 using Polly;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using System.Text.Json;
+using System.Threading;
 
 namespace Pinewolytics.Services;
 
 public class FlipsideClient : Singleton
 {
+    private static readonly Uri APIUrl = new Uri("https://api-v2.flipsidecrypto.xyz/json-rpc");
+
     [Inject]
     private readonly HttpClient Client = null!;
     [Inject]
@@ -18,9 +26,9 @@ public class FlipsideClient : Singleton
     [Inject]
     private readonly QueryCache Cache = null!;
 
-    private readonly IAsyncPolicy<QueryResultsResult> RetryPolicy =
-        Policy<QueryResultsResult>
-            .HandleResult(x => x.Status == QueryResultStatus.Running)
+    private readonly IAsyncPolicy<GetQueryRunResult> RetryPolicy =
+        Policy<GetQueryRunResult>
+            .HandleResult(x => x.QueryRun.State == QueryStatus.Running)
             .WaitAndRetryForeverAsync(x => TimeSpan.FromMilliseconds(200) * x);
 
     public async Task RunQueryAndCacheAsync(string key, Type type, string sql,
@@ -28,12 +36,9 @@ public class FlipsideClient : Singleton
     {
         var queueResult = await QueueQueryAsync(sql, cancellationToken);
 
-        if (!queueResult.Cached)
-        {
-            await Task.Delay(200, cancellationToken);
-        }
+        await Task.Delay(200, cancellationToken);
 
-        object[][] rows = await GetQueryResultsAsync(queueResult.Token, cancellationToken: cancellationToken);
+        object[][] rows = await GetQueryResultsAsync(queueResult.QueryRequest.QueryRunId, cancellationToken: cancellationToken);
         object[] result = ParseFlipsideObjects(type, rows);
 
         if (result.Length > 99000)
@@ -70,7 +75,7 @@ public class FlipsideClient : Singleton
         CancellationToken cancellationToken = default)
     {
         var queueResult = await QueueQueryAsync(sql, cancellationToken);
-        object[][] rows = await GetQueryResultsAsync(queueResult.Token, cancellationToken: cancellationToken);
+        object[][] rows = await GetQueryResultsAsync(queueResult.QueryRequest.QueryRunId, cancellationToken: cancellationToken);
         object[] result = ParseFlipsideObjects(type, rows);
         return result;
     }
@@ -99,86 +104,91 @@ public class FlipsideClient : Singleton
         }).ToArray();
     }
 
-    private async Task<QueueQueryResult> QueueQueryAsync(string sql,
+    private Task<CreateQueryRunResult> QueueQueryAsync(string sql,
         CancellationToken cancellationToken = default)
     {
-        var content = JsonContent.Create(new Dictionary<string, object>()
+        return SendRPCAsync<CreateQueryRunResult>(FlipsideRequest.CreateQueryRun(0, 0, sql), cancellationToken);
+    }
+
+    private async IAsyncEnumerable<object[]> GetBatchedQueryResultsAsync(string token,
+        [EnumeratorCancellation] CancellationToken cancellationToken = default)
+    {
+        var result = await RetryPolicy.ExecuteAsync(() => GetQueryRunAsync(token, cancellationToken));
+        var pageSize = 10000;
+
+        for(int i = 0; i <= result.QueryRun.RowCount / pageSize; i++)
         {
-            ["sql"] = sql,
-            ["ttl_minutes"] = 1, //Use own caching instead
-            ["cache"] = true
+            var page = await GetFinishedQueryResultPageAsync(
+                token, 
+                i + 1,
+                pageSize,
+                cancellationToken
+            );
+
+            foreach(var row in page.Rows)
+            {
+                yield return row;
+            }
+        }
+    }
+
+    private async Task<object[][]> GetQueryResultsAsync(string token, CancellationToken cancellationToken)
+    {
+        var result = await RetryPolicy.ExecuteAsync(() => GetQueryRunAsync(token, cancellationToken));
+
+        await Task.Delay(100, cancellationToken);
+
+        if (!result.QueryRun.RowCount.HasValue)
+        {
+            throw new InvalidOperationException("Result set size unknown");
+        }
+
+        var rows = new object[result.QueryRun.RowCount.Value][];
+        var pageSize = 10000;
+
+        for (int i = 0; i <= result.QueryRun.RowCount / pageSize; i++)
+        {
+            var page = await GetFinishedQueryResultPageAsync(
+                token,
+                i + 1,
+                pageSize,
+                cancellationToken
+            );
+
+            page.Rows.CopyTo(rows.AsSpan(pageSize * i, Math.Min(pageSize, page.Rows.Length)));
+        }
+
+        return rows;
+    }
+
+    private async Task<GetQueryRunResult> GetQueryRunAsync(string token, CancellationToken cancellationToken)
+    {
+        var getQueryRunResult = await SendRPCAsync<GetQueryRunResult>(FlipsideRequest.GetQueryRun(token), cancellationToken);
+        return getQueryRunResult;
+    }
+
+    private async Task<GetQueryRunResultsResult> GetFinishedQueryResultPageAsync(string token, int pageNumber, int pageSize,
+        CancellationToken cancellationToken = default)
+    {
+        var result = await SendRPCAsync<GetQueryRunResultsResult>(
+            FlipsideRequest.GetQueryRunResults(token, pageNumber, pageSize),
+            cancellationToken
+        );
+
+        return result;
+    }
+
+    private async Task<TResult> SendRPCAsync<TResult>(FlipsideRequest payload, CancellationToken cancellationToken)
+        where TResult : class, IFlipsideRequestResult
+    {
+        var content = JsonContent.Create(payload, options: new JsonSerializerOptions()
+        {
+            PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         });
-
-        var request = new HttpRequestMessage(HttpMethod.Post, "https://node-api.flipsidecrypto.com/queries")
+        var request = new HttpRequestMessage(HttpMethod.Post, APIUrl)
         {
-            Content = content
+            Content = content,
         };
-
-        request.Headers.Add("x-api-key", ApiKeyOptions.FlipsideApiKey);
-
-        var response = await Client.SendAsync(request, cancellationToken);
-
-        if (!response.IsSuccessStatusCode)
-        {
-            string errorMessage = await response.Content.ReadAsStringAsync(cancellationToken);
-            throw new Exception($"Flipside responded with {response.StatusCode}: {errorMessage}");
-        }
-
-        return (await response.Content.ReadFromJsonAsync<QueueQueryResult>(cancellationToken: cancellationToken))
-            ?? throw new InvalidOperationException("Failed parsing result from flipside!");
-    }
-
-    private async Task<object[][]> GetQueryResultsAsync(string token,
-        CancellationToken cancellationToken = default)
-    {
-        var result = await RetryPolicy.ExecuteAsync(() => GetFinishedQueryResultsAsync(token, cancellationToken));
-        return result.Results;
-    }
-
-    private async Task<QueryResultsResult> GetFinishedQueryResultsAsync(string token, CancellationToken cancellationToken = default)
-    {
-        List<QueryResultsResult>? resultPages = null;
-
-        for(int i = 1; i <= 10; i++)
-        {
-            var page = await GetFinishedQueryResultPageAsync(token, i, 100000, cancellationToken);
-
-            if (page.Status != "finished")
-            {
-                return page;
-            }
-
-            if (page.Results.Length < 100_000)
-            {
-                if (resultPages is null)
-                {
-                    return page;
-                }
-
-                resultPages.Add(page);
-                break;
-            }
-
-            resultPages ??= new List<QueryResultsResult>();
-            resultPages.Add(page);
-        }
-
-        return new QueryResultsResult()
-        {
-            Results = resultPages!.SelectMany(x => x.Results).ToArray(),
-            ColumnLabels = resultPages![0].ColumnLabels,
-            ColumnTypes = resultPages![0].ColumnTypes,
-            Status = resultPages![0].Status,
-            Message = resultPages![0].Message,
-            StartedAt = resultPages![0].StartedAt,
-            EndedAt = resultPages![0].EndedAt,
-        };
-}
-
-    private async Task<QueryResultsResult> GetFinishedQueryResultPageAsync(string token, int pageNumber, int pageSize,
-        CancellationToken cancellationToken = default)
-    {
-        var request = new HttpRequestMessage(HttpMethod.Get, $"https://node-api.flipsidecrypto.com/queries/{token}?pageNumber={pageNumber}&pageSize={pageSize}");
 
         request.Headers.Add("x-api-key", ApiKeyOptions.FlipsideApiKey);
 
@@ -190,7 +200,21 @@ public class FlipsideClient : Singleton
             throw new HttpRequestException($"Flipside responded with {errorMessage}", null, response.StatusCode);
         }
 
-        return (await response.Content.ReadFromJsonAsync<QueryResultsResult>(cancellationToken: cancellationToken))
-            ?? throw new InvalidOperationException("Unexpected json format");
+        var result = await response.Content.ReadFromJsonAsync<FlipsideResult<TResult>>(cancellationToken: cancellationToken);
+
+        if (result is null)
+        {
+            throw new HttpRequestException($"Flipside responded with null");
+        }
+        if (result.Error is not null)
+        {
+            throw new HttpRequestException($"Flipside responded with error: {JsonSerializer.Serialize(result.Error)}");
+        }
+
+        //
+
+        return result.Result is null
+            ? throw new HttpRequestException($"Flipside responded with null")
+            : result.Result;
     }
 }
