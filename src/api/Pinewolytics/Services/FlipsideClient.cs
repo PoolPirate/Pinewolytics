@@ -136,6 +136,11 @@ public class FlipsideClient : Singleton
     {
         var result = await RetryPolicy.ExecuteAsync(() => GetQueryRunAsync(token, cancellationToken));
 
+        if (result.QueryRun.State != QueryStatus.Success)
+        {
+            throw new Exception($"Query failed: Status={result.QueryRun.State}");
+        }
+
         await Task.Delay(100, cancellationToken);
 
         if (!result.QueryRun.RowCount.HasValue)
