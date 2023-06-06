@@ -22,17 +22,17 @@ public class FlipsideExtractor : Singleton
         RecurringJob.AddOrUpdate<FlipsideExtractor>(
             ICNSCloneTask,
             x => x.ExtractICNSTagsAsync(),
-            CronUtils.ConvertFromPeriodRecurrence(TimeSpan.FromHours(4)));
+            CronUtils.ConvertFromPeriodRecurrence(TimeSpan.FromHours(24)));
 
         RecurringJob.AddOrUpdate<FlipsideExtractor>(
             ProtoRevTransactionExtractTask,
             x => x.ExtractAllAddressProtoRevTransactionsAsync(),
-            CronUtils.ConvertFromPeriodRecurrence(TimeSpan.FromHours(18)));
+            CronUtils.ConvertFromPeriodRecurrence(TimeSpan.FromHours(24)));
 
         RecurringJob.AddOrUpdate<FlipsideExtractor>(
             WalletRankings,
             x => x.ExtractAllWalletRankingsAsync(),
-            CronUtils.ConvertFromPeriodRecurrence(TimeSpan.FromHours(18)));
+            CronUtils.ConvertFromPeriodRecurrence(TimeSpan.FromHours(24)));
 
         return base.InitializeAsync();
     }

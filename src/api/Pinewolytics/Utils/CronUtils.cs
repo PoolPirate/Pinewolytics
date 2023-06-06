@@ -1,4 +1,6 @@
-﻿namespace Pinewolytics.Utils;
+﻿using System;
+
+namespace Pinewolytics.Utils;
 
 public static class CronUtils
 {
@@ -8,9 +10,10 @@ public static class CronUtils
         {
             throw new ArgumentException("Interval cannot contain seconds nor milliseconds.");
         }
-        if (periodRecurrence.Hours >= 1)
+
+        if (periodRecurrence.TotalHours >= 1)
         {
-            return $"{periodRecurrence.Minutes} */{periodRecurrence.Hours} * * *";
+            return $"{periodRecurrence.Minutes} */{periodRecurrence.Hours + periodRecurrence.Days * 24} * * *";
         }
         if (periodRecurrence.Minutes > 1)
         {
