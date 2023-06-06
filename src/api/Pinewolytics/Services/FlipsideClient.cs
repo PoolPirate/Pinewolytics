@@ -28,7 +28,7 @@ public class FlipsideClient : Singleton
 
     private readonly IAsyncPolicy<GetQueryRunResult> RetryPolicy =
         Policy<GetQueryRunResult>
-            .HandleResult(x => x.QueryRun.State == QueryStatus.Running)
+            .HandleResult(x => x.QueryRun.State == QueryStatus.Ready || x.QueryRun.State == QueryStatus.Running || x.QueryRun.State == QueryStatus.Pending)
             .WaitAndRetryForeverAsync(x => TimeSpan.FromMilliseconds(200) * x);
 
     public async Task RunQueryAndCacheAsync(string key, Type type, string sql,
