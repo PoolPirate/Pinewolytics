@@ -151,7 +151,7 @@ public class FlipsideClient : Singleton
         var rows = new object[result.QueryRun.RowCount.Value][];
         var pageSize = 10000;
 
-        for (int i = 0; i < result.QueryRun.RowCount / pageSize; i++)
+        for (int i = 0; i < (int)Math.Ceiling(result.QueryRun.RowCount.Value / (decimal)pageSize); i++)
         {
             var page = await GetFinishedQueryResultPageAsync(
                 token,
