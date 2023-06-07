@@ -24,10 +24,4 @@ public class OptimismDataClient : BaseDataClient
     {
         return await OptimismRpcClient.GetPeakBlockHeightAsync();
     }
-
-    [RealtimeValue("Optimism-Gas-Prices", 10 * SECONDS)]
-    public async Task<OptimismGasPriceDTO> LoadGasPricesAsync()
-    {
-        return await OptimismRpcClient.GetGasPricesAsync();
-    }
 }
