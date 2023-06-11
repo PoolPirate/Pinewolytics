@@ -12,7 +12,7 @@ public class FlipsidePrimitiveObject<T> : IFlipsideObject<FlipsidePrimitiveObjec
         {
             throw new ArgumentException("FlipsidePrimitiveObject only accepts primitive types!");
         }
-        if (rawValues.Length != 1)
+        if (rawValues.Length != 2)
         {
             throw new ArgumentException($"Expecting exactly one column, got {rawValues.Length}");
         }
