@@ -4,6 +4,7 @@ using Pinewolytics.Database;
 using Pinewolytics.Entities;
 using Pinewolytics.Models.DTOs.Osmosis;
 using Pinewolytics.Services;
+using Pinewolytics.Services.ApiClients;
 using Pinewolytics.Utils;
 
 namespace Pinewolytics.Controllers;
@@ -14,11 +15,13 @@ public class QueryController : ControllerBase
 {
     private readonly QueryClient QueryClient;
     private readonly PinewolyticsContext DbContext;
+    private readonly OsmosisLCDClient OsmosisLCDC;
 
-    public QueryController(QueryClient queryClient, PinewolyticsContext dbContext)
+    public QueryController(QueryClient queryClient, PinewolyticsContext dbContext, OsmosisLCDClient osmosisLCDC)
     {
         QueryClient = queryClient;
         DbContext = dbContext;
+        OsmosisLCDC = osmosisLCDC;
     }
 
     [HttpGet("Query/Src/{queryName}")]
@@ -146,7 +149,7 @@ public class QueryController : ControllerBase
             StakedRank = ranking.StakedRank,
             StakedAmount = ranking.StakedAmount,
             BalanceRank = ranking.BalanceRank,
-            BalanceAmount= ranking.BalanceAmount,
+            BalanceAmount = await OsmosisLCDC.GetCurrentOSMOBalanceAsync(address, cancellationToken) ,
             LastUpdatedAt = peak.Timestamp,
             PoolRankings = ranking.LPerRanks!.Select(x => new OsmosisWalletPoolRankingDTO()
             {
