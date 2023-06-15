@@ -11,6 +11,7 @@ using Pinewolytics.Utils;
 using Polly;
 using Polly.Contrib.WaitAndRetry;
 using StackExchange.Redis;
+using System.Net;
 
 namespace Pinewolytics;
 
@@ -33,7 +34,8 @@ public class Startup
 
         services.AddHttpClient<FlipsideClient>()
             .AddTransientHttpErrorPolicy(policyBuilder =>
-                policyBuilder.WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromMilliseconds(200), 5)));
+                policyBuilder.Or<HttpRequestException>(ex => ex.StatusCode == HttpStatusCode.BadGateway)
+                .WaitAndRetryAsync(Backoff.DecorrelatedJitterBackoffV2(TimeSpan.FromMilliseconds(200), 5)));
 
         services.AddApplication(Configuration, options =>
         {
