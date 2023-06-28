@@ -15,7 +15,7 @@
 			href="https://flipsidecrypto.xyz/"
 			target="_blank"
 			rel="noreferrer"
-			class="flex flex-row justify-between items-center gap-4 border rounded-lg p-2 border-gray-700 border-2 bg-gray-400 w-full"
+			class="flex flex-row justify-between items-center gap-4 rounded-lg p-2 border-gray-700 border-2 bg-gray-400 w-full"
 		>
 			<p class="text-xl">Data Provided By FlipsideCrypto</p>
 			<img alt="FlipsideCrypto Logo" class="h-16" src={FlipsideLogo} />
@@ -25,7 +25,7 @@
 			href="https://github.com/PoolPirate/Pinewolytics"
 			target="_blank"
 			rel="noreferrer"
-			class="flex flex-row justify-between items-center gap-4 border rounded-lg p-2 border-gray-700 border-2 bg-gray-400 w-full"
+			class="flex flex-row justify-between items-center gap-4 rounded-lg p-2 border-gray-700 border-2 bg-gray-400 w-full"
 		>
 			<p class="text-xl">Source Code</p>
 			<img alt="FlipsideCrypto Logo" class="h-16" src={GithubLogo} />

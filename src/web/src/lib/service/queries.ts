@@ -16,26 +16,26 @@ import type { RealtimeValueName } from './realtime-value-definitions';
 
 export async function getQuerySrc(queryName: QueryName): Promise<string> {
 	const response = await fetch('/Api/Query/Src/' + queryName);
-	return (await response.json()).src; 
+	return (await response.json()).src;
 }
 
 export async function getOSMOSwaps(addresses: string[]): Promise<OsmosisSwapDTO[]> {
-	const response = await fetch('/Api/Osmosis/Swaps' , {
-		method: "POST",
+	const response = await fetch('/Api/Osmosis/Swaps', {
+		method: 'POST',
 		body: JSON.stringify(addresses),
 		headers: {
-			"Content-Type": "application/json"
+			'Content-Type': 'application/json'
 		}
 	});
 	return (await response.json()) as OsmosisSwapDTO[];
 }
 
 export async function getOSMOTransfers(addresses: string[]): Promise<OsmosisTransferDTO[]> {
-	const response = await fetch('/Api/Osmosis/Transfers' , {
-		method: "POST",
+	const response = await fetch('/Api/Osmosis/Transfers', {
+		method: 'POST',
 		body: JSON.stringify(addresses),
 		headers: {
-			"Content-Type": "application/json"
+			'Content-Type': 'application/json'
 		}
 	});
 	return (await response.json()) as OsmosisTransferDTO[];
@@ -44,11 +44,11 @@ export async function getOSMOTransfers(addresses: string[]): Promise<OsmosisTran
 export async function getInternalNetOSMOTransfers(
 	addresses: string[]
 ): Promise<OsmosisNetTransferDTO[]> {
-	const response = await fetch('/Api/Osmosis/InternalNetTransfers' , {
-		method: "POST",
+	const response = await fetch('/Api/Osmosis/InternalNetTransfers', {
+		method: 'POST',
 		body: JSON.stringify(addresses),
 		headers: {
-			"Content-Type": "application/json"
+			'Content-Type': 'application/json'
 		}
 	});
 	return (await response.json()) as OsmosisNetTransferDTO[];
@@ -57,33 +57,33 @@ export async function getInternalNetOSMOTransfers(
 export async function getExternalNetOSMOTransfers(
 	addresses: string[]
 ): Promise<OsmosisNetTransferDTO[]> {
-	const response = await fetch('/Api/Osmosis/ExternalNetTransfers' , {
-		method: "POST",
+	const response = await fetch('/Api/Osmosis/ExternalNetTransfers', {
+		method: 'POST',
 		body: JSON.stringify(addresses),
 		headers: {
-			"Content-Type": "application/json"
+			'Content-Type': 'application/json'
 		}
 	});
 	return (await response.json()) as OsmosisNetTransferDTO[];
 }
 
 export async function getOSMOIBCTransfers(addresses: string[]): Promise<OsmosisIBCTransferDTO[]> {
-	const response = await fetch('/Api/Osmosis/IBCTransfers' , {
-		method: "POST",
+	const response = await fetch('/Api/Osmosis/IBCTransfers', {
+		method: 'POST',
 		body: JSON.stringify(addresses),
 		headers: {
-			"Content-Type": "application/json"
+			'Content-Type': 'application/json'
 		}
 	});
 	return (await response.json()) as OsmosisIBCTransferDTO[];
 }
 
 export async function getOSMOLPJoins(addresses: string[]): Promise<OsmosisLPJoinDTO[]> {
-	const response = await fetch('/Api/Osmosis/LPJoins' , {
-		method: "POST",
+	const response = await fetch('/Api/Osmosis/LPJoins', {
+		method: 'POST',
 		body: JSON.stringify(addresses),
 		headers: {
-			"Content-Type": "application/json"
+			'Content-Type': 'application/json'
 		}
 	});
 	return (await response.json()) as OsmosisLPJoinDTO[];
@@ -106,17 +106,19 @@ export async function getOsmosisDeveloperWalletsRecursive(depth: number): Promis
 
 export async function getRelatedWallets(addresses: string[]): Promise<string[]> {
 	const response = await fetch('/Api/Osmosis/RelatedWallets', {
-		method: "POST",
+		method: 'POST',
 		body: JSON.stringify(addresses),
 		headers: {
-			"Content-Type": "application/json"
+			'Content-Type': 'application/json'
 		}
 	});
 	return (await response.json()) as string[];
 }
 
-export async function getOsmosisWalletRanking(address: string): Promise<OsmosisWalletRankingDTO | null> {
-	const response = await fetch("/Api/Osmosis/WalletRankings/" + address);
+export async function getOsmosisWalletRanking(
+	address: string
+): Promise<OsmosisWalletRankingDTO | null> {
+	const response = await fetch('/Api/Osmosis/WalletRankings/' + address);
 
 	if (response.ok) {
 		return (await response.json()) as OsmosisWalletRankingDTO;
@@ -129,18 +131,20 @@ export async function getOsmosisWalletRanking(address: string): Promise<OsmosisW
 }
 
 export async function getOsmosisPoolInfosAsync(poolIds: number[]): Promise<OsmosisPoolInfoDTO[]> {
-	const response = await fetch("/Api/Osmosis/PoolInfos/"  + makeListParams("poolIds", poolIds));
+	const response = await fetch('/Api/Osmosis/PoolInfos' + makeListParams('poolIds', poolIds));
 	return (await response.json()) as OsmosisPoolInfoDTO[];
 }
 
-export async function getOsmosisProtoRevTransactions(address: string): Promise<OsmosisProtoRevTransactionDTO[]> {
-	const response = await fetch("/Api/Osmosis/ProtoRevTx/" + address);
+export async function getOsmosisProtoRevTransactions(
+	address: string
+): Promise<OsmosisProtoRevTransactionDTO[]> {
+	const response = await fetch('/Api/Osmosis/ProtoRevTx/' + address);
 	return (await response.json()) as OsmosisProtoRevTransactionDTO[];
 }
 
 export async function getICNSNameByAddress(address: string): Promise<string | null> {
-	const response = await fetch("/Api/ICNS/Reverse/" + address);
-	
+	const response = await fetch('/Api/ICNS/Reverse/' + address);
+
 	if (!response.ok) {
 		return null;
 	}
@@ -149,18 +153,18 @@ export async function getICNSNameByAddress(address: string): Promise<string | nu
 }
 
 export async function getQueryValue(queryName: QueryName) {
-	const response = await fetch("/Api/Subscriptions/Query/" + queryName);
-	return (await response.json() as SubscriptionValueDTO);
+	const response = await fetch('/Api/Subscriptions/Query/' + queryName);
+	return (await response.json()) as SubscriptionValueDTO;
 }
 
 export async function getRealtimeValueValue(realtimeValueName: RealtimeValueName) {
-	const response = await fetch("/Api/Subscriptions/RealtimeValue/" + realtimeValueName);
-	return (await response.json() as SubscriptionValueDTO);
+	const response = await fetch('/Api/Subscriptions/RealtimeValue/' + realtimeValueName);
+	return (await response.json()) as SubscriptionValueDTO;
 }
 
 export async function getRealtimeFeedValue(realtimeFeedName: RealtimeFeedName) {
-	const response = await fetch("/Api/Subscriptions/RealtimeFeed/" + realtimeFeedName);
-	return (await response.json() as SubscriptionValueDTO);
+	const response = await fetch('/Api/Subscriptions/RealtimeFeed/' + realtimeFeedName);
+	return (await response.json()) as SubscriptionValueDTO;
 }
 
 function makeListParams(paramName: string, values: any[]) {
