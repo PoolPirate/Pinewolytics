@@ -38,4 +38,14 @@ public class FlipsideRequest
                     new GetQueryRunResultsParams(queryRunId, "csv", page, pageSize)
                 }
         };
+
+    public static FlipsideRequest CancelQueryRun(string queryRunId)
+        => new FlipsideRequest()
+        {
+            Method = "cancelQueryRun",
+            Params = new IFlipsideRequestParams[]
+                {
+                    new CancelQueryRunParams(queryRunId)
+                }
+        };
 }

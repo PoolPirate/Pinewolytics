@@ -75,9 +75,18 @@ public class FlipsideClient : Singleton
         CancellationToken cancellationToken = default)
     {
         var queueResult = await QueueQueryAsync(sql, cancellationToken);
-        object[][] rows = await GetQueryResultsAsync(queueResult.QueryRequest.QueryRunId, cancellationToken: cancellationToken);
-        object[] result = ParseFlipsideObjects(type, rows);
-        return result;
+
+        try
+        {
+            object[][] rows = await GetQueryResultsAsync(queueResult.QueryRequest.QueryRunId, cancellationToken: cancellationToken);
+            object[] result = ParseFlipsideObjects(type, rows);
+            return result;
+        }
+        catch
+        {
+            await TryCancelQueryAsync(queueResult.QueryRequest.QueryRunId);
+            throw;
+        }
     }
 
     private object[] ParseFlipsideObjects(Type type, object[][] rows)
@@ -181,6 +190,17 @@ public class FlipsideClient : Singleton
         );
 
         return result;
+    }
+
+    private async Task TryCancelQueryAsync(string queryRunId)
+    {
+        try
+        {
+            await SendRPCAsync<CancelQueryRunResult>(FlipsideRequest.CancelQueryRun(queryRunId), default);
+        }
+        catch
+        {
+        }
     }
 
     private async Task<TResult> SendRPCAsync<TResult>(FlipsideRequest payload, CancellationToken cancellationToken)
