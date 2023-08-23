@@ -101,7 +101,7 @@ public class OsmosisLCDClient : Singleton
     record ProtoRevProfitsResult(DenominatedAmountDTO[] Profits);
     public async Task<DenominatedAmountDTO[]> GetTotalProtoRevProfitsAsync(CancellationToken cancellationToken)
     {
-        var route = new Uri(ApiEndpoint, "/osmosis/v14/protorev/all_profits");
+        var route = new Uri(ApiEndpoint, "/osmosis/protorev/all_profits");
         var response = await Client.GetAsync(route, cancellationToken);
 
         response.EnsureSuccessStatusCode();
@@ -118,7 +118,7 @@ public class OsmosisLCDClient : Singleton
     record ProtoRevTradeCountResult(long NumberOfTrades);
     public async Task<long> GetTotalProtoRevTradeCountAsync(CancellationToken cancellationToken = default)
     {
-        var route = new Uri(ApiEndpoint, "/osmosis/v14/protorev/number_of_trades");
+        var route = new Uri(ApiEndpoint, "/osmosis/protorev/number_of_trades");
         var response = await Client.GetAsync(route, cancellationToken);
 
         response.EnsureSuccessStatusCode();
@@ -135,7 +135,7 @@ public class OsmosisLCDClient : Singleton
     record ProtoRevDeveloperAccountResult(string DeveloperAccount);
     public async Task<string> GetProtoRevDeveloperAddressAsync(CancellationToken cancellationToken = default)
     {
-        var route = new Uri(ApiEndpoint, "/osmosis/v14/protorev/developer_account");
+        var route = new Uri(ApiEndpoint, "/osmosis/protorev/developer_account");
         var response = await Client.GetAsync(route, cancellationToken);
 
         response.EnsureSuccessStatusCode();
@@ -152,7 +152,7 @@ public class OsmosisLCDClient : Singleton
     record ProtoRevAdminAccountResult(string AdminAccount);
     public async Task<string> GetProtoRevAdminAddressAsync(CancellationToken cancellationToken = default)
     {
-        var route = new Uri(ApiEndpoint, "/osmosis/v14/protorev/admin_account");
+        var route = new Uri(ApiEndpoint, "/osmosis/protorev/admin_account");
         var response = await Client.GetAsync(route, cancellationToken);
 
         response.EnsureSuccessStatusCode();
@@ -169,7 +169,7 @@ public class OsmosisLCDClient : Singleton
     record ProtoRevEnabledResult(bool Enabled);
     public async Task<bool> GetProtoRevIsEnabledAsync(CancellationToken cancellationToken = default)
     {
-        var route = new Uri(ApiEndpoint, "/osmosis/v14/protorev/enabled");
+        var route = new Uri(ApiEndpoint, "/osmosis/protorev/enabled");
         var response = await Client.GetAsync(route, cancellationToken);
 
         response.EnsureSuccessStatusCode();
@@ -186,7 +186,7 @@ public class OsmosisLCDClient : Singleton
     record ProtoRevRouteStatisticsResult(OsmosisProtoRevRouteStatisticsDTO[] Statistics);
     public async Task<OsmosisProtoRevRouteStatisticsDTO[]> GetProtoRevAllRouteStatisticsAsync(CancellationToken cancellationToken = default)
     {
-        var route = new Uri(ApiEndpoint, "/osmosis/v14/protorev/all_route_statistics");
+        var route = new Uri(ApiEndpoint, "/osmosis/protorev/all_route_statistics");
         var response = await Client.GetAsync(route, cancellationToken);
 
         response.EnsureSuccessStatusCode();
