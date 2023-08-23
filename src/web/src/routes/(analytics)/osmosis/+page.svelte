@@ -1,3 +1,17 @@
+<script lang="ts">
+	import { beforeUpdate } from "svelte";
+
+	beforeUpdate(() => {
+		const rootElement = document.querySelector(':root')! as any;
+
+		rootElement.style.setProperty('--color1', '#f200c9');
+		rootElement.style.setProperty('--color2', '#0602bf');
+
+		rootElement.style.setProperty('--linkgroupcolor', '#f3570f');
+		rootElement.style.setProperty('--linkcolor', '#D2573D');
+	});
+</script>
+
 <div
 	class="
 	w-full h-screen p-8
@@ -29,6 +43,7 @@
 				   [&>a]:bg-orange-100 [&>a]:w-full [&>a]:h-full [&>a]:flex [&>a]:justify-center [&>a]:items-center [&>a]:rounded-lg"
 		>
 			<a href="osmosis/ranking">Wallet Ranking</a>
+			<a href="osmosis/flipside-query-helpers">Flipside Query Helpers</a>
 		</div>
 	</div>
 </div>
