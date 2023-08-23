@@ -96,6 +96,8 @@ ${attributes.reduce((prev, curr, i, arr) => `${prev}${lineCheck(i, arr)}`, "")}
                 <option value="osmosis">Osmosis</option>
                 <option value="cosmos">Cosmos Hub</option>
                 <option value="evmos">Evmos</option>
+                <option value="axelar">Axelar</option>
+                <option value="sei">Sei</option>
             </select>
     
             <h3 class="font-bold text-lg">Message Type</h3>
