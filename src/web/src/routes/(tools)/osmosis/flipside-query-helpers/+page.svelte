@@ -34,13 +34,23 @@ interface Attribute {
         attributes = attributes.filter(x => x != attribute)
     }
 
+    function attributeToTable(attribute: Attribute) {
+        var replaced = "a_" + attribute.key.replace("-", "_");
+        
+        while(replaced.startsWith("_")) {
+            replaced.slice(1);
+        }
+
+        return replaced;
+    }
+
     function generate() {
         generated = true;
 
-        const tableNames = attributes.map(x => `a_${x.key}`)
+        const tableNames = attributes.map(x => `${attributeToTable(x)}`)
 
         const tables = tableNames.map(x => `${chain}.core.fact_msg_attributes AS ${x}`)
-        const cols = attributes.map(x => `a_${x.key}.attribute_value AS ${x.name}`)
+        const cols = attributes.map(x => `${attributeToTable(x)}.attribute_value AS ${x.name}`)
 
         sql = `
 SELECT ${tableNames[0]}.tx_id, ${tableNames[0]}.block_timestamp, 
@@ -49,20 +59,20 @@ FROM
 ${tables.reduce((prev, curr, i, arr) => `${prev}${i != 0 ? "\n" : ""}  ${curr}${i != arr.length - 1 ? "," : ""}`, "")}
 WHERE ${tableNames[0]}.msg_type = '${messageType}'
 ${attributes.reduce((prev, curr, i, arr) => `${prev}${lineCheck(i, arr)}`, "")}
-        `.trim()
+        `.trim();
     }
 
 
     function lineCheck(index: number, attributes: Attribute[]) {
-        const keyCheck = `  AND a_${attributes[index].key}.attribute_key = '${attributes[index].key}'`
+        const keyCheck = `  AND ${attributeToTable(attributes[index])}.attribute_key = '${attributes[index].key}'`;
 
         if (index == 0) {
             return keyCheck + (index == attributes.length - 1 ? "" : "\n")
         }
 
-        return keyCheck + ` AND a_${attributes[0].key}.tx_id = a_${attributes[index].key}.tx_id` +
-            ` AND a_${attributes[0].key}.msg_index = a_${attributes[index].key}.msg_index` +
-            ` AND (a_${attributes[0].key}.msg_group = a_${attributes[index].key}.msg_group OR a_${attributes[0].key}.msg_group IS NULL AND a_${attributes[index].key}.msg_group IS NULL)` +
+        return keyCheck + ` AND ${attributeToTable(attributes[0])}.tx_id = ${attributeToTable(attributes[index])}.tx_id` +
+            ` AND ${attributeToTable(attributes[0])}.msg_index = ${attributeToTable(attributes[index])}.msg_index` +
+            ` AND (${attributeToTable(attributes[0])}.msg_group = ${attributeToTable(attributes[index])}.msg_group OR ${attributeToTable(attributes[0])}.msg_group IS NULL AND ${attributeToTable(attributes[index])}.msg_group IS NULL)` +
             (index == attributes.length - 1 ? "" : "\n")
     }
 
