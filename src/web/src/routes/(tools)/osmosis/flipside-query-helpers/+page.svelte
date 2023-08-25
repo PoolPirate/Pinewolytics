@@ -35,7 +35,7 @@ interface Attribute {
     }
 
     function attributeToTable(attribute: Attribute) {
-        var replaced = "a_" + attribute.key.replace("-", "_");
+        var replaced = "a_" + attribute.key.replaceAll("-", "_");
         
         while(replaced.startsWith("_")) {
             replaced.slice(1);
