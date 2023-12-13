@@ -20,7 +20,7 @@
 				</p>
 				<img
 					class="h-11"
-					src="https://app.osmosis.zone/tokens/{allTokenInfos
+					src="https://app.osmosis.zone/tokens/generated/{allTokenInfos
 						.find((x) => x.denom == balance.denom)
 						?.symbol?.toLowerCase()}.svg"
 					alt="token_symbol"
