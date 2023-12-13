@@ -13,10 +13,12 @@
 		{#each balance as balance, i}
 			<li class="flex flex-row items-center gap-2 text-lg font-bold">
 				<p>
-					{Math.round(
-						(100 * balance.amount) /
-							Math.pow(10, allTokenInfos.find((x) => x.denom == balance.denom)?.exponent ?? 1)
-					) / 100}
+					{(
+						Math.round(
+							(100 * balance.amount) /
+								Math.pow(10, allTokenInfos.find((x) => x.denom == balance.denom)?.exponent ?? 1)
+						) / 100
+					).toLocaleString()}
 				</p>
 				<img
 					class="h-11"

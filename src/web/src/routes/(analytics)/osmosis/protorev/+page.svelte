@@ -88,12 +88,12 @@
 			{#if $protoRevTotalRevenueUSD == null}
 				<p>Loading...</p>
 			{:else}
-				{Math.round(100 * $protoRevTotalRevenueUSD) / 100} $
+				{(Math.round(100 * $protoRevTotalRevenueUSD) / 100).toLocaleString()} $
 			{/if}
 		</div>
 		<div class="transparent-background p-2">
 			<h3 class="text-lg font-bold">All Time Trade Count</h3>
-			{$protoRevTotalTrades}
+			{$protoRevTotalTrades?.toLocaleString()}
 		</div>
 	</div>
 
