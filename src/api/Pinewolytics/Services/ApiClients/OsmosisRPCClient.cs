@@ -69,10 +69,10 @@ public class OsmosisRPCClient : Singleton
             })
             .ToArray();
 
-            var txFrom = Encoding.UTF8.GetString(Convert.FromBase64String(tx.TxResult.Events
+            var txFrom = tx.TxResult.Events
                 .Where(x => x.Type == "message")
-                .SelectMany(x => x.Attributes.Where(y => y.Key == Convert.ToBase64String(Encoding.UTF8.GetBytes("sender"))))
-                .First().Value));
+                .SelectMany(x => x.Attributes.Where(y => y.Key == "sender"))
+                .First().Value;
 
             return (new OsmosisProtoRevTransactionDTO()
             {
