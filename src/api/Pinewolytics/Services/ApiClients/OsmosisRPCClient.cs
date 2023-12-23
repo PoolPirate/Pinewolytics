@@ -67,6 +67,7 @@ public class OsmosisRPCClient : Singleton
 
                 };
             })
+            .DistinctBy(x => x.Profit.Amount)
             .ToArray();
 
             var txFrom = tx.TxResult.Events
