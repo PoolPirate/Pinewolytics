@@ -42,44 +42,26 @@ public class OsmosisRPCClient : Singleton
 
         return await Task.WhenAll(result!.Result.Txs.Select(async tx =>
         {
-            var mintEvents = tx.TxResult.Events
-            .Where(x => x.Type == "coinbase")
-            .Where(x => x.Attributes.Single(
-                attribute => attribute.Key == Convert.ToBase64String(Encoding.UTF8.GetBytes("minter"))).Value == ProtoRevModuleAddressBase64)
-            .ToArray();
+            var backRuns = tx.TxResult.Events
+                .Where(x => x.Type == "protorev_backrun")
+                .ToArray();
 
-            var swaps = mintEvents.Select(mintEvent =>
+            var swaps = backRuns.Select(backrun =>
             {
-                int mintIndex = tx.TxResult.Events.IndexOf(mintEvent);
+                string arbDenom = backrun.Attributes
+                    .Single(x => x.Key == "arb_denom")
+                    .Value;
 
-                var mintAmount = DenominatedAmountDTO.FromBase64AttributeValue(
-                    mintEvent.Attributes.Single(x => x.Key == Convert.ToBase64String(Encoding.UTF8.GetBytes("amount"))).Value);
-
-                var burnEvent = tx.TxResult.Events
-                    .Skip(mintIndex + 1)
-                    .Where(x => x.Type == "burn")
-                    .Where(x => x.Attributes.Single(
-                         attribute => attribute.Key == Convert.ToBase64String(Encoding.UTF8.GetBytes("burner"))).Value == ProtoRevModuleAddressBase64)
-                    .First();
-
-                int burnIndex = tx.TxResult.Events.IndexOf(burnEvent);
-
-                var receivedAmount = tx.TxResult.Events
-                    .Skip(mintIndex + 1)
-                    .Take(burnIndex - mintIndex - 1)
-                    .Where(x => x.Type == "coin_received")
-                    .Where(x => x.Attributes.Any(y => y.Key == Convert.ToBase64String(Encoding.UTF8.GetBytes("receiver")) && y.Value == ProtoRevModuleAddressBase64))
-                    .Select(x => x.Attributes.Single(x => x.Key == Convert.ToBase64String(Encoding.UTF8.GetBytes("amount"))))
-                    .Select(x => DenominatedAmountDTO.FromBase64AttributeValue(x.Value))
-                    .Where(x => x.Denom == mintAmount.Denom)
-                    .Last();
+                ulong profit = ulong.Parse(backrun.Attributes
+                    .Single(x => x.Key == "profit")
+                    .Value);
 
                 return new OsmosisProtoRevSwapDTO()
                 {
                     Profit = new DenominatedAmountDTO()
                     {
-                        Denom = mintAmount.Denom,
-                        Amount = receivedAmount.Amount - mintAmount.Amount,
+                        Denom = arbDenom,
+                        Amount = profit,
                     },
                     ProfitUSD = 0 //ToDo: Add price calculation  
 
