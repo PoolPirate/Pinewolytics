@@ -57,7 +57,7 @@ public class OsmosisLCDClient : Singleton
     record AmountResult(DenominatedAmountDTO Amount);
     public async Task<decimal> GetTotalOSMOSupplyAsync(CancellationToken cancellationToken = default)
     {
-        var route = new Uri(ApiEndpoint, "cosmos/bank/v1beta1/supply/uosmo");
+        var route = new Uri(ApiEndpoint, "cosmos/bank/v1beta1/supply/by_denom?denom=uosmo");
         var response = await Client.GetAsync(route, cancellationToken);
 
         response.EnsureSuccessStatusCode();
